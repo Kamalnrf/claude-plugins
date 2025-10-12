@@ -55,6 +55,30 @@ export async function ensureDefaultMarketplace(marketplaceName?: string): Promis
 }
 
 /**
+ * Registers a new marketplace from a cloned repository
+ * @param marketplaceName Name to register the marketplace as
+ * @param installLocation Absolute path where the marketplace is cloned
+ * @returns true if successful
+ */
+export async function registerMarketplace(
+  marketplaceName: string,
+  installLocation: string
+): Promise<boolean> {
+  const knownMarketplaces =
+    (await readJSON<Record<string, KnownMarketplace>>(KNOWN_MARKETPLACES_FILE)) || {};
+
+  // Register the marketplace
+  knownMarketplaces[marketplaceName] = {
+    source: { source: "directory", path: installLocation },
+    installLocation,
+    lastUpdated: new Date().toISOString(),
+  };
+
+  await writeJSON(KNOWN_MARKETPLACES_FILE, knownMarketplaces);
+  return true;
+}
+
+/**
  * Gets a marketplace's manifest
  * @param marketplaceName Marketplace name
  * @returns Marketplace manifest or null if not found
@@ -139,5 +163,23 @@ export async function removePluginFromMarketplace(
   const manifestPath = join(installLocation, ".claude-plugin", "marketplace.json");
 
   await writeJSON(manifestPath, manifest);
+  return true;
+}
+
+/**
+ * Unregisters a marketplace from known_marketplaces.json
+ * @param marketplaceName Marketplace name to unregister
+ * @returns true if successful
+ */
+export async function unregisterMarketplace(marketplaceName: string): Promise<boolean> {
+  const knownMarketplaces =
+    (await readJSON<Record<string, KnownMarketplace>>(KNOWN_MARKETPLACES_FILE)) || {};
+
+  if (!knownMarketplaces[marketplaceName]) {
+    return false;
+  }
+
+  delete knownMarketplaces[marketplaceName];
+  await writeJSON(KNOWN_MARKETPLACES_FILE, knownMarketplaces);
   return true;
 }

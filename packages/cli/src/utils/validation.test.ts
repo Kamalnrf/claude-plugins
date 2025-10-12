@@ -9,9 +9,9 @@ test("validates namespace/plugin format", () => {
   expect(isValidPluginIdentifier("davila7/claude-code-templates")).toBe(true);
 });
 
-test("validates URLs", () => {
-  expect(isValidPluginIdentifier("https://github.com/test/plugin.git")).toBe(true);
-  expect(isValidPluginIdentifier("http://example.com/repo.git")).toBe(true);
+test("rejects URLs (not supported)", () => {
+  expect(isValidPluginIdentifier("https://github.com/test/plugin.git")).toBe(false);
+  expect(isValidPluginIdentifier("http://example.com/repo.git")).toBe(false);
 });
 
 test("validates simple names", () => {

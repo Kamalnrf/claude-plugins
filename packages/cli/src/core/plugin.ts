@@ -5,18 +5,19 @@ import type { Plugin } from "../types";
 /**
  * Extracts plugin metadata from a cloned plugin repository
  * Tries multiple locations and formats for metadata
- * @param cacheLocation Path to the cloned plugin repository
+ * @param pluginLocation Absolute path to the plugin directory in marketplace
  * @param pluginName Plugin name for fallback metadata
- * @param pluginUrl Plugin URL for source metadata
- * @returns Plugin metadata
+ * @returns Plugin metadata with local directory source
  */
 export async function extractPluginMetadata(
-  cacheLocation: string,
-  pluginName: string,
-  pluginUrl: string
+  pluginLocation: string,
+  pluginName: string
 ): Promise<Plugin> {
+  // Use directory source type with absolute path so Claude can discover the plugin
+  const source = { source: "directory" as const, path: pluginLocation };
+
   // Try .claude-plugin/marketplace.json first
-  const marketplaceJsonPath = join(cacheLocation, ".claude-plugin", "marketplace.json");
+  const marketplaceJsonPath = join(pluginLocation, ".claude-plugin", "marketplace.json");
 
   if (await exists(marketplaceJsonPath)) {
     const data = await readJSON<any>(marketplaceJsonPath);
@@ -28,7 +29,7 @@ export async function extractPluginMetadata(
 
       return {
         ...plugin,
-        source: { source: "url", url: pluginUrl },
+        source,
       };
     }
 
@@ -36,18 +37,18 @@ export async function extractPluginMetadata(
     return {
       name: pluginName,
       ...data,
-      source: { source: "url", url: pluginUrl },
+      source,
     };
   }
 
   // Try .claude-plugin/plugin.json as fallback
-  const pluginJsonPath = join(cacheLocation, ".claude-plugin", "plugin.json");
+  const pluginJsonPath = join(pluginLocation, ".claude-plugin", "plugin.json");
   if (await exists(pluginJsonPath)) {
     const data = await readJSON<any>(pluginJsonPath);
     return {
       name: pluginName,
       ...data,
-      source: { source: "url", url: pluginUrl },
+      source,
     };
   }
 
@@ -55,7 +56,7 @@ export async function extractPluginMetadata(
   console.warn(`No metadata found for ${pluginName}, using minimal defaults`);
   return {
     name: pluginName,
-    source: { source: "url", url: pluginUrl },
+    source,
     description: `Plugin: ${pluginName} (no metadata available)`,
     version: "1.0.0",
     author: { name: "Unknown" },

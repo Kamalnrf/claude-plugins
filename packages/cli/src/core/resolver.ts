@@ -5,73 +5,68 @@
 const REGISTRY_API_URL = "https://kamalnrf--44867e10a75311f08f880224a6c84d84.web.val.run";
 
 /**
- * Resolves a plugin identifier to a git URL
- * @param pluginIdentifier Plugin identifier (@namespace/plugin, namespace/plugin, or URL)
+ * Resolves a plugin identifier to a git URL by querying the registry API
+ * Supports npm-style package names:
+ * - @namespace/plugin (scoped)
+ * - namespace/plugin (scoped without @)
+ * - plugin (unscoped)
+ *
+ * @param pluginIdentifier Plugin identifier in npm format
  * @returns Git URL if resolved, null if unable to resolve
  */
 export async function resolvePluginUrl(pluginIdentifier: string): Promise<string | null> {
-  // Handle direct URLs - no API lookup needed
-  if (pluginIdentifier.startsWith("http://") || pluginIdentifier.startsWith("https://")) {
-    return pluginIdentifier;
-  }
+  try {
+    let apiPath: string;
 
-  // Handle @namespace/plugin or namespace/plugin format - query API
-  if (pluginIdentifier.startsWith("@") || pluginIdentifier.includes("/")) {
-    try {
-      // Remove @ prefix if present for API call
-      const identifier = pluginIdentifier.startsWith("@")
-        ? pluginIdentifier.slice(1)
-        : pluginIdentifier;
+    // Handle @namespace/plugin format (scoped)
+    if (pluginIdentifier.startsWith("@") && pluginIdentifier.includes("/")) {
+      // Remove @ prefix for API call: @namespace/plugin -> namespace/plugin
+      apiPath = pluginIdentifier.slice(1);
+    }
+    // Handle namespace/plugin format (scoped without @)
+    else if (pluginIdentifier.includes("/")) {
+      apiPath = pluginIdentifier;
+    }
+    // Handle unscoped plugin format
+    else {
+      apiPath = pluginIdentifier;
+    }
 
-      const response = await fetch(`${REGISTRY_API_URL}/api/resolve/${identifier}`);
+    const response = await fetch(`${REGISTRY_API_URL}/api/resolve/${apiPath}`);
 
-      if (!response.ok) {
-        // Plugin not found in registry, fall back to GitHub assumption
-        if (response.status === 404 && pluginIdentifier.includes("/")) {
-          return `https://github.com/${identifier}.git`;
-        }
-        return null;
-      }
-
-      const data = await response.json();
-      return data.gitUrl;
-    } catch (error) {
-      console.error(`Failed to resolve plugin ${pluginIdentifier}:`, error);
-
-      // Fallback to GitHub assumption for namespace/plugin format
-      if (pluginIdentifier.includes("/")) {
-        const identifier = pluginIdentifier.startsWith("@")
-          ? pluginIdentifier.slice(1)
-          : pluginIdentifier;
-        return `https://github.com/${identifier}.git`;
-      }
-
+    if (!response.ok) {
       return null;
     }
-  }
 
-  // Unable to resolve
-  return null;
+    const data = (await response.json()) as {
+      gitUrl: string;
+    };
+    if (!data.gitUrl) {
+      throw new Error(`Invalid response from registry API: ${data}`);
+    }
+
+    return data.gitUrl;
+  } catch (error) {
+    return null;
+  }
 }
 
 /**
  * Extracts the plugin name from a plugin identifier
- * @param pluginIdentifier Plugin identifier
- * @returns Plugin name (last part after /)
+ * Supports npm-style package names:
+ * - @namespace/plugin -> plugin
+ * - namespace/plugin -> plugin
+ * - plugin -> plugin
+ *
+ * @param pluginIdentifier Plugin identifier in npm format
+ * @returns Plugin name (last part after / or the entire identifier if no /)
  */
 export function extractPluginName(pluginIdentifier: string): string {
-  // @namespace/plugin-name -> plugin-name
-  if (pluginIdentifier.startsWith("@")) {
-    return pluginIdentifier.split("/").pop()!.replace(/\.git$/, "");
-  }
-
-  // Direct URL or namespace/plugin-name -> extract last part
+  // Handle @namespace/plugin or namespace/plugin -> extract plugin name
   if (pluginIdentifier.includes("/")) {
-    const name = pluginIdentifier.split("/").pop()!;
-    // Remove .git suffix if present
-    return name.replace(/\.git$/, "");
+    return pluginIdentifier.split("/").pop()!;
   }
 
-  // Plain name
-  return pluginIdentifier.replace(/\.git$/, "");
+  // Unscoped plugin name
+  return pluginIdentifier;
 }

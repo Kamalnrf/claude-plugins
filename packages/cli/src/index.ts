@@ -1,7 +1,8 @@
 #!/usr/bin/env bun
 import { parseArgs } from "node:util";
 import { installCommand } from "./commands/install";
-import { removeCommand } from "./commands/remove";
+import { disableCommand } from "./commands/disable";
+import { enableCommand } from "./commands/enable";
 import { listCommand } from "./commands/list";
 
 const { positionals } = parseArgs({
@@ -27,9 +28,10 @@ async function main() {
       await installCommand(args[0]);
       break;
 
-    case "remove":
+    case "disable":
+    case "remove": // Backwards compatibility
       if (args.length === 0) {
-        console.error("Usage: claude-plugins remove <plugin-name>");
+        console.error("Usage: claude-plugins disable <plugin-name>");
         process.exit(1);
       }
 
@@ -38,7 +40,21 @@ async function main() {
         process.exit(1);
       }
 
-      await removeCommand(args[0]);
+      await disableCommand(args[0]);
+      break;
+
+    case "enable":
+      if (args.length === 0) {
+        console.error("Usage: claude-plugins enable <plugin-name>");
+        process.exit(1);
+      }
+
+      if (typeof args[0] !== 'string'){
+        console.error("Invalid plugin name");
+        process.exit(1);
+      }
+
+      await enableCommand(args[0]);
       break;
 
     case "list":
@@ -46,11 +62,12 @@ async function main() {
       break;
 
     default:
-      console.error("Unknown command. Available: install, remove, list, search");
+      console.error("Unknown command. Available: install, enable, disable, list");
       console.error("");
       console.error("Usage:");
       console.error("  claude-plugins install <plugin-identifier>");
-      console.error("  claude-plugins remove <plugin-name>");
+      console.error("  claude-plugins enable <plugin-name>");
+      console.error("  claude-plugins disable <plugin-name>");
       console.error("  claude-plugins list");
       process.exit(1);
   }

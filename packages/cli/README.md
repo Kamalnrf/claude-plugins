@@ -14,19 +14,21 @@ chmod +x src/index.ts
 
 ### Install a plugin
 
-Install plugins using @namespace/name format, namespace/name format, or direct URLs:
+Install plugins using npm-style package names (all plugins must be registered in the central registry):
 
 ```bash
-# From central registry API
-bun run src/index.ts install @wshobson/claude-code-essentials
+# Scoped plugins with @ prefix
 bun run src/index.ts install @every/compounding-engineering
+bun run src/index.ts install @wshobson/claude-code-essentials
 
-# From GitHub (namespace/repo format - falls back if not in registry)
-bun run src/index.ts install davila7/claude-code-templates
+# Scoped plugins without @ prefix
+bun run src/index.ts install every/compounding-engineering
 
-# From direct URL
-bun run src/index.ts install https://github.com/org/plugin.git
+# Unscoped plugins
+bun run src/index.ts install plugin-name
 ```
+
+**Note:** All plugins must be registered in the central registry API. Direct URLs are not supported.
 
 ### Search for plugins
 
@@ -50,18 +52,28 @@ bun run src/index.ts list
 
 Output shows enabled (✓) and disabled (✗) plugins.
 
-### Remove a plugin
+### Enable a plugin
 
-Remove an installed plugin:
+Re-enable a previously disabled plugin:
 
 ```bash
-bun run src/index.ts remove plugin-name
+bun run src/index.ts enable plugin-name
+```
+
+This command works for both local and external marketplace plugins that have been disabled.
+
+### Disable a plugin
+
+Disable an installed plugin:
+
+```bash
+bun run src/index.ts disable plugin-name
 ```
 
 This will:
-- Remove from settings.json
-- Remove from marketplace.json
-- Delete cached files
+- **For external marketplace plugins**: Disables the plugin (sets to `false` in settings.json) but keeps all files
+- **For local marketplace plugins**: Disables the plugin AND removes files from the local marketplace directory
+  - If it's the last plugin in the local marketplace, the entire local marketplace is removed
 
 ## Architecture
 
@@ -69,23 +81,45 @@ This will:
 
 ```
 ~/.claude/
-   settings.json                    # Plugin enablement settings
+   settings.json                         # Plugin enablement settings
    plugins/
-      config.json                   # CLI configuration
-      known_marketplaces.json       # Registered marketplaces
+      config.json                        # CLI configuration
+      known_marketplaces.json            # Registered marketplaces
       marketplaces/
-         marketplace-name/          # Marketplace repos
+         claude-plugin-marketplace/      # Default local marketplace
              .claude-plugin/
-                 marketplace.json   # Plugin registry
-      cache/
-          plugin-name/              # Cloned plugin repos
+                 marketplace.json        # Local plugin registry
+             plugin-1/                   # Individual plugin (cloned)
+             plugin-2/                   # Another individual plugin
+         compounding-engineering/        # Installed marketplace (cloned)
+             .claude-plugin/
+                 marketplace.json        # Marketplace's plugin registry
 ```
+
+**Architecture:**
+- **Marketplaces** are cloned to `marketplaces/marketplace-name/` and registered in `known_marketplaces.json`
+- **Individual plugins** are cloned to `marketplaces/local-marketplace/plugin-name/`
+- Claude scans all marketplaces in `marketplaces/` to discover plugins
+- The CLI automatically detects if you're installing a marketplace or a plugin
+
+### Installation Flow
+
+When you run `install @namespace/name`:
+
+1. **Resolve URL** - Query registry API or use fallback
+2. **Clone to temp** - Clone to temporary location
+3. **Validate** - Check for `.claude-plugin/` directory
+4. **Detect type** - Check if marketplace (has `plugins` array) or individual plugin
+5. **Install accordingly**:
+   - **Marketplace**: Move to `marketplaces/name/`, register in `known_marketplaces.json`
+   - **Plugin**: Move to `marketplaces/local/name/`, add to local marketplace, enable in settings
 
 ### Key Features
 
 - **File Locking**: Prevents race conditions during concurrent operations
-- **Validation**: Ensures plugins have required `.claude-plugin` directory structure
-- **Rollback**: Automatically rolls back failed installations
+- **Type Detection**: Automatically distinguishes marketplaces from plugins
+- **Validation**: Ensures `.claude-plugin` directory structure
+- **Rollback**: Automatically cleans up failed installations
 - **Metadata Extraction**: Reads plugin info from cloned repos
 - **Configuration**: Flexible marketplace and registry settings
 
@@ -105,13 +139,15 @@ bun run build
 
 ## Plugin Resolution
 
-The CLI resolves plugin identifiers to git URLs via the central registry API:
+The CLI resolves all plugin identifiers via the central registry API (npm-style):
 
-1. **@namespace/plugin** → API lookup at `https://kamalnrf--44867e10a75311f08f880224a6c84d84.web.val.run/api/resolve/`
-2. **namespace/plugin** → API lookup with fallback to `https://github.com/namespace/plugin.git`
-3. **https://...** → Direct URL (no API call)
+1. **@namespace/plugin** → API lookup at `https://kamalnrf--44867e10a75311f08f880224a6c84d84.web.val.run/api/resolve/namespace/plugin`
+2. **namespace/plugin** → API lookup at `https://kamalnrf--44867e10a75311f08f880224a6c84d84.web.val.run/api/resolve/namespace/plugin`
+3. **plugin** → API lookup at `https://kamalnrf--44867e10a75311f08f880224a6c84d84.web.val.run/api/resolve/plugin`
 
-The registry API is deployed on Val Town and automatically tracks download statistics. View source: https://www.val.town/x/kamalnrf/claude-plugins-registry
+All plugins must be registered in the central registry. The API automatically tracks download statistics.
+
+**Registry API:** https://www.val.town/x/kamalnrf/claude-plugins-registry
 
 ## Creating Plugins
 
@@ -172,7 +208,6 @@ Run an install command first - this will bootstrap the default marketplace.
 ## Future Enhancements
 
 - Plugin update/upgrade command
-- Enable/disable without removing
 - Plugin dependency resolution
 - Version pinning
 - Interactive install mode
