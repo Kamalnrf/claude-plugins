@@ -24,7 +24,7 @@ export async function installCommand(pluginIdentifier: string): Promise<void> {
   const s = spinner();
   s.start("Resolving plugin URL...");
 
-  const pluginUrl = resolvePluginUrl(pluginIdentifier);
+  const pluginUrl = await resolvePluginUrl(pluginIdentifier);
   if (!pluginUrl) {
     s.stop("Failed to resolve");
     cancel(`Unable to resolve "${pluginIdentifier}"`);

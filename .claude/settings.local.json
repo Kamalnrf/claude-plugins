@@ -9,7 +9,12 @@
       "Bash(bun install)",
       "Bash(bun test)",
       "Bash(bun run:*)",
-      "Bash(cat:*)"
+      "Bash(cat:*)",
+      "mcp__context7__resolve-library-id",
+      "Bash(bun:*)",
+      "WebSearch",
+      "mcp__context7__get-library-docs",
+      "Read(//Users/kamal/workspace/claude-plugins-api/**)"
     ],
     "deny": [],
     "ask": []

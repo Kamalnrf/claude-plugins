@@ -17,10 +17,11 @@ chmod +x src/index.ts
 Install plugins using @namespace/name format, namespace/name format, or direct URLs:
 
 ```bash
-# From hardcoded registry
+# From central registry API
 bun run src/index.ts install @wshobson/claude-code-essentials
+bun run src/index.ts install @every/compounding-engineering
 
-# From GitHub (namespace/repo format)
+# From GitHub (namespace/repo format - falls back if not in registry)
 bun run src/index.ts install davila7/claude-code-templates
 
 # From direct URL
@@ -104,13 +105,13 @@ bun run build
 
 ## Plugin Resolution
 
-The CLI resolves plugin identifiers to git URLs:
+The CLI resolves plugin identifiers to git URLs via the central registry API:
 
-1. **@namespace/plugin** → Hardcoded registry lookup (MVP)
-2. **namespace/plugin** → `https://github.com/namespace/plugin.git`
-3. **https://...** → Direct URL
+1. **@namespace/plugin** → API lookup at `https://kamalnrf--44867e10a75311f08f880224a6c84d84.web.val.run/api/resolve/`
+2. **namespace/plugin** → API lookup with fallback to `https://github.com/namespace/plugin.git`
+3. **https://...** → Direct URL (no API call)
 
-Future versions will use API-based resolution.
+The registry API is deployed on Val Town and automatically tracks download statistics. View source: https://www.val.town/x/kamalnrf/claude-plugins-registry
 
 ## Creating Plugins
 
@@ -145,9 +146,11 @@ The CLI stores configuration in `~/.claude/plugins/config.json`:
 ```json
 {
   "defaultMarketplace": "claude-plugin-marketplace",
-  "registryUrl": "https://api.claude-plugins.com"
+  "registryUrl": "https://kamalnrf--44867e10a75311f08f880224a6c84d84.web.val.run"
 }
 ```
+
+The registry URL points to the central Claude Plugins API deployed on Val Town.
 
 ## Troubleshooting
 
@@ -168,13 +171,13 @@ Run an install command first - this will bootstrap the default marketplace.
 
 ## Future Enhancements
 
-- API-based plugin resolution
 - Plugin update/upgrade command
 - Enable/disable without removing
 - Plugin dependency resolution
 - Version pinning
 - Interactive install mode
 - Plugin signatures/verification
+- Search command with API integration
 
 ## Documentation
 

@@ -1,24 +1,25 @@
 import { test, expect } from "bun:test";
 import { resolvePluginUrl, extractPluginName } from "./resolver";
 
-test("resolves @namespace/plugin format", () => {
-  const url = resolvePluginUrl("@wshobson/claude-code-essentials");
+test("resolves @namespace/plugin format from API", async () => {
+  const url = await resolvePluginUrl("@wshobson/claude-code-essentials");
   expect(url).toBe("https://github.com/wshobson/agents.git");
 });
 
-test("resolves namespace/plugin format to GitHub URL", () => {
-  const url = resolvePluginUrl("davila7/claude-code-templates");
-  expect(url).toBe("https://github.com/davila7/claude-code-templates.git");
+test("resolves @every/compounding-engineering from API", async () => {
+  const url = await resolvePluginUrl("@every/compounding-engineering");
+  expect(url).toBe("https://github.com/EveryInc/compounding-engineering-plugin.git");
 });
 
-test("passes through direct URLs", () => {
-  const url = resolvePluginUrl("https://github.com/test/plugin.git");
+test("passes through direct URLs without API call", async () => {
+  const url = await resolvePluginUrl("https://github.com/test/plugin.git");
   expect(url).toBe("https://github.com/test/plugin.git");
 });
 
-test("returns null for unknown @namespace/plugin", () => {
-  const url = resolvePluginUrl("@unknown/nonexistent-plugin");
-  expect(url).toBeNull();
+test("falls back to GitHub for unknown namespace/plugin", async () => {
+  const url = await resolvePluginUrl("unknown/nonexistent-plugin");
+  // Should fallback to GitHub URL assumption when not found in registry
+  expect(url).toBe("https://github.com/unknown/nonexistent-plugin.git");
 });
 
 test("extracts plugin name from @namespace/plugin", () => {
