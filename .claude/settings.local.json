@@ -1,0 +1,17 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//Users/kamal/.claude/**)",
+      "Read(//Users/kamal/.claude/plugins/**)",
+      "Bash(git rev-parse:*)",
+      "Bash(git checkout:*)",
+      "Bash(git pull:*)",
+      "Bash(bun install)",
+      "Bash(bun test)",
+      "Bash(bun run:*)",
+      "Bash(cat:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
