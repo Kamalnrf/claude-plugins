@@ -16,7 +16,8 @@
     "picocolors": "^1.1.1"
   },
   "devDependencies": {
-    "@types/bun": "latest"
+    "@types/bun": "latest",
+    "bunchee": "^6.6.2"
   },
   "peerDependencies": {
     "typescript": "^5"
