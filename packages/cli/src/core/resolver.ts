@@ -2,7 +2,7 @@
  * Claude Plugins Registry API
  * Production API deployed on Val Town
  */
-const REGISTRY_API_URL = "https://kamalnrf--44867e10a75311f08f880224a6c84d84.web.val.run";
+const REGISTRY_API_URL = "https://api.claude-plugins.dev/";
 
 /**
  * Resolves a plugin identifier to a git URL by querying the registry API
