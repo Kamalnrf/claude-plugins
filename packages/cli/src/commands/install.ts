@@ -16,7 +16,7 @@ import { enablePlugin } from "../core/settings";
  * @param pluginIdentifier Plugin/Marketplace identifier (@namespace/name, namespace/name, or URL)
  */
 export async function installCommand(pluginIdentifier: string): Promise<void> {
-  intro("Claude Plugin Installer");
+  intro(pc.cyan("Claude Plugins"));
 
   await ensureDirectories();
   const config = await getConfig();
@@ -43,27 +43,31 @@ export async function installCommand(pluginIdentifier: string): Promise<void> {
   const tempLocation = join(MARKETPLACES_DIR, `.temp-${name}`);
 
   try {
-    s.start(`Cloning ${name}...`);
+    s.start(`Installing ${name}...`);
     await rm(tempLocation, { recursive: true, force: true });
 
     const cloned = await cloneRepo(url, tempLocation);
     if (!cloned) {
+      s.stop("Failed to install");
+      note(
+        `Plugin ${pc.cyan(pluginIdentifier)} ${pc.red("failed to be cloned")}. Please check if this repo ${pc.blue(pc.underline(url))} exists.
+        You can also raise an issue at ${pc.blue(pc.underline("https://github.com/Kamalnrf/claude-plugins/issues"))} to get help.`,
+        "Clone Step Failed"
+      )
       throw new Error("Clone failed");
     }
-    s.stop("Cloned successfully");
+    s.stop(`Cloned Repo`)
 
     // Step 3: Validate structure
-    s.start("Validating structure...");
     const validation = await isValidClaudePlugin(tempLocation);
     if (!validation.valid) {
+      s.stop("Plugin appears to be invalid");
+      note(`Reason: ${validation.reason}`, "Validation Step Failed");
       throw new Error(`Invalid: ${validation.reason}`);
     }
-    s.stop("Structure validated");
 
     // Step 4: Detect if marketplace or plugin
-    s.start("Detecting type...");
     const repoType = await detectRepoType(tempLocation);
-    s.stop(`Detected: ${repoType}`);
 
     if (repoType === "marketplace") {
       await installMarketplace(name, tempLocation, s);
@@ -71,8 +75,8 @@ export async function installCommand(pluginIdentifier: string): Promise<void> {
       await installPlugin(name, tempLocation, config.defaultMarketplace, s);
     }
 
-    note(` Installed successfully, you can start Claude Code to use the new plugin ${name}.`, "Success");
-    outro("Installation complete ✓");
+    note(`Start a new Claude Code session to use the new plugin "${name}".`, "Installed successfully");
+    outro(pc.green("Installation complete ✓"));
   } catch (error: any) {
     cancel(`Installation failed: ${error.message}`);
     await rm(tempLocation, { recursive: true, force: true });
@@ -88,32 +92,32 @@ async function installMarketplace(
   tempLocation: string,
   s: any
 ): Promise<void> {
+  s.start("Enabling plugin...");
   // Read marketplace.json from temp location to get the actual marketplace name
-  s.start("Reading marketplace metadata...");
+  // s.start("Reading marketplace metadata...");
   const marketplaceJsonPath = join(tempLocation, ".claude-plugin", "marketplace.json");
   const marketplaceData = await readJSON<any>(marketplaceJsonPath);
   const marketplaceName = marketplaceData?.name || identifierName;
-  s.stop(`Marketplace name: ${marketplaceName}`);
+  // s.stop(`Marketplace name: ${marketplaceName}`);
 
   // Use marketplace name for directory
   const finalLocation = join(MARKETPLACES_DIR, marketplaceName);
 
   // Move from temp to final location
-  s.start("Installing marketplace...");
+  // s.start("Installing marketplace...");
   await rm(finalLocation, { recursive: true, force: true });
   await Bun.spawn(["mv", tempLocation, finalLocation]).exited;
-  s.stop("Marketplace installed");
+  // s.stop("Marketplace installed");
 
   // Register marketplace using marketplace name
-  s.start("Registering marketplace...");
+  // s.start("Registering marketplace...");
   await registerMarketplace(marketplaceName, finalLocation);
-  s.stop(`Marketplace "${marketplaceName}" registered`);
+  // s.stop(`Marketplace "${marketplaceName}" registered`);
 
   // Enable the plugin using the identifier name (directory name from identifier)
   // For @every/compounding-engineering: pluginName = "compounding-engineering", marketplaceName = "every-marketplace"
-  s.start("Enabling plugin...");
   await enablePlugin(identifierName, marketplaceName);
-  s.stop(`Plugin "${identifierName}" enabled from marketplace "${marketplaceName}"`);
+  s.stop(`Plugin "${identifierName}" enabled from marketplace ${pc.dim(marketplaceName)}`);
 }
 
 /**

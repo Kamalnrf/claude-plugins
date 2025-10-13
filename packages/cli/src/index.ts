@@ -27,9 +27,7 @@ async function main() {
 
       await installCommand(args[0]);
       break;
-
     case "disable":
-    case "remove": // Backwards compatibility
       if (args.length === 0) {
         console.error("Usage: claude-plugins disable <plugin-name>");
         process.exit(1);

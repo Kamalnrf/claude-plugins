@@ -16,23 +16,7 @@ const REGISTRY_API_URL = "https://api.claude-plugins.dev/";
  */
 export async function resolvePluginUrl(pluginIdentifier: string): Promise<string | null> {
   try {
-    let apiPath: string;
-
-    // Handle @namespace/plugin format (scoped)
-    if (pluginIdentifier.startsWith("@") && pluginIdentifier.includes("/")) {
-      // Remove @ prefix for API call: @namespace/plugin -> namespace/plugin
-      apiPath = pluginIdentifier.slice(1);
-    }
-    // Handle namespace/plugin format (scoped without @)
-    else if (pluginIdentifier.includes("/")) {
-      apiPath = pluginIdentifier;
-    }
-    // Handle unscoped plugin format
-    else {
-      apiPath = pluginIdentifier;
-    }
-
-    const response = await fetch(`${REGISTRY_API_URL}/api/resolve/${apiPath}`);
+    const response = await fetch(`${REGISTRY_API_URL}/api/resolve/${pluginIdentifier}`);
 
     if (!response.ok) {
       return null;

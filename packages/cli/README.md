@@ -30,18 +30,6 @@ bun run src/index.ts install plugin-name
 
 **Note:** All plugins must be registered in the central registry API. Direct URLs are not supported.
 
-### Search for plugins
-
-Search the marketplace for available plugins:
-
-```bash
-# List all plugins
-bun run src/index.ts search
-
-# Filter by query (searches name, description, keywords)
-bun run src/index.ts search supabase
-```
-
 ### List installed plugins
 
 View all installed plugins grouped by marketplace:
@@ -70,10 +58,7 @@ Disable an installed plugin:
 bun run src/index.ts disable plugin-name
 ```
 
-This will:
-- **For external marketplace plugins**: Disables the plugin (sets to `false` in settings.json) but keeps all files
-- **For local marketplace plugins**: Disables the plugin AND removes files from the local marketplace directory
-  - If it's the last plugin in the local marketplace, the entire local marketplace is removed
+This will disable the plugin (set to `false` in settings.json) but keep all files intact. Use this when you want to temporarily turn off a plugin without uninstalling it.
 
 ## Architecture
 
@@ -141,9 +126,9 @@ bun run build
 
 The CLI resolves all plugin identifiers via the central registry API (npm-style):
 
-1. **@namespace/plugin** → API lookup at `https://kamalnrf--44867e10a75311f08f880224a6c84d84.web.val.run/api/resolve/namespace/plugin`
-2. **namespace/plugin** → API lookup at `https://kamalnrf--44867e10a75311f08f880224a6c84d84.web.val.run/api/resolve/namespace/plugin`
-3. **plugin** → API lookup at `https://kamalnrf--44867e10a75311f08f880224a6c84d84.web.val.run/api/resolve/plugin`
+1. **@namespace/plugin** → API lookup at `https://api.claude-plugins.dev/api/resolve/namespace/plugin`
+2. **namespace/plugin** → API lookup at `https://api.claude-plugins.dev/api/resolve/namespace/plugin`
+3. **plugin** → API lookup at `https://api.claude-plugins.dev/api/resolve/plugin`
 
 All plugins must be registered in the central registry. The API automatically tracks download statistics.
 
@@ -182,11 +167,11 @@ The CLI stores configuration in `~/.claude/plugins/config.json`:
 ```json
 {
   "defaultMarketplace": "claude-plugin-marketplace",
-  "registryUrl": "https://kamalnrf--44867e10a75311f08f880224a6c84d84.web.val.run"
+  "registryUrl": "https://api.claude-plugins.dev"
 }
 ```
 
-The registry URL points to the central Claude Plugins API deployed on Val Town.
+The registry URL points to the central Claude Plugins API.
 
 ## Troubleshooting
 
@@ -212,7 +197,7 @@ Run an install command first - this will bootstrap the default marketplace.
 - Version pinning
 - Interactive install mode
 - Plugin signatures/verification
-- Search command with API integration
+- Search command with API integration (API endpoint exists, CLI command not implemented yet)
 
 ## Documentation
 

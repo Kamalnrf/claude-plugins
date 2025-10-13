@@ -1,11 +1,12 @@
 import { intro, outro, note } from "@clack/prompts";
 import { listEnabledPlugins } from "../core/settings";
+import pc from "picocolors";
 
 /**
  * List command - lists all installed plugins
  */
 export async function listCommand(): Promise<void> {
-  intro("Installed Plugins");
+  intro(pc.cyan("Claude Plugins"));
 
   const plugins = await listEnabledPlugins();
 
@@ -27,10 +28,11 @@ export async function listCommand(): Promise<void> {
 
     let output = "";
     for (const [marketplace, marketplacePlugins] of Object.entries(grouped)) {
-      output += `\n${marketplace}:\n`;
+      output += `\n${pc.dim(marketplace)}:\n`;
       for (const plugin of marketplacePlugins) {
-        const status = plugin.enabled ? "✓" : "✗";
-        output += `  ${status} ${plugin.name}\n`;
+        const status = plugin.enabled ? pc.green("✓") : pc.dim("✗");
+        const pluginDisplay = plugin.enabled ? plugin.name : pc.dim(plugin.name);
+        output += `  ${status} ${pluginDisplay}\n`;
       }
     }
 

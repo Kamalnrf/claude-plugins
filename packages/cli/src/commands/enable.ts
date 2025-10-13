@@ -1,6 +1,7 @@
 import { intro, outro, spinner, cancel, confirm, isCancel } from "@clack/prompts";
 import { readJSON, SETTINGS_FILE } from "../utils/fs";
 import { enablePlugin } from "../core/settings";
+import pc from "picocolors";
 import type { Settings } from "../types";
 
 /**
@@ -8,7 +9,7 @@ import type { Settings } from "../types";
  * @param pluginName Plugin name to enable
  */
 export async function enableCommand(pluginName: string): Promise<void> {
-  intro("Claude Plugin Manager");
+  intro(pc.cyan("Claude Plugins"));
 
   const s = spinner();
 
@@ -65,5 +66,5 @@ export async function enableCommand(pluginName: string): Promise<void> {
   await enablePlugin(pluginName, marketplaceName);
   s.stop("Plugin enabled");
 
-  outro(`"${pluginName}" has been enabled ✓`);
+  outro(pc.green(`"${pluginName}" has been enabled ✓`));
 }
