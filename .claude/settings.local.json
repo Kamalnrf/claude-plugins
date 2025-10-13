@@ -14,7 +14,12 @@
       "Bash(bun:*)",
       "WebSearch",
       "mcp__context7__get-library-docs",
-      "Read(//Users/kamal/workspace/claude-plugins-api/**)"
+      "Read(//Users/kamal/workspace/claude-plugins-api/**)",
+      "Bash(tree:*)",
+      "WebFetch(domain:silkhq.com)",
+      "WebFetch(domain:www.uilabs.dev)",
+      "WebFetch(domain:context7.com)",
+      "WebFetch(domain:www.val.town)"
     ],
     "deny": [],
     "ask": []

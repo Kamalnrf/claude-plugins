@@ -1,0 +1,51 @@
+---
+import '@fontsource/redaction';
+import "../styles/global.css";
+import { GithubIcon } from "../components/ui/github";
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const { title = 'Claude Code Plugins', description = 'Discover and install plugins for Claude Code' } = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="description" content={description} />
+    <meta name="viewport" content="width=device-width" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="generator" content={Astro.generator} />
+    <title>{title}</title>
+  </head>
+  <body class="max-w-4xl mx-auto">
+    <header class="flex items-center justify-between px-6 pt-10 pb-8 border-b border-border/50">
+      <div>
+        <a
+          href="/"
+          class="text-3xl font-serif font-bold tracking-tight bg-gradient-to-r from-primary via-primary to-orange-400 bg-clip-text text-transparent hover:opacity-80 transition-opacity"
+        >
+          Claude Code Plugins
+        </a>
+        <p class="text-muted-foreground/80 text-sm mt-1.5 tracking-wide">
+          Community-maintained marketplace
+        </p>
+      </div>
+      <a
+        href="https://github.com/Kamalnrf/claude-plugins"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="text-muted-foreground hover:text-primary transition-all hover:scale-110"
+      >
+        <GithubIcon size={24} client:load />
+      </a>
+    </header>
+
+    <main class="min-h-screen">
+      <slot />
+    </main>
+  </body>
+</html>

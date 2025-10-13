@@ -1,0 +1,19 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:icons.pqoqubbw.dev)",
+      "Bash(bun add:*)",
+      "Bash(pnpx shadcn@latest add \"https://icons.pqoqubbw.dev/c/arrow-down.json\")",
+      "Bash(pnpx shadcn@latest add \"https://icons.pqoqubbw.dev/c/star.json\")",
+      "Bash(pnpx shadcn@latest add \"https://icons.pqoqubbw.dev/c/github.json\")",
+      "Bash(pnpx shadcn@latest add \"https://icons.pqoqubbw.dev/c/search.json\")",
+      "Bash(pnpx shadcn@latest add \"https://icons.pqoqubbw.dev/c/package.json\")",
+      "Bash(pnpx shadcn@latest add \"https://icons.pqoqubbw.dev/c/copy.json\")",
+      "Bash(pnpx shadcn@latest add \"https://icons.pqoqubbw.dev/c/check.json\")",
+      "Bash(pnpx shadcn@latest add \"https://icons.pqoqubbw.dev/c/loader.json\")",
+      "Bash(bun run:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
