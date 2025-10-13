@@ -1,23 +1,46 @@
 {
   "name": "claude-plugins",
   "version": "0.1.0",
-  "module": "src/index.ts",
+  "description": "CLI tool for managing Claude Code plugins",
+  "author": "Kamal <https://github.com/Kamalnrf>",
+  "license": "MIT",
+  "main": "dist/index.js",
   "type": "module",
   "bin": {
-    "claude-plugins": "./src/index.ts"
+    "claude-plugins": "./dist/index.js"
   },
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "dev": "bun run src/index.ts",
     "test": "bun test",
-    "build": "bun build src/index.ts --outdir=dist --target=bun"
+    "build": "bun build src/index.ts --outdir=dist --target=node",
+    "prepublishOnly": "bun run build"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "keywords": [
+    "claude",
+    "claude-code",
+    "plugins",
+    "cli"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Kamalnrf/claude-plugins.git"
+  },
+  "homepage": "https://github.com/Kamalnrf/claude-plugins#readme",
+  "bugs": {
+    "url": "https://github.com/Kamalnrf/claude-plugins/issues"
   },
   "dependencies": {
     "@clack/prompts": "^0.7.0",
     "picocolors": "^1.1.1"
   },
   "devDependencies": {
-    "@types/bun": "latest",
-    "bunchee": "^6.6.2"
+    "@types/bun": "latest"
   },
   "peerDependencies": {
     "typescript": "^5"

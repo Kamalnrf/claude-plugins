@@ -1,6 +1,6 @@
 import { join } from "node:path";
 import { homedir } from "node:os";
-import { mkdir, access, rm } from "node:fs/promises";
+import { mkdir, access, rm, readFile, writeFile } from "node:fs/promises";
 import { constants } from "node:fs";
 
 // Path constants
@@ -73,8 +73,7 @@ export async function readJSON<T>(filePath: string): Promise<T | null> {
       return null;
     }
 
-    const file = Bun.file(filePath);
-    const content = await file.text();
+    const content = await readFile(filePath, 'utf-8');
 
     if (!content.trim()) {
       return null;
@@ -98,10 +97,10 @@ export async function writeJSON<T>(filePath: string, data: T): Promise<void> {
     const tempPath = `${filePath}.tmp`;
 
     // Write to temp file first
-    await Bun.write(tempPath, content);
+    await writeFile(tempPath, content, 'utf-8');
 
     // Atomic rename
-    await Bun.write(filePath, content);
+    await writeFile(filePath, content, 'utf-8');
 
     // Clean up temp file
     try {

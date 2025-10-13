@@ -1,6 +1,6 @@
 import { intro, outro, spinner, cancel, note } from "@clack/prompts";
 import { join } from "node:path";
-import { rm } from "node:fs/promises";
+import { rm, rename } from "node:fs/promises";
 import pc from "picocolors";
 import { ensureDirectories, MARKETPLACES_DIR, readJSON } from "../utils/fs";
 import { cloneRepo } from "../utils/git";
@@ -106,7 +106,7 @@ async function installMarketplace(
   // Move from temp to final location
   // s.start("Installing marketplace...");
   await rm(finalLocation, { recursive: true, force: true });
-  await Bun.spawn(["mv", tempLocation, finalLocation]).exited;
+  await rename(tempLocation, finalLocation);
   // s.stop("Marketplace installed");
 
   // Register marketplace using marketplace name
@@ -139,7 +139,7 @@ async function installPlugin(
   // Move from temp to final location
   s.start("Installing plugin...");
   await rm(finalLocation, { recursive: true, force: true });
-  await Bun.spawn(["mv", tempLocation, finalLocation]).exited;
+  await rename(tempLocation, finalLocation);
   s.stop("Plugin installed");
 
   // Extract metadata with local directory path
