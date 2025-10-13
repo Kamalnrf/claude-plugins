@@ -1,35 +1,35 @@
-# Claude Code Plugin Manager
+# Claude Plugins CLI
 
-Manage Claude Code plugins with an npm-like workflow. Install, enable, disable, and discover plugins for Claude Code.
+Manage _ALL_ Claude Code plugins in one place.
 
-## Quick Start
-
-No installation required - use with `npx` or `bunx`:
-
-```bash
-# Install a plugin
-npx claude-plugins install @anthropics/claude-code-plugins/pr-review-toolkit
-bunx claude-plugins install @anthropics/claude-code-plugins/pr-review-toolkit
-
-# List installed plugins
-npx claude-plugins list
-
-# Enable/disable plugins
-npx claude-plugins enable <plugin-name>
-npx claude-plugins disable <plugin-name>
-```
-
-Or install globally:
-
-```bash
-npm install -g claude-plugins
-claude-plugins install @anthropics/claude-code-plugins/pr-review-toolkit
-```
+> You must be on atleast [Claude Code v2.0.12](https://x.com/claudeai/status/1976332881409737124) to be able to use the Claude Plugins CLI
 
 ## Discover Plugins
 
 Explore available plugins at **[claude-plugins.dev](https://claude-plugins.dev)**
 Today we are sourcing all public plugins on Github and indexing them for easy discovery and installation.
+
+## Usage
+
+With `npx`:
+
+```bash
+# Install a plugin
+npx claude-plugins install @anthropics/claude-code-plugins/pr-review-toolkit
+
+# List installed plugins
+npx claude-plugins list
+
+# Enable/disable plugins
+npx claude-plugins enable plugin-name
+npx claude-plugins disable plugin-name
+```
+
+Or globally:
+
+```bash
+npm install -g claude-plugins
+```
 
 ## How It Works
 
