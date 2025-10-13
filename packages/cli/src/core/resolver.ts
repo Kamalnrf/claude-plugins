@@ -16,7 +16,8 @@ const REGISTRY_API_URL = "https://api.claude-plugins.dev/";
  */
 export async function resolvePluginUrl(pluginIdentifier: string): Promise<string | null> {
   try {
-    const response = await fetch(`${REGISTRY_API_URL}/api/resolve/${pluginIdentifier}`);
+    const identifier = pluginIdentifier.replace(/^@/, "");
+    const response = await fetch(`${REGISTRY_API_URL}/api/resolve/${identifier}`);
 
     if (!response.ok) {
       return null;
