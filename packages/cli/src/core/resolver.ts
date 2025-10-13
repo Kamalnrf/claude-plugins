@@ -2,7 +2,7 @@
  * Claude Plugins Registry API
  * Production API deployed on Val Town
  */
-const REGISTRY_API_URL = "https://api.claude-plugins.dev/";
+const REGISTRY_API_URL = "https://api.claude-plugins.dev";
 
 /**
  * Resolves a plugin identifier to a git URL by querying the registry API
@@ -16,8 +16,7 @@ const REGISTRY_API_URL = "https://api.claude-plugins.dev/";
  */
 export async function resolvePluginUrl(pluginIdentifier: string): Promise<string | null> {
   try {
-    const identifier = pluginIdentifier.replace(/^@/, "");
-    const response = await fetch(`${REGISTRY_API_URL}/api/resolve/${identifier}`);
+    const response = await fetch(`${REGISTRY_API_URL}/api/resolve/${pluginIdentifier}`);
 
     if (!response.ok) {
       return null;
