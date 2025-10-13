@@ -1,0 +1,9 @@
+# https://www.robotstxt.org/robotstxt.html
+User-agent: *
+Allow: /
+
+# Disallow API endpoints from being crawled
+Disallow: /api/
+
+# Sitemap location
+Sitemap: https://claude-plugins.dev/sitemap.xml

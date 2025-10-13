@@ -6,20 +6,64 @@ import { GithubIcon } from "../components/ui/github";
 interface Props {
   title?: string;
   description?: string;
+  ogImage?: string;
+  keywords?: string;
+  canonicalUrl?: string;
 }
 
-const { title = 'Claude Code Plugins', description = 'Discover and install plugins for Claude Code' } = Astro.props;
+const {
+  title = 'Claude Code Plugins - Community Marketplace & Plugin Manager',
+  description = 'Install Claude Code plugins directly without manually adding marketplaces first. Simple CLI tool that handles marketplace setup automatically.',
+  ogImage = '/og-image.png',
+  keywords = 'Claude Code plugins, Claude Code CLI, plugin manager, AI development tools, Claude AI plugins, developer tools, npm packages, plugin marketplace',
+  canonicalUrl = Astro.url.href
+} = Astro.props;
+
+const siteUrl = 'https://claude-plugins.dev';
+const fullOgImage = ogImage.startsWith('http') ? ogImage : `${siteUrl}${ogImage}`;
 ---
 
 <!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="description" content={description} />
-    <meta name="viewport" content="width=device-width" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="generator" content={Astro.generator} />
+
+    <!-- Primary Meta Tags -->
     <title>{title}</title>
+    <meta name="title" content={title} />
+    <meta name="description" content={description} />
+    <meta name="keywords" content={keywords} />
+    <meta name="author" content="Claude Plugins Community" />
+
+    <!-- Canonical URL -->
+    <link rel="canonical" href={canonicalUrl} />
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+    <!-- Theme Color -->
+    <meta name="theme-color" content="#000000" />
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={canonicalUrl} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={fullOgImage} />
+    <meta property="og:site_name" content="Claude Code Plugins" />
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:url" content={canonicalUrl} />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={fullOgImage} />
+
+    <!-- Additional SEO -->
+    <meta name="robots" content="index, follow" />
+    <meta name="language" content="English" />
   </head>
   <body class="max-w-4xl mx-auto">
     <header class="flex items-center justify-between px-6 pt-10 pb-8 border-b border-border/50">
