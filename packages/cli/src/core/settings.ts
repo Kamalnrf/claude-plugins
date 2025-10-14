@@ -15,7 +15,14 @@ export async function getSettings(): Promise<Settings> {
   }
 
   const settings = await readJSON<Settings>(SETTINGS_FILE);
-  return settings || DEFAULT_SETTINGS;
+  const result = settings || DEFAULT_SETTINGS;
+
+  // Ensure enabledPlugins exists
+  if (!result.enabledPlugins) {
+    result.enabledPlugins = {};
+  }
+
+  return result;
 }
 
 /**
