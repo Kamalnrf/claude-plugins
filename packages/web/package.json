@@ -19,6 +19,7 @@
     "@radix-ui/react-tooltip": "^1.2.8",
     "@tailwindcss/vite": "^4.1.14",
     "@types/dompurify": "^3.2.0",
+    "@vercel/analytics": "^1.5.0",
     "@vercel/og": "^0.8.5",
     "astro": "^5.14.4",
     "class-variance-authority": "^0.7.1",

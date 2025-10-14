@@ -12,8 +12,8 @@ export const GET: APIRoute = async () => {
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundColor: '#000',
-        backgroundImage: 'linear-gradient(135deg, rgba(255, 107, 53, 0.1) 0%, rgba(247, 147, 30, 0.1) 100%)',
+        backgroundColor: '#252321', // Using actual background color from design system
+        backgroundImage: 'linear-gradient(135deg, rgba(213, 97, 60, 0.15) 0%, rgba(251, 146, 60, 0.15) 100%)',
       },
       children: [
         {
@@ -30,11 +30,16 @@ export const GET: APIRoute = async () => {
                 type: 'h1',
                 props: {
                   style: {
-                    fontSize: '72px',
+                    fontSize: '80px',
                     fontWeight: 'bold',
-                    color: '#fff',
+                    background: 'linear-gradient(to right, #D5613C, #D5613C, #fb923c)',
+                    backgroundClip: 'text',
+                    WebkitBackgroundClip: 'text',
+                    color: 'transparent',
                     margin: '0',
                     marginBottom: '20px',
+                    fontFamily: 'Georgia, serif',
+                    letterSpacing: '-0.02em',
                   },
                   children: 'Claude Code Plugins',
                 },
@@ -44,9 +49,10 @@ export const GET: APIRoute = async () => {
                 props: {
                   style: {
                     fontSize: '32px',
-                    color: '#999',
+                    color: '#a8b3c7', // Using muted-foreground from design system
                     margin: '0',
                     marginBottom: '40px',
+                    fontFamily: 'system-ui, sans-serif',
                   },
                   children: 'Install plugins with one command',
                 },
@@ -58,8 +64,8 @@ export const GET: APIRoute = async () => {
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    backgroundColor: '#1a1a1a',
-                    border: '2px solid #333',
+                    backgroundColor: '#2d2b28', // Using card color from design system
+                    border: '2px solid #393734', // Using border color from design system
                     borderRadius: '12px',
                     padding: '24px 48px',
                     marginBottom: '60px',
@@ -69,8 +75,8 @@ export const GET: APIRoute = async () => {
                     props: {
                       style: {
                         fontSize: '28px',
-                        color: '#00ff88',
-                        fontFamily: 'monospace',
+                        color: '#fb923c', // Using orange-400 to match brand gradient
+                        fontFamily: 'Menlo, Monaco, monospace',
                       },
                       children: 'npx claude-plugins install',
                     },
@@ -82,8 +88,9 @@ export const GET: APIRoute = async () => {
                 props: {
                   style: {
                     fontSize: '24px',
-                    color: '#666',
+                    color: '#7a8091', // Darker muted color for footer
                     margin: '0',
+                    fontFamily: 'system-ui, sans-serif',
                   },
                   children: 'claude-plugins.dev',
                 },

@@ -1,4 +1,5 @@
 ---
+import Analytics from '@vercel/analytics/astro';
 import '@fontsource/redaction';
 import "../styles/global.css";
 import { GithubIcon } from "../components/ui/github";
@@ -29,6 +30,7 @@ const fullOgImage = ogImage.startsWith('http') ? ogImage : `${siteUrl}${ogImage}
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="generator" content={Astro.generator} />
+    <Analytics />
 
     <!-- Primary Meta Tags -->
     <title>{title}</title>
