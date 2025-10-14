@@ -5,6 +5,12 @@
     "packages/*"
   ],
   "module": "index.ts",
+  "scripts": {
+    "web:dev": "cd packages/web && bun run dev",
+    "web:build": "cd packages/web && bun run build",
+    "cli:dev": "cd packages/cli && bun run dev",
+    "cli:build": "cd packages/cli && bun run build"
+  },
   "type": "module",
   "devDependencies": {
     "@types/bun": "latest"
