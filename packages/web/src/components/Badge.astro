@@ -1,0 +1,23 @@
+---
+interface Props {
+  href?: string;
+  variant?: "solid" | "dotted";
+  class?: string;
+}
+
+const { href, variant = "solid", class: className } = Astro.props;
+const baseClasses = "px-2 py-0.5 bg-muted/30 rounded font-mono";
+const borderClasses = variant === "dotted" ? "border border-dashed border-border/30" : "border border-border/30";
+const linkClasses = href ? "hover:underline" : "";
+const classes = [baseClasses, borderClasses, linkClasses, className].filter(Boolean).join(" ");
+---
+
+{href ? (
+  <a href={href} class={classes}>
+    <slot />
+  </a>
+) : (
+  <span class={classes}>
+    <slot />
+  </span>
+)}

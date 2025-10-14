@@ -6,27 +6,29 @@ import type { HTMLAttributes } from 'react';
 import { forwardRef, useCallback, useImperativeHandle, useRef } from 'react';
 import { cn } from '@/lib/utils';
 
-export interface StarIconHandle {
+export interface DownloadIconHandle {
   startAnimation: () => void;
   stopAnimation: () => void;
 }
 
-interface StarIconProps extends HTMLAttributes<HTMLDivElement> {
+interface DownloadIconProps extends HTMLAttributes<HTMLDivElement> {
   size?: number;
 }
 
-const starVariants: Variants = {
-  normal: { scale: 1, rotate: 0 },
+const arrowVariants: Variants = {
+  normal: { y: 0 },
   animate: {
-    scale: [1, 1.2, 1],
-    rotate: [0, 15, -15, 0],
+    y: 2,
     transition: {
-      duration: 0.5,
+      type: 'spring',
+      stiffness: 200,
+      damping: 10,
+      mass: 1,
     },
   },
 };
 
-const StarIcon = forwardRef<StarIconHandle, StarIconProps>(
+const DownloadIcon = forwardRef<DownloadIconHandle, DownloadIconProps>(
   ({ onMouseEnter, onMouseLeave, className, size = 28, ...props }, ref) => {
     const controls = useAnimation();
     const isControlledRef = useRef(false);
@@ -69,7 +71,7 @@ const StarIcon = forwardRef<StarIconHandle, StarIconProps>(
         onMouseLeave={handleMouseLeave}
         {...props}
       >
-        <motion.svg
+        <svg
           xmlns="http://www.w3.org/2000/svg"
           width={size}
           height={size}
@@ -79,17 +81,18 @@ const StarIcon = forwardRef<StarIconHandle, StarIconProps>(
           strokeWidth="2"
           strokeLinecap="round"
           strokeLinejoin="round"
-          variants={starVariants}
-          animate={controls}
         >
-          <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-        </motion.svg>
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+          <motion.g variants={arrowVariants} animate={controls}>
+            <polyline points="7 10 12 15 17 10" />
+            <line x1="12" x2="12" y1="15" y2="3" />
+          </motion.g>
+        </svg>
       </div>
     );
   }
 );
 
-StarIcon.displayName = 'StarIcon';
+DownloadIcon.displayName = 'DownloadIcon';
 
-export { StarIcon };
-export type { StarIconProps };
+export { DownloadIcon };

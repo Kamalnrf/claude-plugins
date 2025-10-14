@@ -1,23 +1,38 @@
 import { useState, useEffect, useRef } from "react";
 import { motion } from "motion/react";
-import { PluginCard, type Plugin } from "./PluginCard";
+import { PluginCard } from "./PluginCard";
+import { type Plugin } from "@/lib/api";
 import { Loader2 } from "lucide-react";
 
 interface InfinitePluginListProps {
   initialPlugins: Plugin[];
-  searchQuery: string;
   total: number;
+  searchQuery: string;
+  onSearchChange?: (query: string) => void;
 }
 
 export default function InfinitePluginList({
   initialPlugins,
+  total,
   searchQuery,
-  total
+  onSearchChange
 }: InfinitePluginListProps) {
   const [plugins, setPlugins] = useState<Plugin[]>(initialPlugins);
   const [isLoading, setIsLoading] = useState(false);
   const [hasMore, setHasMore] = useState(initialPlugins.length < total);
   const observerTarget = useRef<HTMLDivElement>(null);
+
+  // Sync with parent when props change
+  useEffect(() => {
+    setPlugins(initialPlugins);
+    setHasMore(initialPlugins.length < total);
+  }, [initialPlugins, total]);
+
+  const handleBadgeClick = (keyword: string) => {
+    if (onSearchChange) {
+      onSearchChange(keyword);
+    }
+  };
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -66,8 +81,8 @@ export default function InfinitePluginList({
     <>
       {/* Plugin List */}
       <div className="flex flex-col gap-1.5">
-        {plugins.map((plugin, index) => (
-          <PluginCard key={`${plugin.namespace}-${index}`} plugin={plugin} />
+        {plugins.map((plugin) => (
+          <PluginCard key={plugin.id} plugin={plugin} onBadgeClick={handleBadgeClick} />
         ))}
       </div>
 

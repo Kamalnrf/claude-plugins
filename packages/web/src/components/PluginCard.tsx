@@ -11,21 +11,14 @@ import {
 import { GithubIcon } from "@/components/ui/github";
 import { PackageIcon } from "@/components/ui/package-icon";
 import { StarIcon } from "@/components/ui/star-icon";
-import { ArrowDownIcon } from "@/components/ui/arrow-down";
+import { DownloadIcon } from "./ui/download";
 import { MetricBadge } from "./MetricBadge";
 import { InstallCommand } from "./InstallCommand";
-
-export interface Plugin {
-  name: string;
-  namespace: string;
-  description: string;
-  gitUrl: string;
-  stars: number;
-  downloads: number;
-}
+import { type Plugin } from "@/lib/api";
 
 export interface PluginCardProps {
   plugin: Plugin;
+  onBadgeClick?: (keyword: string) => void;
 }
 
 function formatNumber(num: number): string {
@@ -34,53 +27,87 @@ function formatNumber(num: number): string {
   return (num / 1000000).toFixed(1).replace(/\.0$/, '') + 'M';
 }
 
-export function PluginCard({ plugin }: PluginCardProps) {
+export function PluginCard({ plugin, onBadgeClick }: PluginCardProps) {
+  const keywords = plugin.keywords?.slice(0, 3) ?? [];
+  // Combine and deduplicate category + keywords
+  const allBadges = plugin.category ? [plugin.category, ...keywords] : keywords;
+  const badges = [...new Set(allBadges)]; // Remove duplicates
+  const additionalBadges = badges.length > 3 ? [`${badges.length - 3}+`] : [];
+
+  const handleBadgeClick = (badge: string) => {
+    if (onBadgeClick) {
+      onBadgeClick(badge);
+    }
+  };
+
   return (
     <Item
       variant="outline"
       size="sm"
       className="group hover:border-primary/50 hover:shadow-lg hover:shadow-primary/5 transition-all duration-300 bg-card/50 backdrop-blur-sm"
     >
-      <ItemHeader>
-        <ItemMedia variant="icon" className="bg-primary/10 size-7">
-          <PackageIcon size={14} className="text-primary" />
-        </ItemMedia>
+      <ItemHeader className="flex flex-col justify-start">
+        <div className="flex w-full justify-between">
+          <ItemHeader>
+            <ItemMedia variant="icon" className="bg-primary/10 size-7">
+              <PackageIcon size={14} className="text-primary" />
+            </ItemMedia>
 
-        <ItemContent>
-          <ItemTitle className="text-sm group-hover:text-primary transition-colors">
-            {plugin.name}
-          </ItemTitle>
+            <ItemContent>
+              <ItemTitle className="text-sm group-hover:text-primary transition-colors">
+                {plugin.name}
+              </ItemTitle>
 
-          <a
-            href={plugin.gitUrl}
-            target="_blank"
-            rel="noopener"
-            className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors w-fit"
-          >
-            <GithubIcon size={12} className="shrink-0" />
-            <span className="font-medium">{plugin.namespace}</span>
-          </a>
-        </ItemContent>
-
-        <ItemActions>
-          <MetricBadge
-            icon={StarIcon}
-            value={formatNumber(plugin.stars)}
-            color="yellow"
-          />
-          <MetricBadge
-            icon={ArrowDownIcon}
-            value={formatNumber(plugin.downloads)}
-            color="blue"
-          />
-        </ItemActions>
+              <a
+                href={plugin.gitUrl}
+                target="_blank"
+                rel="noopener"
+                className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors w-fit"
+              >
+                <GithubIcon size={12} className="shrink-0" />
+                <span className="font-medium">{plugin.namespace}</span>
+              </a>
+            </ItemContent>
+          </ItemHeader>
+          <ItemActions>
+            <MetricBadge
+              icon={StarIcon}
+              value={formatNumber(plugin.stars)}
+              color="yellow"
+            />
+            <MetricBadge
+              icon={DownloadIcon}
+              value={formatNumber(plugin.downloads)}
+              color="blue"
+            />
+          </ItemActions>
+        </div>
+        <div className="flex flex-wrap items-center gap-1.5 self-start">
+          {badges.map((keyword) => (
+            <button
+              key={keyword}
+              onClick={() => handleBadgeClick(keyword)}
+              className="px-2 py-0.5 text-[10px] font-medium bg-muted/50 text-muted-foreground rounded-md border border-border/30 border-dotted cursor-pointer hover:border-primary/40 hover:bg-primary/5 hover:text-primary transition-colors"
+            >
+              {keyword}
+            </button>
+          ))}
+          {additionalBadges.map((badge) => (
+            <span
+              key={badge}
+              className="px-2 py-0.5 text-[10px] font-medium bg-muted/50 text-muted-foreground rounded-md border border-border/30 border-dotted"
+            >
+              {badge}
+            </span>
+          ))}
+        </div>
       </ItemHeader>
 
       <ItemDescription className="my-2 leading-relaxed line-clamp-2 text-xs">
         {plugin.description}
       </ItemDescription>
 
-      <ItemFooter>
+      <ItemFooter className="w-full">
         <InstallCommand namespace={plugin.namespace} name={plugin.name} />
       </ItemFooter>
     </Item>
