@@ -4,6 +4,12 @@
   "workspaces": [
     "packages/*"
   ],
+  "scripts": {
+    "web:dev": "cd packages/web && bun run dev",
+    "web:build": "cd packages/web && bun run build",
+    "cli:dev": "cd packages/cli && bun run dev",
+    "cli:build": "cd packages/cli && bun run build"
+  },
   "module": "index.ts",
   "type": "module",
   "devDependencies": {
