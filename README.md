@@ -31,6 +31,9 @@ Or globally:
 npm install -g claude-plugins
 ```
 
+![usage-demo](https://github.com/user-attachments/assets/45598f81-1718-4c5b-9824-37e4f297fc61)
+
+
 ## How It Works
 
 It works same as installing with Claude Code. Main difference being instead of running multiple commands, to add marketplace, and for installing plugin. This tool, will do it in one command. The plugin manager uses a centralized registry to resolve plugin identifiers to Git repositories:
