@@ -1,8 +1,14 @@
-import type { ComponentType, HTMLAttributes } from "react";
+import type { ComponentType, HTMLAttributes, RefObject } from "react";
+import { useRef } from "react";
 import { cn } from "@/lib/utils";
 
+export interface IconHandle {
+  startAnimation: () => void;
+  stopAnimation: () => void;
+}
+
 export interface MetricBadgeProps extends HTMLAttributes<HTMLDivElement> {
-  icon: ComponentType<any>;
+  icon: ComponentType<{ size?: number; ref?: RefObject<IconHandle> }>;
   value: string;
   color: "yellow" | "blue" | "green";
 }
@@ -20,6 +26,16 @@ export function MetricBadge({
   className,
   ...props
 }: MetricBadgeProps) {
+  const iconRef = useRef<IconHandle>(null);
+
+  const handleMouseEnter = () => {
+    iconRef.current?.startAnimation();
+  };
+
+  const handleMouseLeave = () => {
+    iconRef.current?.stopAnimation();
+  };
+
   return (
     <div
       className={cn(
@@ -28,9 +44,11 @@ export function MetricBadge({
         colorClasses[color],
         className
       )}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
       {...props}
     >
-      <Icon size={12} className="shrink-0" />
+      <Icon size={12} ref={iconRef} />
       <span className="font-semibold tabular-nums text-[11px]">{value}</span>
     </div>
   );

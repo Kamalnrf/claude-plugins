@@ -1,9 +1,8 @@
 ---
 import MarketplaceLayout from '../layouts/MarketplaceLayout.astro';
 import { registryAPI } from '../lib/api';
-import InfinitePluginList from '../components/InfinitePluginList';
-import { Input } from '@/components/ui/input';
-import { Search } from 'lucide-react';
+import PluginBrowser from '../components/PluginBrowser';
+import Badge from '../components/Badge.astro';
 
 // Get search params from URL
 const url = new URL(Astro.request.url);
@@ -40,7 +39,7 @@ function formatNumber(num: number): string {
           Install <strong>Claude Code plugins</strong> directly without manually adding marketplaces first.
           Claude Code normally requires installing a marketplace, then installing plugins from it. This CLI handles both steps automatically in one command.
           Browse and install from <a href="https://www.val.town/x/kamalnrf/claude-plugins-registry" class="underline hover:text-primary">indexed public plugins</a>.
-          <a href="https://github.com/Kamalnrf/claude-plugins" class="underline hover:text-primary">Open-source</a> and community-maintained.
+          <a href="https://github.com/Kamalnrwhy f/claude-plugins" class="underline hover:text-primary">Open-source</a> and community-maintained.
         </p>
       </div>
 
@@ -48,9 +47,9 @@ function formatNumber(num: number): string {
       <div class="flex items-center gap-2.5 text-xs text-muted-foreground/60">
         <span class="font-medium">built with</span>
         <div class="flex items-center gap-1.5">
-          <span class="px-2 py-0.5 bg-muted/30 rounded border border-border/30 font-mono">bun</span>
-          <a href="https://www.val.town/x/kamalnrf/claude-plugins-registry" class="px-2 py-0.5 bg-muted/30 rounded border border-border/30 font-mono hover:underline">Val Town</a>
-          <span class="px-2 py-0.5 bg-muted/30 rounded border border-border/30 font-mono">Claude Code 😉</span>
+          <Badge>bun</Badge>
+          <Badge href="https://www.val.town/x/kamalnrf/claude-plugins-registry">Val Town</Badge>
+          <Badge variant="dotted">Claude Code 😉</Badge>
         </div>
       </div>
 
@@ -89,19 +88,6 @@ function formatNumber(num: number): string {
           </div>
         </div>
 
-        <!-- Install Globally and use without npx -->
-        <div class="flex flex-col gap-1.5">
-          <p class="text-xs text-muted-foreground">Install Globally and use without npx:</p>
-          <div class="flex items-center gap-2 bg-muted/30 border border-border/50 rounded-lg px-3 py-2 font-mono text-xs">
-            <span class="select-none text-muted-foreground/50">$</span>
-            <code class="flex-1 text-foreground/90">npm install -g claude-plugins</code>
-          </div>
-          <div class="flex items-center gap-2 bg-muted/30 border border-border/50 rounded-lg px-3 py-2 font-mono text-xs">
-            <span class="select-none text-muted-foreground/50">$</span>
-            <code class="flex-1 text-foreground/90">claude-plugins enable {"<plugin-name>"}</code>
-          </div>
-        </div>
-
         <p class="text-xs text-muted-foreground/60 mt-1">
           Requires Claude Code v2.0.12 or higher.
           <a href="https://github.com/Kamalnrf/claude-plugins" target="_blank" rel="noopener noreferrer" class="text-primary hover:underline">
@@ -112,7 +98,7 @@ function formatNumber(num: number): string {
     </section>
 
     <!-- Search Section -->
-    <section class="flex flex-col gap-3 sticky top-0 z-10 backdrop-blur-md bg-background/80">
+    <section class="flex flex-col gap-3 sticky top-0 z-10 backdrop-blur-md bg-background/80 py-2">
       <div class="flex items-center gap-2">
         <h2 class="text-base font-semibold text-foreground/90 tracking-tight">Browse Plugins</h2>
         <div class="flex-1 h-px bg-border/30"></div>
@@ -121,27 +107,13 @@ function formatNumber(num: number): string {
         </div>
       </div>
 
-      <form method="get" class="sticky top-0 z-10" aria-label="Search plugins">
-        <div class="relative group">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" />
-          <Input
-            type="search"
-            name="q"
-            value={searchQuery}
-            placeholder="Search by name, author, or keyword..."
-            aria-label="Search for Claude Code plugins"
-            className="h-9 pl-9 text-sm bg-background/50 backdrop-blur-sm border-border/50 focus:border-primary/50 focus:ring-2 focus:ring-primary/10 transition-all"
-          />
-        </div>
-      </form>
+      <!-- Plugin Browser with Search and Infinite Scroll -->
+      <PluginBrowser
+        initialPlugins={plugins}
+        initialQuery={searchQuery}
+        total={total}
+        client:load
+      />
     </section>
-
-    <!-- Plugin List with Infinite Scroll -->
-    <InfinitePluginList
-      initialPlugins={plugins}
-      searchQuery={searchQuery}
-      total={total}
-      client:load
-    />
   </div>
 </MarketplaceLayout>
