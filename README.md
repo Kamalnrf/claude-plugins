@@ -33,6 +33,51 @@ npm install -g claude-plugins
 
 ![usage-demo](https://github.com/user-attachments/assets/45598f81-1718-4c5b-9824-37e4f297fc61)
 
+## Commands
+
+### `install <plugin-identifier>`
+
+Install a plugin from the registry:
+
+All plugins must be registered @ central registry. Currently we scour Github for public plugins.
+
+### `list`
+
+View all installed plugins grouped by marketplace:
+
+```bash
+npx claude-plugins list
+```
+
+Output shows enabled (✓) and disabled (✗) plugins.
+
+### `enable <plugin-name>`
+
+Re-enable a previously disabled plugin:
+
+```bash
+npx claude-plugins enable plugin-name
+```
+
+### `disable <plugin-name>`
+
+Disable an installed plugin:
+
+```bash
+npx claude-plugins disable plugin-name
+```
+
+The plugin can be re-enabled later.
+
+## Plugin Resolution
+
+The CLI resolves all plugin identifiers via a [lightweight registry](https://www.val.town/x/kamalnrf/claude-plugins-registry)(npm-style):
+
+1. **@author/marketplace/plugin** → API lookup at `https://api.claude-plugins.dev/api/resolve/author/marketplace/plugin`
+2. **namespace/plugin** → API lookup at `https://api.claude-plugins.dev/api/resolve/namespace/plugin`
+3. **plugin** → API lookup at `https://api.claude-plugins.dev/api/resolve/plugin`
+
+Today, we are [indexing all publicly available plugins](https://www.val.town/x/kamalnrf/claude-plugins-registry) on Github every 10 mins, so no additional changes required to get your plugin added. And every public plugin is available for easy installation.
 
 ## How It Works
 
@@ -55,6 +100,15 @@ This repository contains:
 - **Web** (`packages/web`) - Plugin discovery website
 
 **Registry API:** [val.town/x/kamalnrf/claude-plugins-registry](https://www.val.town/x/kamalnrf/claude-plugins-registry)
+
+## Future Enhancements Plan
+
+- Search command with API integration (API endpoint exists, CLI command not implemented yet)
+- Plugin update/upgrade command
+- Version pinning
+- Plugin signatures/verification
+- Plugin interoperability between different coding agents (e.g., Claude Code, Gemini CLI, Codex)
+- Plugin owners being able to update the plugin identifier
 
 ## Development
 
