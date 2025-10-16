@@ -31,7 +31,6 @@ const fullOgImage = ogImage.startsWith('http') ? ogImage : `${siteUrl}${ogImage}
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="generator" content={Astro.generator} />
-    <Analytics />
 
     <!-- Primary Meta Tags -->
     <title>{title}</title>
@@ -91,5 +90,6 @@ const fullOgImage = ogImage.startsWith('http') ? ogImage : `${siteUrl}${ogImage}
     <main class="min-h-screen">
       <slot />
     </main>
+    <Analytics />
   </body>
 </html>
