@@ -1,18 +1,20 @@
 ---
-import MarketplaceLayout from '../layouts/MarketplaceLayout.astro';
-import { registryAPI } from '../lib/api';
-import PluginBrowser from '../components/PluginBrowser';
-import Badge from '../components/Badge.astro';
+import Badge from "../components/Badge.astro";
+import PluginBrowser from "../components/PluginBrowser";
+import MarketplaceLayout from "../layouts/MarketplaceLayout.astro";
+import { registryAPI } from "../lib/api";
 
 // Get search params from URL
 const url = new URL(Astro.request.url);
-const searchQuery = url.searchParams.get('q') || '';
+const searchQuery = url.searchParams.get("q") || "";
+const hasSkills = url.searchParams.get("hasSkills") === "true";
 
 // Fetch initial plugins with SSR
 const { plugins, total } = await registryAPI.searchPlugins({
-  q: searchQuery,
-  limit: 20,
-  offset: 0,
+	q: searchQuery,
+	limit: 20,
+	offset: 0,
+	hasSkills
 });
 ---
 
@@ -28,9 +30,9 @@ const { plugins, total } = await registryAPI.searchPlugins({
           Manage Claude Code plugins with ease
         </h1>
         <p class="text-base text-muted-foreground/80 leading-relaxed">
-          Install <strong>Claude Code plugins</strong> directly without manually adding marketplaces first.
+          Discover and Install <strong>Claude Code plugins</strong>, even ones with <a href="https://www.anthropic.com/news/skills" class="underline"> skills</a> quickly.
           Claude Code normally requires installing a marketplace, then installing plugins from it. This CLI handles both steps automatically in one command.
-          Browse and install from <a href="https://www.val.town/x/kamalnrf/claude-plugins-registry" class="underline hover:text-primary">indexed public plugins</a>.
+          Browse plugins with skills to extend Claude's capabilities—discover AI agents, document processors, and more.
           <a href="https://github.com/Kamalnrf/claude-plugins" class="underline hover:text-primary">Open-source</a> and community-maintained.
         </p>
       </div>
@@ -91,6 +93,7 @@ const { plugins, total } = await registryAPI.searchPlugins({
     <PluginBrowser
       initialPlugins={plugins}
       initialQuery={searchQuery}
+      initialHasSkills={hasSkills}
       total={total}
       client:load
     />

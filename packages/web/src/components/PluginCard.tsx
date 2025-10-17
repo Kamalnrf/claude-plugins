@@ -14,6 +14,7 @@ import { StarIcon } from "@/components/ui/star-icon";
 import { DownloadIcon } from "./ui/download";
 import { MetricBadge } from "./MetricBadge";
 import { InstallCommand } from "./InstallCommand";
+import { SkillsSection } from "./SkillsSection";
 import { type Plugin } from "@/lib/api";
 
 export interface PluginCardProps {
@@ -28,8 +29,10 @@ function formatNumber(num: number): string {
 }
 
 export function PluginCard({ plugin, onBadgeClick }: PluginCardProps) {
+  const hasSkills = plugin.skills && plugin.skills.length > 0;
+
+  // Show keywords only if no skills available
   const keywords = plugin.keywords?.slice(0, 3) ?? [];
-  // Combine and deduplicate category + keywords
   const allBadges = plugin.category ? [plugin.category, ...keywords] : keywords;
   const badges = [...new Set(allBadges)]; // Remove duplicates
   const additionalBadges = badges.length > 3 ? [`${badges.length - 3}+`] : [];
@@ -82,28 +85,36 @@ export function PluginCard({ plugin, onBadgeClick }: PluginCardProps) {
             />
           </ItemActions>
         </div>
-        <div className="flex flex-wrap items-center gap-1.5 self-start">
-          {badges.map((keyword) => (
-            <button
-              key={keyword}
-              onClick={() => handleBadgeClick(keyword)}
-              className="px-2 py-0.5 text-[10px] font-medium bg-muted/50 text-muted-foreground rounded-md border border-border/30 border-dotted cursor-pointer hover:border-primary/40 hover:bg-primary/5 hover:text-primary transition-colors"
-            >
-              {keyword}
-            </button>
-          ))}
-          {additionalBadges.map((badge) => (
-            <span
-              key={badge}
-              className="px-2 py-0.5 text-[10px] font-medium bg-muted/50 text-muted-foreground rounded-md border border-border/30 border-dotted"
-            >
-              {badge}
-            </span>
-          ))}
-        </div>
+
+        {/* Show Skills OR Keywords (prioritize skills) */}
+        {hasSkills ? (
+          <SkillsSection skills={plugin.skills} onSkillClick={handleBadgeClick} />
+        ) : (
+          badges.length > 0 && (
+            <div className="flex flex-wrap items-center gap-1.5 self-start">
+              {badges.map((keyword) => (
+                <button
+                  key={keyword}
+                  onClick={() => handleBadgeClick(keyword)}
+                  className="px-2 py-0.5 text-[10px] font-medium bg-muted/50 text-muted-foreground rounded-md border border-border/30 border-dotted cursor-pointer hover:border-primary/40 hover:bg-primary/5 hover:text-primary transition-colors"
+                >
+                  {keyword}
+                </button>
+              ))}
+              {additionalBadges.map((badge) => (
+                <span
+                  key={badge}
+                  className="px-2 py-0.5 text-[10px] font-medium bg-muted/50 text-muted-foreground rounded-md border border-border/30 border-dotted"
+                >
+                  {badge}
+                </span>
+              ))}
+            </div>
+          )
+        )}
       </ItemHeader>
 
-      <ItemDescription className="my-2 leading-relaxed line-clamp-2 text-xs">
+      <ItemDescription className="mt-3 mb-2 leading-relaxed line-clamp-2 text-sm text-foreground/90">
         {plugin.description}
       </ItemDescription>
 
