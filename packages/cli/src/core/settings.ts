@@ -1,28 +1,28 @@
-import { readJSON, writeJSON, SETTINGS_FILE, exists } from "../utils/fs";
 import type { Settings } from "../types";
+import { exists, readJSON, SETTINGS_FILE, writeJSON } from "../utils/fs";
 
 const DEFAULT_SETTINGS: Settings = {
-  enabledPlugins: {},
+	enabledPlugins: {},
 };
 
 /**
  * Gets Claude Code settings
  */
 export async function getSettings(): Promise<Settings> {
-  if (!(await exists(SETTINGS_FILE))) {
-    await writeJSON(SETTINGS_FILE, DEFAULT_SETTINGS);
-    return DEFAULT_SETTINGS;
-  }
+	if (!(await exists(SETTINGS_FILE))) {
+		await writeJSON(SETTINGS_FILE, DEFAULT_SETTINGS);
+		return DEFAULT_SETTINGS;
+	}
 
-  const settings = await readJSON<Settings>(SETTINGS_FILE);
-  const result = settings || DEFAULT_SETTINGS;
+	const settings = await readJSON<Settings>(SETTINGS_FILE);
+	const result = settings || DEFAULT_SETTINGS;
 
-  // Ensure enabledPlugins exists
-  if (!result.enabledPlugins) {
-    result.enabledPlugins = {};
-  }
+	// Ensure enabledPlugins exists
+	if (!result.enabledPlugins) {
+		result.enabledPlugins = {};
+	}
 
-  return result;
+	return result;
 }
 
 /**
@@ -30,11 +30,14 @@ export async function getSettings(): Promise<Settings> {
  * @param pluginName Plugin name
  * @param marketplaceName Marketplace name
  */
-export async function enablePlugin(pluginName: string, marketplaceName: string): Promise<void> {
-  const settings = await getSettings();
-  const key = `${pluginName}@${marketplaceName}`;
-  settings.enabledPlugins[key] = true;
-  await writeJSON(SETTINGS_FILE, settings);
+export async function enablePlugin(
+	pluginName: string,
+	marketplaceName: string,
+): Promise<void> {
+	const settings = await getSettings();
+	const key = `${pluginName}@${marketplaceName}`;
+	settings.enabledPlugins[key] = true;
+	await writeJSON(SETTINGS_FILE, settings);
 }
 
 /**
@@ -42,11 +45,14 @@ export async function enablePlugin(pluginName: string, marketplaceName: string):
  * @param pluginName Plugin name
  * @param marketplaceName Marketplace name
  */
-export async function disablePlugin(pluginName: string, marketplaceName: string): Promise<void> {
-  const settings = await getSettings();
-  const key = `${pluginName}@${marketplaceName}`;
-  settings.enabledPlugins[key] = false;
-  await writeJSON(SETTINGS_FILE, settings);
+export async function disablePlugin(
+	pluginName: string,
+	marketplaceName: string,
+): Promise<void> {
+	const settings = await getSettings();
+	const key = `${pluginName}@${marketplaceName}`;
+	settings.enabledPlugins[key] = false;
+	await writeJSON(SETTINGS_FILE, settings);
 }
 
 /**
@@ -55,13 +61,13 @@ export async function disablePlugin(pluginName: string, marketplaceName: string)
  * @param marketplaceName Marketplace name
  */
 export async function removePluginFromSettings(
-  pluginName: string,
-  marketplaceName: string
+	pluginName: string,
+	marketplaceName: string,
 ): Promise<void> {
-  const settings = await getSettings();
-  const key = `${pluginName}@${marketplaceName}`;
-  delete settings.enabledPlugins[key];
-  await writeJSON(SETTINGS_FILE, settings);
+	const settings = await getSettings();
+	const key = `${pluginName}@${marketplaceName}`;
+	delete settings.enabledPlugins[key];
+	await writeJSON(SETTINGS_FILE, settings);
 }
 
 /**
@@ -71,12 +77,12 @@ export async function removePluginFromSettings(
  * @returns true if enabled, false otherwise
  */
 export async function isPluginEnabled(
-  pluginName: string,
-  marketplaceName: string
+	pluginName: string,
+	marketplaceName: string,
 ): Promise<boolean> {
-  const settings = await getSettings();
-  const key = `${pluginName}@${marketplaceName}`;
-  return settings.enabledPlugins[key] === true;
+	const settings = await getSettings();
+	const key = `${pluginName}@${marketplaceName}`;
+	return settings.enabledPlugins[key] === true;
 }
 
 /**
@@ -84,21 +90,25 @@ export async function isPluginEnabled(
  * @returns Array of plugin info with name, marketplace, and enabled status
  */
 export async function listEnabledPlugins(): Promise<
-  Array<{ name: string; marketplace: string; enabled: boolean }>
+	Array<{ name: string; marketplace: string; enabled: boolean }>
 > {
-  const settings = await getSettings();
-  const plugins: Array<{ name: string; marketplace: string; enabled: boolean }> = [];
+	const settings = await getSettings();
+	const plugins: Array<{
+		name: string;
+		marketplace: string;
+		enabled: boolean;
+	}> = [];
 
-  for (const [key, enabled] of Object.entries(settings.enabledPlugins)) {
-    const [name, marketplace] = key.split("@");
-    if (!name || !marketplace) continue;
+	for (const [key, enabled] of Object.entries(settings.enabledPlugins)) {
+		const [name, marketplace] = key.split("@");
+		if (!name || !marketplace) continue;
 
-    plugins.push({
-      name,
-      marketplace,
-      enabled,
-    });
-  }
+		plugins.push({
+			name,
+			marketplace,
+			enabled,
+		});
+	}
 
-  return plugins;
+	return plugins;
 }

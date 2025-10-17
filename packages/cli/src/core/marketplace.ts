@@ -1,24 +1,35 @@
-import { join } from "node:path";
 import { mkdir } from "node:fs/promises";
-import { readJSON, writeJSON, KNOWN_MARKETPLACES_FILE, MARKETPLACES_DIR } from "../utils/fs";
-import type { KnownMarketplace, Marketplace, Plugin } from "../types";
+import { join } from "node:path";
 import { getConfig } from "../config";
+import type { KnownMarketplace, Marketplace, Plugin } from "../types";
+import {
+	KNOWN_MARKETPLACES_FILE,
+	MARKETPLACES_DIR,
+	readJSON,
+	writeJSON,
+} from "../utils/fs";
 
 /**
  * Creates a default marketplace template
  */
-async function createMarketplaceTemplate(installLocation: string, name: string): Promise<void> {
-  await mkdir(installLocation, { recursive: true });
-  await mkdir(join(installLocation, ".claude-plugin"), { recursive: true });
+async function createMarketplaceTemplate(
+	installLocation: string,
+	name: string,
+): Promise<void> {
+	await mkdir(installLocation, { recursive: true });
+	await mkdir(join(installLocation, ".claude-plugin"), { recursive: true });
 
-  const template: Marketplace = {
-    name,
-    owner: { name: "Local", url: "" },
-    metadata: { description: "Local marketplace", version: "1.0.0" },
-    plugins: [],
-  };
+	const template: Marketplace = {
+		name,
+		owner: { name: "Local", url: "" },
+		metadata: { description: "Local marketplace", version: "1.0.0" },
+		plugins: [],
+	};
 
-  await writeJSON(join(installLocation, ".claude-plugin", "marketplace.json"), template);
+	await writeJSON(
+		join(installLocation, ".claude-plugin", "marketplace.json"),
+		template,
+	);
 }
 
 /**
@@ -26,32 +37,36 @@ async function createMarketplaceTemplate(installLocation: string, name: string):
  * @param marketplaceName Optional marketplace name (uses config default if not provided)
  * @returns Path to marketplace installation location
  */
-export async function ensureDefaultMarketplace(marketplaceName?: string): Promise<string> {
-  const config = await getConfig();
-  const name = marketplaceName || config.defaultMarketplace;
+export async function ensureDefaultMarketplace(
+	marketplaceName?: string,
+): Promise<string> {
+	const config = await getConfig();
+	const name = marketplaceName || config.defaultMarketplace;
 
-  const knownMarketplaces =
-    (await readJSON<Record<string, KnownMarketplace>>(KNOWN_MARKETPLACES_FILE)) || {};
+	const knownMarketplaces =
+		(await readJSON<Record<string, KnownMarketplace>>(
+			KNOWN_MARKETPLACES_FILE,
+		)) || {};
 
-  // Return if already registered
-  if (knownMarketplaces?.[name]) {
-    return knownMarketplaces[name].installLocation;
-  }
+	// Return if already registered
+	if (knownMarketplaces?.[name]) {
+		return knownMarketplaces[name].installLocation;
+	}
 
-  // Bootstrap a local marketplace clone or create template
-  // In the future, this would try to clone from a registry URL first
-  const installLocation = join(MARKETPLACES_DIR, name);
-  await createMarketplaceTemplate(installLocation, name);
+	// Bootstrap a local marketplace clone or create template
+	// In the future, this would try to clone from a registry URL first
+	const installLocation = join(MARKETPLACES_DIR, name);
+	await createMarketplaceTemplate(installLocation, name);
 
-  // Register
-  knownMarketplaces[name] = {
-    source: { source: "directory", path: installLocation },
-    installLocation,
-    lastUpdated: new Date().toISOString(),
-  };
+	// Register
+	knownMarketplaces[name] = {
+		source: { source: "directory", path: installLocation },
+		installLocation,
+		lastUpdated: new Date().toISOString(),
+	};
 
-  await writeJSON(KNOWN_MARKETPLACES_FILE, knownMarketplaces);
-  return installLocation;
+	await writeJSON(KNOWN_MARKETPLACES_FILE, knownMarketplaces);
+	return installLocation;
 }
 
 /**
@@ -60,22 +75,29 @@ export async function ensureDefaultMarketplace(marketplaceName?: string): Promis
  * @param installLocation Absolute path where the marketplace is cloned
  * @returns true if successful
  */
-export async function registerMarketplace(
-  marketplaceName: string,
-  installLocation: string
-): Promise<boolean> {
-  const knownMarketplaces =
-    (await readJSON<Record<string, KnownMarketplace>>(KNOWN_MARKETPLACES_FILE)) || {};
+export async function registerMarketplace({
+	marketplaceName,
+	installLocation,
+	gitPath,
+}: {
+	marketplaceName: string;
+	installLocation: string;
+	gitPath: `${string}.git`;
+}): Promise<boolean> {
+	const knownMarketplaces =
+		(await readJSON<Record<string, KnownMarketplace>>(
+			KNOWN_MARKETPLACES_FILE,
+		)) || {};
 
-  // Register the marketplace
-  knownMarketplaces[marketplaceName] = {
-    source: { source: "directory", path: installLocation },
-    installLocation,
-    lastUpdated: new Date().toISOString(),
-  };
+	// Register the marketplace
+	knownMarketplaces[marketplaceName] = {
+		source: { source: "git", url: gitPath },
+		installLocation,
+		lastUpdated: new Date().toISOString(),
+	};
 
-  await writeJSON(KNOWN_MARKETPLACES_FILE, knownMarketplaces);
-  return true;
+	await writeJSON(KNOWN_MARKETPLACES_FILE, knownMarketplaces);
+	return true;
 }
 
 /**
@@ -84,19 +106,25 @@ export async function registerMarketplace(
  * @returns Marketplace manifest or null if not found
  */
 export async function getMarketplaceManifest(
-  marketplaceName: string
+	marketplaceName: string,
 ): Promise<Marketplace | null> {
-  const knownMarketplaces =
-    (await readJSON<Record<string, KnownMarketplace>>(KNOWN_MARKETPLACES_FILE)) || {};
+	const knownMarketplaces =
+		(await readJSON<Record<string, KnownMarketplace>>(
+			KNOWN_MARKETPLACES_FILE,
+		)) || {};
 
-  if (!knownMarketplaces || !knownMarketplaces[marketplaceName]) {
-    return null;
-  }
+	if (!knownMarketplaces || !knownMarketplaces[marketplaceName]) {
+		return null;
+	}
 
-  const { installLocation } = knownMarketplaces[marketplaceName];
-  const manifestPath = join(installLocation, ".claude-plugin", "marketplace.json");
+	const { installLocation } = knownMarketplaces[marketplaceName];
+	const manifestPath = join(
+		installLocation,
+		".claude-plugin",
+		"marketplace.json",
+	);
 
-  return await readJSON<Marketplace>(manifestPath);
+	return await readJSON<Marketplace>(manifestPath);
 }
 
 /**
@@ -106,31 +134,37 @@ export async function getMarketplaceManifest(
  * @returns true if successful
  */
 export async function addPluginToMarketplace(
-  marketplaceName: string,
-  plugin: Plugin
+	marketplaceName: string,
+	plugin: Plugin,
 ): Promise<boolean> {
-  const manifest = await getMarketplaceManifest(marketplaceName);
-  if (!manifest) {
-    return false;
-  }
+	const manifest = await getMarketplaceManifest(marketplaceName);
+	if (!manifest) {
+		return false;
+	}
 
-  // Add new plugin and remove existing plugin with same name if present
-  manifest.plugins = manifest.plugins.filter((p) => p.name !== plugin.name);
-  manifest.plugins.push(plugin);
+	// Add new plugin and remove existing plugin with same name if present
+	manifest.plugins = manifest.plugins.filter((p) => p.name !== plugin.name);
+	manifest.plugins.push(plugin);
 
-  // Write back
-  const knownMarketplaces =
-    (await readJSON<Record<string, KnownMarketplace>>(KNOWN_MARKETPLACES_FILE)) || {};
+	// Write back
+	const knownMarketplaces =
+		(await readJSON<Record<string, KnownMarketplace>>(
+			KNOWN_MARKETPLACES_FILE,
+		)) || {};
 
-  if (!knownMarketplaces[marketplaceName]) {
-    return false;
-  }
+	if (!knownMarketplaces[marketplaceName]) {
+		return false;
+	}
 
-  const { installLocation } = knownMarketplaces[marketplaceName];
-  const manifestPath = join(installLocation, ".claude-plugin", "marketplace.json");
+	const { installLocation } = knownMarketplaces[marketplaceName];
+	const manifestPath = join(
+		installLocation,
+		".claude-plugin",
+		"marketplace.json",
+	);
 
-  await writeJSON(manifestPath, manifest);
-  return true;
+	await writeJSON(manifestPath, manifest);
+	return true;
 }
 
 /**
@@ -140,30 +174,36 @@ export async function addPluginToMarketplace(
  * @returns true if successful
  */
 export async function removePluginFromMarketplace(
-  marketplaceName: string,
-  pluginName: string
+	marketplaceName: string,
+	pluginName: string,
 ): Promise<boolean> {
-  const manifest = await getMarketplaceManifest(marketplaceName);
-  if (!manifest) {
-    return false;
-  }
+	const manifest = await getMarketplaceManifest(marketplaceName);
+	if (!manifest) {
+		return false;
+	}
 
-  // Filter out the plugin
-  manifest.plugins = manifest.plugins.filter((p) => p.name !== pluginName);
+	// Filter out the plugin
+	manifest.plugins = manifest.plugins.filter((p) => p.name !== pluginName);
 
-  // Write back
-  const knownMarketplaces =
-    (await readJSON<Record<string, KnownMarketplace>>(KNOWN_MARKETPLACES_FILE)) || {};
+	// Write back
+	const knownMarketplaces =
+		(await readJSON<Record<string, KnownMarketplace>>(
+			KNOWN_MARKETPLACES_FILE,
+		)) || {};
 
-  if (!knownMarketplaces[marketplaceName]) {
-    return false;
-  }
+	if (!knownMarketplaces[marketplaceName]) {
+		return false;
+	}
 
-  const { installLocation } = knownMarketplaces[marketplaceName];
-  const manifestPath = join(installLocation, ".claude-plugin", "marketplace.json");
+	const { installLocation } = knownMarketplaces[marketplaceName];
+	const manifestPath = join(
+		installLocation,
+		".claude-plugin",
+		"marketplace.json",
+	);
 
-  await writeJSON(manifestPath, manifest);
-  return true;
+	await writeJSON(manifestPath, manifest);
+	return true;
 }
 
 /**
@@ -171,15 +211,19 @@ export async function removePluginFromMarketplace(
  * @param marketplaceName Marketplace name to unregister
  * @returns true if successful
  */
-export async function unregisterMarketplace(marketplaceName: string): Promise<boolean> {
-  const knownMarketplaces =
-    (await readJSON<Record<string, KnownMarketplace>>(KNOWN_MARKETPLACES_FILE)) || {};
+export async function unregisterMarketplace(
+	marketplaceName: string,
+): Promise<boolean> {
+	const knownMarketplaces =
+		(await readJSON<Record<string, KnownMarketplace>>(
+			KNOWN_MARKETPLACES_FILE,
+		)) || {};
 
-  if (!knownMarketplaces[marketplaceName]) {
-    return false;
-  }
+	if (!knownMarketplaces[marketplaceName]) {
+		return false;
+	}
 
-  delete knownMarketplaces[marketplaceName];
-  await writeJSON(KNOWN_MARKETPLACES_FILE, knownMarketplaces);
-  return true;
+	delete knownMarketplaces[marketplaceName];
+	await writeJSON(KNOWN_MARKETPLACES_FILE, knownMarketplaces);
+	return true;
 }
