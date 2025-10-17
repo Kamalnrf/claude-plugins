@@ -2,12 +2,13 @@
 
 Manage _ALL_ Claude Code plugins in one place.
 
-> You must be on atleast [Claude Code v2.0.12](https://x.com/claudeai/status/1976332881409737124) to be able to use the Claude Plugins CLI
+> You must be on at least [Claude Code v2.0.12](https://x.com/claudeai/status/1976332881409737124) to be able to use the Claude Plugins CLI
 
 ## Discover Plugins
 
-Explore available plugins at **[claude-plugins.dev](https://claude-plugins.dev)**
-Today we are sourcing all public plugins on Github and indexing them for easy discovery and installation.
+Explore available plugins and skills at **[claude-plugins.dev](https://claude-plugins.dev)**
+
+Currently indexing **1200+ plugins** from GitHub repositories. Our [registry](https://www.val.town/x/kamalnrf/claude-plugins-registry) automatically discovers and indexes all public Claude Code plugins on GitHub every 10 minutes for easy discovery and installation.
 
 ## Usage
 
@@ -81,7 +82,7 @@ Today, we are [indexing all publicly available plugins](https://www.val.town/x/k
 
 ## How It Works
 
-It works same as installing with Claude Code. Main difference being instead of running multiple commands, to add marketplace, and for installing plugin. This tool, will do it in one command. The plugin manager uses a centralized registry to resolve plugin identifiers to Git repositories:
+The plugin manager uses a centralized registry to resolve plugin identifiers to Git repositories:
 
 1. You run `npx claude-plugins install @namespace/name`
 2. CLI queries the registry API
@@ -96,19 +97,23 @@ Plugins are installed to `~/.claude/plugins/marketplaces/`
 This repository contains:
 
 - **CLI** (`packages/cli`) - Command-line tool for managing plugins
-- **Registry API** - Central plugin registry on Val Town
-- **Web** (`packages/web`) - Plugin discovery website
+- **Registry API** - Central plugin registry on Val Town that auto-indexes GitHub
+- **Web** (`packages/web`) - Plugin discovery website with skills filtering
 
 **Registry API:** [val.town/x/kamalnrf/claude-plugins-registry](https://www.val.town/x/kamalnrf/claude-plugins-registry)
 
-## Future Enhancements Plan
+### Skills Support
 
-- Search command with API integration (API endpoint exists, CLI command not implemented yet)
-- Plugin update/upgrade command
-- Version pinning
-- Plugin signatures/verification
-- Plugin interoperability between different coding agents (e.g., Claude Code, Gemini CLI, Codex)
-- Plugin owners being able to update the plugin identifier
+Many plugins now include [Claude Skills](https://docs.claude.com/en/docs/claude-code/skills) - reusable capabilities that extend Claude Code's functionality. Browse and filter plugins by skills on [claude-plugins.dev](https://claude-plugins.dev).
+
+## Roadmap
+
+- [ ] Search command with API integration (API endpoint exists, CLI command not implemented yet)
+- [ ] Plugin update/upgrade command
+- [ ] Version pinning
+- [ ] Plugin signatures/verification
+- [ ] Plugin interoperability between different coding agents (e.g., Claude Code, Gemini CLI, Codex)
+- [ ] Plugin owners being able to update the plugin identifier
 
 ## Development
 
