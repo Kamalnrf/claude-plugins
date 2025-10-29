@@ -5,6 +5,7 @@ import { InstallSkill } from "../../components/InstallSkill";
 import { SkillDetailHeader } from "@/components/SkillDetailHeader";
 import Markdown from "@/components/Markdown.astro";
 import { Button } from "@/components/ui/button";
+import {LinkIcon} from '@/components/ui/link-icon'
 
 const { slug } = Astro.params;
 const parts = slug?.split("/") || [];
@@ -40,7 +41,7 @@ if (!skill) {
         <h2 class="text-base font-semibold text-foreground/90 tracking-tight">SKILL.md</h2>
         <div class="flex-1 h-px bg-border/30"></div>
         <a href={skill.sourceUrl}>
-          <Button variant="ghost" size="sm" className="cursor-pointer text-muted-foreground">View Source <ExternalLink /></Button>
+          <Button variant="ghost" size="sm" className="cursor-pointer text-muted-foreground">View Source <LinkIcon /></Button>
         </a>
       </div>
 		  <Markdown content={markdown} />
