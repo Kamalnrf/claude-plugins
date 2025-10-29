@@ -35,13 +35,15 @@ export function InstallSkill({ skill }: Props) {
 							Download skill
 						</span>
 					</div>
-					<a
-						href={downloadUrl}
-						className="inline-flex items-center gap-1 px-3 py-2 bg-secondary text-secondary-foreground shadow-sm hover:bg-secondary/80 rounded-md transition-colors text-xs font-medium w-fit"
+					<button
+						onClick={() => {
+							window.location.href = downloadUrl;
+						}}
+						className="inline-flex items-center gap-1 px-3 py-2 bg-secondary text-secondary-foreground shadow-sm hover:bg-secondary/80 rounded-md transition-colors text-xs font-medium w-fit cursor-pointer"
 					>
 						<DownloadIcon size={14} />
 						{skill.name}.zip
-					</a>
+					</button>
 				</div>
 
 				{/* Step 2: Go to Settings */}

@@ -22,13 +22,7 @@ export const GET: APIRoute = async ({ request }) => {
 	}
 	const [owner, marketplace, skillName] = parts;
 
-	// 3. Track install (fire-and-forget - don't await)
-	fetch(
-		`https://api.claude-plugins.dev/api/skills/${owner}/${marketplace}/${skillName}/install`,
-		{ method: "POST" },
-	).catch((err) => console.error("Tracking failed:", err));
-
-	// 4. Fetch skill to get sourceUrl
+	// 3. Fetch skill to get sourceUrl
 	try {
 		const skillResponse = await fetch(
 			`https://api.claude-plugins.dev/api/skills/${owner}/${marketplace}/${skillName}`,
@@ -43,7 +37,7 @@ export const GET: APIRoute = async ({ request }) => {
 
 		const skill = await skillResponse.json();
 
-		// 5. Proxy to github-zip-api
+		// 4. Proxy to github-zip-api
 		const zipUrl = `https://github-zip-api.val.run/zip?source=${encodeURIComponent(skill.sourceUrl)}`;
 		const zipResponse = await fetch(zipUrl);
 
@@ -53,6 +47,12 @@ export const GET: APIRoute = async ({ request }) => {
 				{ status: 502, headers: { "Content-Type": "application/json" } },
 			);
 		}
+
+		// 5. Track install ONLY after successful zip fetch (fire-and-forget)
+		fetch(
+			`https://api.claude-plugins.dev/api/skills/${owner}/${marketplace}/${skillName}/install`,
+			{ method: "POST" },
+		).catch((err) => console.error("Tracking failed:", err));
 
 		// 6. Stream response
 		return new Response(zipResponse.body, {
