@@ -16,6 +16,7 @@
     "@lucide/astro": "^0.545.0",
     "@radix-ui/react-separator": "^1.1.7",
     "@radix-ui/react-slot": "^1.2.3",
+    "@radix-ui/react-tabs": "^1.1.13",
     "@radix-ui/react-tooltip": "^1.2.8",
     "@tailwindcss/vite": "^4.1.14",
     "@types/dompurify": "^3.2.0",
@@ -25,7 +26,8 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "dompurify": "^3.2.7",
-    "isomorphic-dompurify": "^2.28.0",
+    "github-markdown-css": "^5.8.1",
+    "gray-matter": "^4.0.3",
     "lucide-react": "^0.545.0",
     "marked": "^16.4.0",
     "motion": "^12.23.24",
@@ -38,6 +40,7 @@
   },
   "private": true,
   "devDependencies": {
+    "@tailwindcss/typography": "^0.5.19",
     "@types/bun": "latest"
   },
   "peerDependencies": {

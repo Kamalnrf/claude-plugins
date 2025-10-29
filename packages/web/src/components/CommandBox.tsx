@@ -1,20 +1,17 @@
 import { useRef } from "react";
 import CopyInstallButton, { type CopyInstallButtonHandle } from "./CopyInstallButton";
 import { cn } from "@/lib/utils";
-import type { HTMLAttributes } from "react";
 
-export interface InstallCommandProps extends HTMLAttributes<HTMLDivElement> {
-  namespace: string;
-  name: string;
+type Props = {
+  command: string;
+  className?: string;
 }
 
-export function InstallCommand({
-  namespace,
-  name,
+export function CommandBox({
+  command,
   className,
   ...props
-}: InstallCommandProps) {
-  const command = `npx claude-plugins install ${namespace}/${name}`;
+}: Props) {
   const copyButtonRef = useRef<CopyInstallButtonHandle>(null);
 
   const handleClick = async () => {
@@ -45,7 +42,7 @@ export function InstallCommand({
       <span className="flex-1 whitespace-nowrap text-muted-foreground group-hover:text-foreground transition-colors text-[11px] overflow-auto scroll-smooth">
         {command}
       </span>
-      <CopyInstallButton ref={copyButtonRef} pluginIdentifier={`${namespace}/${name}`} />
+      <CopyInstallButton ref={copyButtonRef} command={command} />
     </div>
   );
 }

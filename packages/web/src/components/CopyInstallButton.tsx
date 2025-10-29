@@ -5,7 +5,7 @@ import { CheckIcon } from "@/components/ui/check";
 import { cn } from "@/lib/utils";
 
 interface CopyInstallButtonProps {
-  pluginIdentifier: string;
+  command: string;
 }
 
 export interface CopyInstallButtonHandle {
@@ -14,15 +14,13 @@ export interface CopyInstallButtonHandle {
 }
 
 const CopyInstallButton = forwardRef<CopyInstallButtonHandle, CopyInstallButtonProps>(
-  ({ pluginIdentifier }, ref) => {
+  ({ command }, ref) => {
     const [copied, setCopied] = useState(false);
     const iconRef = useRef<CopyIconHandle>(null);
 
     const copyInstallCommand = async (e?: React.MouseEvent) => {
       e?.preventDefault();
       e?.stopPropagation();
-
-      const command = `npx claude-plugins install ${pluginIdentifier}`;
       await navigator.clipboard.writeText(command);
       setCopied(true);
 
@@ -71,7 +69,7 @@ const CopyInstallButton = forwardRef<CopyInstallButtonHandle, CopyInstallButtonP
             : "hover:bg-primary/10 text-muted-foreground hover:text-primary"
         )}
         whileTap={{ scale: 0.9 }}
-        aria-label={`Copy install command for ${pluginIdentifier}`}
+        aria-label={`Copy ${command}`}
       >
         <AnimatePresence mode="wait">
           {copied ? (

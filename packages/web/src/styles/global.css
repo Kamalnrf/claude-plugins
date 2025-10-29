@@ -1,5 +1,23 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
+/* redaction-latin-400-normal */
+@font-face {
+  font-family: 'Redaction';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 400;
+  src: url(https://cdn.jsdelivr.net/fontsource/fonts/redaction@latest/latin-400-normal.woff2) format('woff2'), url(https://cdn.jsdelivr.net/fontsource/fonts/redaction@latest/latin-400-normal.woff) format('woff');
+}
+
+/* redaction-latin-700-normal */
+@font-face {
+  font-family: 'Redaction';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 700;
+  src: url(https://cdn.jsdelivr.net/fontsource/fonts/redaction@latest/latin-700-normal.woff2) format('woff2'), url(https://cdn.jsdelivr.net/fontsource/fonts/redaction@latest/latin-700-normal.woff) format('woff');
+}
+
 @plugin 'tailwindcss-animate';
 @import "tailwindcss";
 @import "tw-animate-css";

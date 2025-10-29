@@ -13,7 +13,7 @@ import { PackageIcon } from "@/components/ui/package-icon";
 import { StarIcon } from "@/components/ui/star-icon";
 import { DownloadIcon } from "./ui/download";
 import { MetricBadge } from "./MetricBadge";
-import { InstallCommand } from "./InstallCommand";
+import { InstallPlugin } from "./InstallPlugin";
 import { SkillsSection } from "./SkillsSection";
 import { type Plugin } from "@/lib/api";
 
@@ -119,7 +119,7 @@ export function PluginCard({ plugin, onBadgeClick }: PluginCardProps) {
       </ItemDescription>
 
       <ItemFooter className="w-full">
-        <InstallCommand namespace={plugin.namespace} name={plugin.name} />
+        <InstallPlugin namespace={plugin.namespace} name={plugin.name} />
       </ItemFooter>
     </Item>
   );
