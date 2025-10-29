@@ -89,25 +89,25 @@ export function InstallSkill({ skill }: Props) {
 	};
 
 	const renderClaudeCodeInstructions = () => {
-		const personalSkill = `mkdir -p ~/.claude/skills/${skill.name} && npx gitpick ${skill.sourceUrl} ~/.claude/skills/${skill.name}`;
-		const projectSkill = `mkdir -p .claude/skills/${skill.name} && npx gitpick ${skill.sourceUrl} .claude/skills/${skill.name}`;
+		const projectSkill = `npx claude-plugins skills install ${skill.namespace}`;
+		const personalSkill = `npx claude-plugins skills install ${skill.namespace} --global`;
 
 		return (
 			<div className="flex flex-col gap-4">
-				{/* Step 1: Install */}
+				{/* Step 1: Install as Project Skill (default) */}
 				<div className="flex flex-col gap-2">
   				<div className="flex items-center gap-2">
   					<span className="inline-flex items-center justify-center px-1.5 py-0.5 bg-muted/50 text-foreground rounded border border-border/30 text-[10px] font-semibold font-mono">
   						1
   					</span>
   					<span className="text-sm font-medium text-foreground">
-  						As Personal Skill
+  						As Project Skill (default)
   					</span>
   				</div>
 					<p className="text-sm text-muted-foreground">
-						Applies to all projects
+						Applies to current project only. Run this command in your project root.
 					</p>
-					<CommandBox command={personalSkill} />
+					<CommandBox command={projectSkill} />
 				</div>
 				<div className="flex flex-col gap-2">
 					<div className="flex items-center gap-2">
@@ -115,13 +115,13 @@ export function InstallSkill({ skill }: Props) {
 							2
 						</span>
 						<span className="text-sm font-medium text-foreground">
-							As Project Skill
+							As Personal Skill
 						</span>
 					</div>
 					<p className="text-sm text-muted-foreground">
-						Applies to a specific project. Make sure to run this command in the root directory of your project.
+						Applies to all projects globally.
 					</p>
-					<CommandBox command={projectSkill} />
+					<CommandBox command={personalSkill} />
 				</div>
 			</div>
 		);

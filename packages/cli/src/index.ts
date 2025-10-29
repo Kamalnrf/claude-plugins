@@ -4,55 +4,95 @@ import { disableCommand } from "./commands/disable";
 import { enableCommand } from "./commands/enable";
 import { installCommand } from "./commands/install";
 import { listCommand } from "./commands/list";
+import { skillInstallCommand } from "./commands/skills/install";
 
-const { positionals } = parseArgs({
+const { positionals, values } = parseArgs({
 	args: process.argv.slice(2),
 	allowPositionals: true,
+	options: {
+		global: { type: "boolean", default: false },
+	},
 });
 
-const [command, ...args] = positionals;
+const [command, subcommand, ...args] = positionals;
 
 async function main() {
 	switch (command) {
+		case "skills":
+			switch (subcommand) {
+				case "install":
+					if (args.length === 0) {
+						console.error(
+							"Usage: claude-plugins skills install <skill-identifier> [--global]",
+						);
+						console.error("");
+						console.error("Examples:");
+						console.error(
+							"  claude-plugins skills install @owner/repo/skill-name",
+						);
+						console.error(
+							"  claude-plugins skills install @owner/repo/skill-name --global",
+						);
+						process.exit(1);
+					}
+
+					if (typeof args[0] !== "string") {
+						console.error("Invalid skill identifier");
+						process.exit(1);
+					}
+
+					await skillInstallCommand(args[0], values.global as boolean);
+					break;
+
+				default:
+					console.error(`Unknown skills subcommand: ${subcommand}`);
+					console.error("");
+					console.error("Available commands:");
+					console.error("  claude-plugins skills install <skill-identifier>");
+					process.exit(1);
+			}
+			break;
+
 		case "install":
-			if (args.length === 0) {
+			if (subcommand && args.length === 0) {
+				// Handle case where subcommand is actually the plugin name
+				await installCommand(subcommand);
+				break;
+			}
+
+			if (!subcommand) {
 				console.error("Usage: claude-plugins install <plugin-name>");
 				process.exit(1);
 			}
 
-			if (typeof args[0] !== "string") {
-				console.error("Invalid plugin name");
-				process.exit(1);
-			}
-
-			await installCommand(args[0]);
+			await installCommand(subcommand);
 			break;
 		case "disable":
-			if (args.length === 0) {
+			if (!subcommand) {
 				console.error("Usage: claude-plugins disable <plugin-name>");
 				process.exit(1);
 			}
 
-			if (typeof args[0] !== "string") {
+			if (typeof subcommand !== "string") {
 				console.error("Invalid plugin name");
 				process.exit(1);
 			}
 
-			await disableCommand(args[0]);
+			await disableCommand(subcommand);
 			break;
 
 		case "enable":
-			if (args.length === 0) {
+			if (!subcommand) {
 				console.error("Usage: claude-plugins enable <plugin-name>");
 				process.exit(1);
 			}
 
-			if (typeof args[0] !== "string") {
+			if (typeof subcommand !== "string") {
 				console.error("Invalid plugin name");
 				process.exit(1);
 			}
 
-			await enableCommand(args[0]);
+			await enableCommand(subcommand);
 			break;
 
 		case "list":
@@ -61,7 +101,7 @@ async function main() {
 
 		default:
 			console.error(
-				"Unknown command. Available: install, enable, disable, list",
+				"Unknown command. Available: install, enable, disable, list, skills",
 			);
 			console.error("");
 			console.error("Usage:");
@@ -69,6 +109,11 @@ async function main() {
 			console.error("  claude-plugins enable <plugin-name>");
 			console.error("  claude-plugins disable <plugin-name>");
 			console.error("  claude-plugins list");
+			console.error("");
+			console.error("Skills:");
+			console.error(
+				"  claude-plugins skills install <skill-identifier> [--global]",
+			);
 			process.exit(1);
 	}
 }
