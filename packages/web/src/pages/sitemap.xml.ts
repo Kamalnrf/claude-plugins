@@ -10,6 +10,8 @@ export const GET: APIRoute = async () => {
 		});
 		const skills = skillsResponse.skills || [];
 
+		console.log('SKill =>', skills.length)
+
 		const urls = [
 			{
 				loc: siteUrl,
@@ -30,7 +32,7 @@ export const GET: APIRoute = async () => {
 
 				return {
 					loc: `${siteUrl}/skills/${skill.namespace}`,
-					lastmod: skill.updatedAt,
+					lastmod: updatedDate.toISOString(),
 					changefreq: daysSinceUpdate < 7 ? "daily" : "weekly",
 					priority: 0.8,
 				};
