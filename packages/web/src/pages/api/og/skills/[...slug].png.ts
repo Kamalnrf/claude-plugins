@@ -59,10 +59,7 @@ export const GET: APIRoute = async ({ params }) => {
 										style: {
 											fontSize: "80px",
 											fontWeight: "bold",
-											background: "linear-gradient(to right, #D5613C, #fb923c)",
-											backgroundClip: "text",
-											WebkitBackgroundClip: "text",
-											color: "transparent",
+											color: "#fb923c",
 											margin: 0,
 											lineHeight: 1.1,
 											maxWidth: "1000px",
@@ -118,7 +115,29 @@ export const GET: APIRoute = async ({ params }) => {
 														alignItems: "center",
 														gap: "12px",
 													},
-													children: `★ ${skill.stars.toLocaleString()}`,
+													children: [
+														{
+															type: "svg",
+															props: {
+																width: "24",
+																height: "24",
+																viewBox: "0 0 24 24",
+																fill: "currentColor",
+																children: {
+																	type: "path",
+																	props: {
+																		d: "M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z",
+																	},
+																},
+															},
+														},
+														{
+															type: "span",
+															props: {
+																children: skill.stars.toLocaleString(),
+															},
+														},
+													],
 												},
 											},
 											{
@@ -134,7 +153,29 @@ export const GET: APIRoute = async ({ params }) => {
 														alignItems: "center",
 														gap: "12px",
 													},
-													children: `↓ ${skill.installs.toLocaleString()}`,
+													children: [
+														{
+															type: "svg",
+															props: {
+																width: "24",
+																height: "24",
+																viewBox: "0 0 24 24",
+																fill: "currentColor",
+																children: {
+																	type: "path",
+																	props: {
+																		d: "M11 5h2v7h3l-4 4-4-4h3V5m-7 9h4v2H4v-2m16 0h-4v2h4v-2m-12 4h8v2H8v-2z",
+																	},
+																},
+															},
+														},
+														{
+															type: "span",
+															props: {
+																children: skill.installs.toLocaleString(),
+															},
+														},
+													],
 												},
 											},
 										],
