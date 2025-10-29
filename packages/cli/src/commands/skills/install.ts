@@ -1,3 +1,4 @@
+import { spawn } from "node:child_process";
 import { homedir } from "node:os";
 import { join } from "node:path";
 import { cancel, intro, note, outro, spinner } from "@clack/prompts";
@@ -9,6 +10,43 @@ import {
 } from "../../core/skill-resolver";
 
 const REGISTRY_API_URL = "https://api.claude-plugins.dev";
+
+/**
+ * Execute a command using Node's child_process
+ */
+async function execCommand(
+	command: string,
+	args: string[],
+): Promise<{ exitCode: number; stdout: string; stderr: string }> {
+	return new Promise((resolve, reject) => {
+		const child = spawn(command, args, {
+			stdio: ["inherit", "pipe", "pipe"],
+		});
+
+		let stdout = "";
+		let stderr = "";
+
+		child.stdout?.on("data", (data) => {
+			stdout += data.toString();
+		});
+
+		child.stderr?.on("data", (data) => {
+			stderr += data.toString();
+		});
+
+		child.on("close", (code) => {
+			resolve({
+				exitCode: code ?? 0,
+				stdout,
+				stderr,
+			});
+		});
+
+		child.on("error", (error) => {
+			reject(error);
+		});
+	});
+}
 
 /**
  * Install a skill to either local (.claude/skills/) or global (~/.claude/skills/) directory
@@ -54,11 +92,17 @@ export async function skillInstallCommand(
 	try {
 		s.start(`Installing ${skillName}...`);
 
-		// Use Bun's $ to execute gitpick
-		const result = await Bun.$`npx gitpick ${skill.sourceUrl} ${targetDir}`;
+		// Use Node's child_process to execute gitpick
+		const result = await execCommand("npx", [
+			"gitpick",
+			skill.sourceUrl,
+			targetDir,
+		]);
 
 		if (result.exitCode !== 0) {
-			throw new Error("gitpick command failed");
+			throw new Error(
+				`gitpick command failed: ${result.stderr || result.stdout}`,
+			);
 		}
 
 		s.stop(`Skill cloned to ${location}/${skillName}`);
