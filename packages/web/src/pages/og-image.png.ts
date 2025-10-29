@@ -12,8 +12,7 @@ export const GET: APIRoute = async () => {
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundColor: '#252321', // Using actual background color from design system
-        backgroundImage: 'linear-gradient(135deg, rgba(213, 97, 60, 0.15) 0%, rgba(251, 146, 60, 0.15) 100%)',
+        backgroundColor: '#252321',
       },
       children: [
         {
@@ -32,10 +31,7 @@ export const GET: APIRoute = async () => {
                   style: {
                     fontSize: '80px',
                     fontWeight: 'bold',
-                    background: 'linear-gradient(to right, #D5613C, #D5613C, #fb923c)',
-                    backgroundClip: 'text',
-                    WebkitBackgroundClip: 'text',
-                    color: 'transparent',
+                    color: '#fb923c',
                     margin: '0',
                     marginBottom: '20px',
                     fontFamily: 'Georgia, serif',
@@ -49,7 +45,7 @@ export const GET: APIRoute = async () => {
                 props: {
                   style: {
                     fontSize: '32px',
-                    color: '#a8b3c7', // Using muted-foreground from design system
+                    color: '#a8b3c7',
                     margin: '0',
                     marginBottom: '40px',
                     fontFamily: 'system-ui, sans-serif',
@@ -88,7 +84,7 @@ export const GET: APIRoute = async () => {
                 props: {
                   style: {
                     fontSize: '24px',
-                    color: '#7a8091', // Darker muted color for footer
+                    color: '#6B7280',
                     margin: '0',
                     fontFamily: 'system-ui, sans-serif',
                   },

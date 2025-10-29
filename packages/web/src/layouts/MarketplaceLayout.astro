@@ -63,6 +63,10 @@ const fullOgImage = ogImage.startsWith('http') ? ogImage : `${siteUrl}${ogImage}
     <!-- Additional SEO -->
     <meta name="robots" content="index, follow" />
     <meta name="language" content="English" />
+    
+    <!-- Custom head slot for additional meta tags -->
+    <slot name="head" />
+    
     <ClientRouter />
   </head>
   <body class="max-w-4xl mx-auto">
