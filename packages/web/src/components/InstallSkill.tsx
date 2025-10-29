@@ -20,9 +20,7 @@ const CLIENTS: Client[] = [
 ];
 
 export function InstallSkill({ skill }: Props) {
-	const downloadUrl = `https://github-zip-api.val.run/zip?source=${encodeURIComponent(
-		skill.sourceUrl,
-	)}`;
+	const downloadUrl = `/api/download?namespace=${encodeURIComponent(skill.namespace)}`;
 
 	const renderClaudeInstructions = () => {
 		return (
