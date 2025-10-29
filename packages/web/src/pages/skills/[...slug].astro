@@ -21,12 +21,30 @@ const markdown = await fetch(skill.metadata.rawFileUrl).then(res => res.text())
 if (!skill) {
   return Astro.redirect("/404");
 }
+
+const pageTitle = `${skill.name} - Claude Skills`;
+const pageDescription = skill.description || `Install and use ${skill.name} skill for Claude Code`;
+const ogImageUrl = `/api/og/skills/${slug}.png`;
+const canonicalUrl = `https://claude-plugins.dev/skills/${slug}`;
+const keywords = `Claude Code, Claude Skills, ${skill.name}, ${owner}, ${marketplace}, AI development tools`;
+const ogImageAlt = `${skill.name} skill for Claude Code with ${skill.stars} stars and ${skill.installs} installs`;
 ---
 
 <MarketplaceLayout
-	title={`${skill.name} - Claude Skills`}
-	description={skill.description}
+	title={pageTitle}
+	description={pageDescription}
+	ogImage={ogImageUrl}
+	keywords={keywords}
+	canonicalUrl={canonicalUrl}
 >
+	<Fragment slot="head">
+		<meta property="og:image:width" content="1200" />
+		<meta property="og:image:height" content="630" />
+		<meta property="og:image:alt" content={ogImageAlt} />
+		<meta property="article:author" content={skill.author} />
+		<meta property="article:published_time" content={skill.createdAt} />
+		<meta property="article:modified_time" content={skill.updatedAt} />
+	</Fragment>
 	<div class="flex flex-col p-6 gap-4">
 	  <SkillDetailHeader client:load skill={skill} />
 		<section>
