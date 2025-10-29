@@ -1,6 +1,6 @@
 ---
+import { ClientRouter } from 'astro:transitions'
 import Analytics from '@vercel/analytics/astro';
-import '@fontsource/redaction';
 import "../styles/global.css";
 import { GithubIcon } from "../components/ui/github";
 
@@ -63,9 +63,10 @@ const fullOgImage = ogImage.startsWith('http') ? ogImage : `${siteUrl}${ogImage}
     <!-- Additional SEO -->
     <meta name="robots" content="index, follow" />
     <meta name="language" content="English" />
+    <ClientRouter />
   </head>
   <body class="max-w-4xl mx-auto">
-    <header class="flex items-center justify-between px-6 pt-10 pb-8 border-b border-border/50">
+    <header transition:persist class="flex items-center justify-between px-6 pt-10 pb-4 border-b border-border/50">
       <div>
         <a
           href="/"

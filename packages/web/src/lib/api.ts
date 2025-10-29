@@ -49,6 +49,37 @@ export interface SearchResponse {
 	offset: number;
 }
 
+export interface Skill {
+	id: string;
+	name: string;
+	namespace: string; // "owner/marketplace/skillName"
+	sourceUrl: string;
+	description: string;
+	version?: string;
+	dependencies?: string[];
+	author: string;
+	stars: number;
+	installs: number;
+	verified: boolean;
+	metadata: Record<string, any>;
+	skillMdContent?: string;
+	createdAt: string;
+	updatedAt: string;
+}
+
+export interface SkillSearchParams {
+	q?: string;
+	limit?: number;
+	offset?: number;
+}
+
+export interface SkillSearchResponse {
+	skills: Skill[];
+	total: number;
+	limit: number;
+	offset: number;
+}
+
 export class RegistryAPI {
 	private cache = new Map<string, { data: unknown; timestamp: number }>();
 
@@ -132,7 +163,7 @@ export class RegistryAPI {
 
 	async getPluginReadme(gitUrl: string): Promise<string> {
 		// Extract owner/repo from gitUrl
-		const match = gitUrl.match(/github\.com\/([^\/]+\/[^\/]+)/);
+		const match = gitUrl.match(/github\.com\/([^/]+\/[^/]+)/);
 		if (!match) throw new Error("Invalid GitHub URL");
 
 		const [owner, repo] = match[1].replace(".git", "").split("/");
@@ -165,6 +196,50 @@ export class RegistryAPI {
 			marketplace: parts[1],
 			plugin: parts[2],
 		};
+	}
+
+	async searchSkills(params: SearchParams): Promise<SkillSearchResponse> {
+		return this.fetchWithCache(
+			`skills:search:${JSON.stringify(params)}`,
+			async () => {
+				const url = new URL("/api/skills/search", REGISTRY_BASE);
+				Object.entries(params).forEach(([key, value]) => {
+					if (value !== undefined) url.searchParams.set(key, String(value));
+				});
+
+				const response = await fetch(url, {
+					headers: { Accept: "application/json" },
+				});
+
+				if (!response.ok) {
+					throw new Error(`Skills API error: ${response.status}`);
+				}
+
+				return response.json();
+			},
+		);
+	}
+
+	async getSkill(
+		owner: string,
+		marketplace: string,
+		skillName: string,
+	): Promise<Skill> {
+		return this.fetchWithCache(
+			`skill:${owner}/${marketplace}/${skillName}`,
+			async () => {
+				const url = `${REGISTRY_BASE}/api/skills/${owner}/${marketplace}/${skillName}`;
+				const response = await fetch(url, {
+					headers: { Accept: "application/json" },
+				});
+
+				if (!response.ok) {
+					throw new Error(`Skill not found: ${response.status}`);
+				}
+
+				return response.json();
+			},
+		);
 	}
 }
 

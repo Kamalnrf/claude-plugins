@@ -1,0 +1,25 @@
+---
+import "github-markdown-css/github-markdown-dark.css";
+import matter from 'gray-matter';
+import { marked } from 'marked';
+
+const { content: markdown } = Astro.props;
+const { data: frontMatter, content } = matter(markdown);
+const parsedContent = marked(content);
+const entries = Object.entries(frontMatter);
+---
+<article class="markdown-body mx-auto p-6 rounded">
+  {entries.length > 0 && (
+    <table border="1" cellpadding="6" style="border-collapse: collapse; margin-bottom: 2rem;">
+      <tbody>
+        {entries.map(([key, value]) => (
+          <tr>
+            <td>{key}</td>
+            <td>{Array.isArray(value) ? value.join(', ') : String(value)}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  )}
+  <div set:html={parsedContent} />
+</article>

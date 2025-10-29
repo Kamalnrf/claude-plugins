@@ -1,0 +1,60 @@
+---
+import Badge from "@/components/Badge.astro";
+import { InstallSkill } from "@/components/InstallSkill";
+import { PluginOrSkillsTabSwitcher } from "@/components/PluginOrSkillsTabSwitcher";
+import SkillBrowser from "@/components/SkillBrowser";
+import MarketplaceLayout from "@/layouts/MarketplaceLayout.astro";
+import { registryAPI } from "@/lib/api";
+
+// Get search params from URL
+const url = new URL(Astro.request.url);
+const searchQuery = url.searchParams.get("q") || "";
+
+// Fetch initial skills with SSR
+const { skills, total } = await registryAPI.searchSkills({
+	q: searchQuery,
+	limit: 20,
+	offset: 0,
+});
+
+// Use first skill for Quick Start instructions
+const quickStartSkill = skills[0];
+---
+
+<MarketplaceLayout>
+  <div class="px-6 py-6 flex flex-col gap-6">
+    <PluginOrSkillsTabSwitcher transition:persist client:load selectedTab="skills" />
+    <section class="flex flex-col gap-5" transition:animate="fade" transition:name="hero">
+      <div class="flex flex-col gap-2.5">
+        <h1 class="text-2xl font-serif font-bold tracking-tight bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
+          Discover Claude Skills
+        </h1>
+        <p class="text-base text-muted-foreground/80 leading-relaxed">
+          Discover and Install <strong>Claude skills</strong> quickly.
+          All public skills in Github are auto-indexed and made available for quickly discovering and installing.
+          <a href="https://github.com/Kamalnrf/claude-plugins" class="underline hover:text-primary">Open-source</a> and community-maintained.
+        </p>
+      </div>
+
+      <!-- Built with badges -->
+      <div class="flex items-center gap-2.5 text-xs text-muted-foreground/60">
+        <span class="font-medium">built with</span>
+        <div class="flex items-center gap-1.5">
+          <Badge href="https://www.val.town/x/kamalnrf/claude-plugins-registry">Val Town</Badge>
+          <Badge variant="dotted">Claude Code 😉</Badge>
+        </div>
+      </div>
+      {quickStartSkill &&
+        <section class="flex flex-col gap-4">
+          <div class="flex items-center gap-2">
+            <h2 class="text-lg font-semibold text-foreground">
+        					Quick Start
+        		</h2>
+        		<div class="flex-1 h-px bg-border/30" />
+       	  </div>
+          <InstallSkill skill={quickStartSkill} client:load />
+      </section>}
+    </section>
+    <SkillBrowser initialQuery={searchQuery} initialSkills={skills} total={total} client:load />
+  </div>
+</MarketplaceLayout>

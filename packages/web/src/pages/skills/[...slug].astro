@@ -1,0 +1,49 @@
+---
+import MarketplaceLayout from "../../layouts/MarketplaceLayout.astro";
+import { registryAPI } from "../../lib/api";
+import { InstallSkill } from "../../components/InstallSkill";
+import { SkillDetailHeader } from "@/components/SkillDetailHeader";
+import Markdown from "@/components/Markdown.astro";
+import { Button } from "@/components/ui/button";
+
+const { slug } = Astro.params;
+const parts = slug?.split("/") || [];
+
+if (parts.length !== 3) {
+	return Astro.redirect("/404");
+}
+
+const [owner, marketplace, skillName] = parts;
+const skill = await registryAPI.getSkill(owner, marketplace, skillName);
+const markdown = await fetch(skill.metadata.rawFileUrl).then(res => res.text())
+
+if (!skill) {
+  return Astro.redirect("/404");
+}
+---
+
+<MarketplaceLayout
+	title={`${skill.name} - Claude Skills`}
+	description={skill.description}
+>
+	<div class="flex flex-col p-6 gap-4">
+	  <SkillDetailHeader client:load skill={skill} />
+		<section>
+      <div class="flex items-center gap-2 py-2">
+        <h2 class="text-base font-semibold text-foreground/90 tracking-tight">Install Skill</h2>
+        <div class="flex-1 h-px bg-border/30"></div>
+      </div>
+			<InstallSkill skill={skill} client:load />
+		</section>
+		<section>
+		  <div class="flex items-center gap-2 py-2">
+        <h2 class="text-base font-semibold text-foreground/90 tracking-tight">SKILL.md</h2>
+        <div class="flex-1 h-px bg-border/30"></div>
+        <a href={skill.sourceUrl}>
+          <Button variant="ghost" size="sm" className="cursor-pointer text-muted-foreground">View Source <ExternalLink /></Button>
+        </a>
+      </div>
+		  <Markdown content={markdown} />
+		</section>
+	</div>
+</MarketplaceLayout>
