@@ -30,7 +30,7 @@ export const GET: APIRoute = async ({ params }) => {
 					alignItems: "flex-start",
 					justifyContent: "space-between",
 					backgroundColor: "#252321",
-					padding: "80px",
+					padding: "60px",
 					fontFamily: "system-ui, sans-serif",
 				},
 				children: [
@@ -46,9 +46,9 @@ export const GET: APIRoute = async ({ params }) => {
 									type: "div",
 									props: {
 										style: {
-											fontSize: "32px",
+											fontSize: "24px",
 											color: "#a8b3c7",
-											marginBottom: "20px",
+											marginBottom: "16px",
 										},
 										children: "Claude Skills",
 									},
@@ -57,7 +57,7 @@ export const GET: APIRoute = async ({ params }) => {
 									type: "h1",
 									props: {
 										style: {
-											fontSize: "80px",
+											fontSize: "56px",
 											fontWeight: "bold",
 											color: "#fb923c",
 											margin: 0,
@@ -76,17 +76,17 @@ export const GET: APIRoute = async ({ params }) => {
 							style: {
 								display: "flex",
 								flexDirection: "column",
-								gap: "30px",
+								gap: "20px",
 							},
 							children: [
 								{
 									type: "p",
 									props: {
 										style: {
-											fontSize: "36px",
+											fontSize: "28px",
 											color: "#a8b3c7",
 											margin: 0,
-											lineHeight: 1.4,
+											lineHeight: 1.3,
 											maxWidth: "1000px",
 										},
 										children:
@@ -106,14 +106,14 @@ export const GET: APIRoute = async ({ params }) => {
 												type: "div",
 												props: {
 													style: {
-														padding: "12px 24px",
+														padding: "10px 20px",
 														backgroundColor: "#2d2b28",
 														borderRadius: "8px",
-														fontSize: "28px",
+														fontSize: "24px",
 														color: "#fbbf24",
 														display: "flex",
 														alignItems: "center",
-														gap: "12px",
+														gap: "10px",
 													},
 													children: [
 														{
@@ -144,14 +144,14 @@ export const GET: APIRoute = async ({ params }) => {
 												type: "div",
 												props: {
 													style: {
-														padding: "12px 24px",
+														padding: "10px 20px",
 														backgroundColor: "#2d2b28",
 														borderRadius: "8px",
-														fontSize: "28px",
+														fontSize: "24px",
 														color: "#60a5fa",
 														display: "flex",
 														alignItems: "center",
-														gap: "12px",
+														gap: "10px",
 													},
 													children: [
 														{
@@ -185,9 +185,9 @@ export const GET: APIRoute = async ({ params }) => {
 									type: "div",
 									props: {
 										style: {
-											fontSize: "28px",
+											fontSize: "22px",
 											color: "#6B7280",
-											marginTop: "20px",
+											marginTop: "0px",
 										},
 										children: `${owner}/${marketplace} • claude-plugins.dev`,
 									},
