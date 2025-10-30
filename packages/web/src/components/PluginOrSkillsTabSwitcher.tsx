@@ -20,7 +20,7 @@ export function PluginOrSkillsTabSwitcher({ selectedTab }: Props) {
 		<Tabs
 			defaultValue={selectedTab}
 			onValueChange={setSelectedTab}
-			className="w-[400px]"
+			className="w-full max-w-[400px]"
 		>
 			<TabsList>
 				<TabsTrigger value="plugins">Browse Plugins</TabsTrigger>

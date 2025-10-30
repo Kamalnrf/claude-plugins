@@ -23,7 +23,7 @@ const { plugins, total } = await registryAPI.searchPlugins({
   title="Claude Code Plugins - Marketplace & CLI Plugin Manager"
   description="Install Claude Code plugins directly without manually adding marketplaces first. Simple CLI tool that handles marketplace setup automatically. Browse and install from indexed public plugins."
 >
-  <div class="p-6 flex flex-col gap-6">
+  <div class="p-4 md:p-6 flex flex-col gap-6">
     <PluginOrSkillsTabSwitcher transition:persist client:load selectedTab="plugins" />
     <!-- Hero Section -->
     <section class="flex flex-col gap-5" transition:animate="fade" transition:name="hero">
@@ -31,7 +31,7 @@ const { plugins, total } = await registryAPI.searchPlugins({
         <h1 class="text-2xl font-serif font-bold tracking-tight bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
           Manage Claude Code plugins with ease
         </h1>
-        <p class="text-base text-muted-foreground/80 leading-relaxed">
+        <p class="text-base text-muted-foreground/80 leading-relaxed break-words">
           Discover and Install <strong>Claude Code plugins</strong>, even ones with <a href="https://www.anthropic.com/news/skills" class="underline"> skills</a> quickly.
           Claude Code normally requires installing a marketplace, then installing plugins from it. This CLI handles both steps automatically in one command.
           Browse plugins with skills to extend Claude's capabilities—discover AI agents, document processors, and more.
@@ -58,29 +58,29 @@ const { plugins, total } = await registryAPI.searchPlugins({
 
         <div class="flex flex-col gap-1.5">
           <p class="text-xs text-muted-foreground">Install a plugin from the marketplace:</p>
-          <div class="flex items-center gap-2 bg-muted/30 border border-border/50 rounded-lg px-3 py-2 font-mono text-xs">
+          <div class="flex items-center gap-2 bg-muted/30 border border-border/50 rounded-lg px-3 py-2 font-mono text-xs overflow-x-auto">
             <span class="select-none text-muted-foreground/50">$</span>
-            <code class="flex-1 text-foreground/90">npx claude-plugins install {"<unique-plugin-identifier>"}</code>
+            <code class="flex-1 text-foreground/90 whitespace-nowrap">npx claude-plugins install {"<unique-plugin-identifier>"}</code>
           </div>
         </div>
 
         <div class="flex flex-col gap-1.5">
           <p class="text-xs text-muted-foreground">List all installed plugins:</p>
-          <div class="flex items-center gap-2 bg-muted/30 border border-border/50 rounded-lg px-3 py-2 font-mono text-xs">
+          <div class="flex items-center gap-2 bg-muted/30 border border-border/50 rounded-lg px-3 py-2 font-mono text-xs overflow-x-auto">
             <span class="select-none text-muted-foreground/50">$</span>
-            <code class="flex-1 text-foreground/90">npx claude-plugins list</code>
+            <code class="flex-1 text-foreground/90 whitespace-nowrap">npx claude-plugins list</code>
           </div>
         </div>
 
         <div class="flex flex-col gap-1.5">
           <p class="text-xs text-muted-foreground">Enable or Disable:</p>
-          <div class="flex items-center gap-2 bg-muted/30 border border-border/50 rounded-lg px-3 py-2 font-mono text-xs">
+          <div class="flex items-center gap-2 bg-muted/30 border border-border/50 rounded-lg px-3 py-2 font-mono text-xs overflow-x-auto">
             <span class="select-none text-muted-foreground/50">$</span>
-            <code class="flex-1 text-foreground/90">npx claude-plugins enable {"<plugin-name>"}</code>
+            <code class="flex-1 text-foreground/90 whitespace-nowrap">npx claude-plugins enable {"<plugin-name>"}</code>
           </div>
-          <div class="flex items-center gap-2 bg-muted/30 border border-border/50 rounded-lg px-3 py-2 font-mono text-xs">
+          <div class="flex items-center gap-2 bg-muted/30 border border-border/50 rounded-lg px-3 py-2 font-mono text-xs overflow-x-auto">
             <span class="select-none text-muted-foreground/50">$</span>
-            <code class="flex-1 text-foreground/90">npx claude-plugins disable {"<plugin-name>"}</code>
+            <code class="flex-1 text-foreground/90 whitespace-nowrap">npx claude-plugins disable {"<plugin-name>"}</code>
           </div>
         </div>
 
