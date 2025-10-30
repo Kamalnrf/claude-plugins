@@ -1,52 +1,16 @@
-import { spawn } from "node:child_process";
 import { homedir } from "node:os";
 import { join } from "node:path";
 import { cancel, intro, note, outro, spinner } from "@clack/prompts";
 import pc from "picocolors";
+import { downloadTemplate} from 'giget'
 import {
 	extractSkillName,
 	parseSkillNamespace,
 	resolveSkill,
 } from "../../core/skill-resolver";
+import { normalizeGithubPath } from "../../utils/git";
 
 const REGISTRY_API_URL = "https://api.claude-plugins.dev";
-
-/**
- * Execute a command using Node's child_process
- */
-async function execCommand(
-	command: string,
-	args: string[],
-): Promise<{ exitCode: number; stdout: string; stderr: string }> {
-	return new Promise((resolve, reject) => {
-		const child = spawn(command, args, {
-			stdio: ["inherit", "pipe", "pipe"],
-		});
-
-		let stdout = "";
-		let stderr = "";
-
-		child.stdout?.on("data", (data) => {
-			stdout += data.toString();
-		});
-
-		child.stderr?.on("data", (data) => {
-			stderr += data.toString();
-		});
-
-		child.on("close", (code) => {
-			resolve({
-				exitCode: code ?? 0,
-				stdout,
-				stderr,
-			});
-		});
-
-		child.on("error", (error) => {
-			reject(error);
-		});
-	});
-}
 
 /**
  * Install a skill to either local (.claude/skills/) or global (~/.claude/skills/) directory
@@ -55,7 +19,7 @@ async function execCommand(
  */
 export async function skillInstallCommand(
 	skillIdentifier: string,
-	isGlobal = false,
+	isLocal = false,
 ): Promise<void> {
 	intro(pc.cyan("Claude Plugins - Skills"));
 
@@ -75,37 +39,26 @@ export async function skillInstallCommand(
 	}
 
 	const skillName = extractSkillName(skillIdentifier);
-	s.stop(`Resolved: ${skillName}`);
+	s.stop(`Resolved: ${skillName} ${pc.gray(`(${skill.sourceUrl})`)}`);
 
 	// Step 2: Determine target directory
-	const targetDir = isGlobal
+	const targetDir = !isLocal
 		? join(homedir(), ".claude", "skills", skillName)
 		: join(process.cwd(), ".claude", "skills", skillName);
 
-	const location = isGlobal ? "~/.claude/skills" : ".claude/skills";
 	note(
-		`Installing to: ${pc.dim(targetDir)}\nSource: ${pc.dim(skill.sourceUrl)}`,
-		`Target: ${location}/${skillName}`,
+		`Installing to: ${pc.dim(targetDir)}`,
 	);
 
 	// Step 3: Clone using gitpick
 	try {
 		s.start(`Installing ${skillName}...`);
 
-		// Use Node's child_process to execute gitpick
-		const result = await execCommand("npx", [
-			"gitpick",
-			skill.sourceUrl,
-			targetDir,
-		]);
+		const {dir} = await downloadTemplate(`gh:${normalizeGithubPath(skill.sourceUrl)}`, {
+		  dir: targetDir,
+		})
 
-		if (result.exitCode !== 0) {
-			throw new Error(
-				`gitpick command failed: ${result.stderr || result.stdout}`,
-			);
-		}
-
-		s.stop(`Skill cloned to ${location}/${skillName}`);
+		s.stop(`Skill cloned to ${dir}`);
 
 		// Step 4: Track installation (fire-and-forget)
 		const { owner, marketplace, skillName: name } =
@@ -117,7 +70,7 @@ export async function skillInstallCommand(
 
 		// Step 5: Success message
 		note(
-			`${pc.green("✓")} Skill "${skillName}" installed successfully!\n\n${isGlobal ? "Available for all Claude Code projects." : "Available for this project only."}`,
+			`${pc.green("✓")} Skill "${skillName}" installed successfully!\n\n${!isLocal ? "Available for all Claude Code projects." : "Available for this project only."}`,
 			"Installation Complete",
 		);
 
@@ -127,7 +80,7 @@ export async function skillInstallCommand(
 
 		const errorMessage =
 			error.exitCode !== undefined
-				? "gitpick failed to clone the skill"
+				? "failed to clone the skill"
 				: error.message;
 
 		note(

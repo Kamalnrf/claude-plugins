@@ -10,7 +10,7 @@ const { positionals, values } = parseArgs({
 	args: process.argv.slice(2),
 	allowPositionals: true,
 	options: {
-		global: { type: "boolean", default: false },
+		local: { type: "boolean", default: false },
 	},
 });
 
@@ -23,7 +23,7 @@ async function main() {
 				case "install":
 					if (args.length === 0) {
 						console.error(
-							"Usage: claude-plugins skills install <skill-identifier> [--global]",
+							"Usage: claude-plugins skills install <skill-identifier> [--local]",
 						);
 						console.error("");
 						console.error("Examples:");
@@ -31,7 +31,7 @@ async function main() {
 							"  claude-plugins skills install @owner/repo/skill-name",
 						);
 						console.error(
-							"  claude-plugins skills install @owner/repo/skill-name --global",
+							"  claude-plugins skills install @owner/repo/skill-name --local",
 						);
 						process.exit(1);
 					}
@@ -41,7 +41,7 @@ async function main() {
 						process.exit(1);
 					}
 
-					await skillInstallCommand(args[0], values.global as boolean);
+					await skillInstallCommand(args[0], values.local);
 					break;
 
 				default:
@@ -112,7 +112,7 @@ async function main() {
 			console.error("");
 			console.error("Skills:");
 			console.error(
-				"  claude-plugins skills install <skill-identifier> [--global]",
+				"  claude-plugins skills install <skill-identifier> [--local]",
 			);
 			process.exit(1);
 	}

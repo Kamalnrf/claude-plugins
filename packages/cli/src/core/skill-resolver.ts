@@ -17,7 +17,6 @@ export interface SkillInfo {
  * Resolves a skill identifier to skill info by querying the registry API
  * Supports npm-style package names:
  * - @owner/repo/skill (scoped)
- * - owner/repo/skill (without @)
  *
  * @param skillIdentifier Skill identifier in format: @owner/repo/skill or owner/repo/skill
  * @returns SkillInfo if resolved, null if unable to resolve
@@ -26,13 +25,7 @@ export async function resolveSkill(
 	skillIdentifier: string,
 ): Promise<SkillInfo | null> {
 	try {
-		// Remove @ prefix if present
-		const cleanedIdentifier = skillIdentifier.startsWith("@")
-			? skillIdentifier.slice(1)
-			: skillIdentifier;
-
-		// Parse namespace: owner/repo/skill
-		const parts = cleanedIdentifier.split("/");
+		const parts = skillIdentifier.split("/");
 		if (parts.length !== 3) {
 			throw new Error(
 				`Invalid skill identifier format. Expected: @owner/repo/skill or owner/repo/skill`,
@@ -64,16 +57,12 @@ export async function resolveSkill(
 /**
  * Extracts the skill name from a skill identifier
  * - @owner/repo/skill -> skill
- * - owner/repo/skill -> skill
  *
  * @param skillIdentifier Skill identifier
  * @returns Skill name (last part after /)
  */
 export function extractSkillName(skillIdentifier: string): string {
-	const cleaned = skillIdentifier.startsWith("@")
-		? skillIdentifier.slice(1)
-		: skillIdentifier;
-	return cleaned.split("/").pop()!;
+	return skillIdentifier.split("/").pop()!;
 }
 
 /**
@@ -86,11 +75,7 @@ export function parseSkillNamespace(skillIdentifier: string): {
 	marketplace: string;
 	skillName: string;
 } {
-	const cleaned = skillIdentifier.startsWith("@")
-		? skillIdentifier.slice(1)
-		: skillIdentifier;
-
-	const parts = cleaned.split("/");
+  const parts = skillIdentifier.split("/");
 	if (parts.length !== 3) {
 		throw new Error(
 			"Invalid skill identifier format. Expected: @owner/repo/skill or owner/repo/skill",
@@ -98,8 +83,8 @@ export function parseSkillNamespace(skillIdentifier: string): {
 	}
 
 	return {
-		owner: parts[0],
-		marketplace: parts[1],
-		skillName: parts[2],
+		owner: parts[0] ?? '',
+		marketplace: parts[1] ?? '',
+		skillName: parts[2] ?? '',
 	};
 }
