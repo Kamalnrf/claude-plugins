@@ -89,8 +89,8 @@ export function InstallSkill({ skill }: Props) {
 	};
 
 	const renderClaudeCodeInstructions = () => {
-		const projectSkill = `npx claude-plugins skills install ${skill.namespace}`;
-		const personalSkill = `npx claude-plugins skills install ${skill.namespace} --global`;
+		const projectSkill = `npx claude-plugins skills install ${skill.namespace} --local`;
+		const personalSkill = `npx claude-plugins skills install ${skill.namespace}`;
 
 		return (
 			<div className="flex flex-col gap-4">
