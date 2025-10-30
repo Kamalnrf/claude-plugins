@@ -1,0 +1,33 @@
+name: Feedback
+description: Share feedback, bug report, or feature request
+title: "[Feedback]: "
+labels:
+  - feedback
+  - triage
+body:
+  - type: dropdown
+    id: type
+    attributes:
+      label: Feedback type
+      description: Select the type of feedback
+      options:
+        - Bug
+        - Feature request
+        - Documentation
+        - Performance
+    validations:
+      required: true
+  - type: input
+    id: summary
+    attributes:
+      label: One-line summary
+      placeholder: e.g., Issue with zip download of skills
+    validations:
+      required: true
+  - type: textarea
+    id: details
+    attributes:
+      label: Details
+      description: Any extra info, screenshots, or links
+    validations:
+      required: true
