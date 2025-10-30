@@ -89,39 +89,38 @@ export function InstallSkill({ skill }: Props) {
 	};
 
 	const renderClaudeCodeInstructions = () => {
-		const projectSkill = `npx claude-plugins skills install ${skill.namespace} --local`;
+		const projectSkill = `npx claude-plugins skills install ${skill.namespace} -- --local`;
 		const personalSkill = `npx claude-plugins skills install ${skill.namespace}`;
 
 		return (
 			<div className="flex flex-col gap-4">
-				{/* Step 1: Install as Project Skill (default) */}
+  			<div className="flex flex-col gap-2">
+  				<div className="flex items-center gap-2">
+  					<span className="inline-flex items-center justify-center px-1.5 py-0.5 bg-muted/50 text-foreground rounded border border-border/30 text-[10px] font-semibold font-mono">
+  						1.a
+  					</span>
+  					<span className="text-sm font-medium text-foreground">
+  						As Personal Skill (default)
+  					</span>
+  				</div>
+  				<p className="text-sm text-muted-foreground">
+  					Applies to all projects globally.
+  				</p>
+  				<CommandBox command={personalSkill} />
+  			</div>
 				<div className="flex flex-col gap-2">
   				<div className="flex items-center gap-2">
   					<span className="inline-flex items-center justify-center px-1.5 py-0.5 bg-muted/50 text-foreground rounded border border-border/30 text-[10px] font-semibold font-mono">
-  						1
+  						1.b
   					</span>
   					<span className="text-sm font-medium text-foreground">
-  						As Project Skill (default)
+  						As Project Skill
   					</span>
   				</div>
 					<p className="text-sm text-muted-foreground">
 						Applies to current project only. Run this command in your project root.
 					</p>
 					<CommandBox command={projectSkill} />
-				</div>
-				<div className="flex flex-col gap-2">
-					<div className="flex items-center gap-2">
-						<span className="inline-flex items-center justify-center px-1.5 py-0.5 bg-muted/50 text-foreground rounded border border-border/30 text-[10px] font-semibold font-mono">
-							2
-						</span>
-						<span className="text-sm font-medium text-foreground">
-							As Personal Skill
-						</span>
-					</div>
-					<p className="text-sm text-muted-foreground">
-						Applies to all projects globally.
-					</p>
-					<CommandBox command={personalSkill} />
 				</div>
 			</div>
 		);
