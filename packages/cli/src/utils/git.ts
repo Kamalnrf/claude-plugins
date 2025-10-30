@@ -63,3 +63,22 @@ export async function isGitRepo(repoPath: string): Promise<boolean> {
 		return false;
 	}
 }
+
+export function normalizeGithubPath(inputUrl: string): string {
+  // Example inputs:
+  // https://github.com/anthropics/claude-cookbooks/tree/main/skills/custom_skills/analyzing-financial-statements
+  // https://github.com/anthropics/claude-cookbooks/skills/custom_skills/analyzing-financial-statements
+  // github.com/anthropics/claude-cookbooks/tree/main/skills/custom_skills/analyzing-financial-statements
+
+  const withoutProtocol = inputUrl.replace(/^https?:\/\//i, '');
+  const afterHost = withoutProtocol.replace(/^github\.com\/?/i, '');
+
+  // If the URL contains /tree/<branch>/, remove that segment (owner/repo/tree/branch/path -> owner/repo/path)
+  // This regex finds "owner/repo/tree/<branch>/" and removes it
+  const cleaned = afterHost.replace(
+    /^([^/]+)\/([^/]+)\/tree\/[^/]+\/(.*)$/i,
+    (_m, owner: string, repo: string, rest: string) => `${owner}/${repo}/${rest}`
+  );
+
+  return cleaned.replace(/\/+$/,'');
+}
