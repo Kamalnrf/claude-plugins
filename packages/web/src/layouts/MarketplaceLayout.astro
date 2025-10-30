@@ -82,14 +82,24 @@ const fullOgImage = ogImage.startsWith('http') ? ogImage : `${siteUrl}${ogImage}
           Community-maintained marketplace
         </p>
       </div>
-      <a
-        href="https://github.com/Kamalnrf/claude-plugins"
-        target="_blank"
-        rel="noopener noreferrer"
-        class="text-muted-foreground hover:text-primary transition-all hover:scale-110"
-      >
-        <GithubIcon size={24} client:load />
-      </a>
+      <div class="flex items-center gap-4">
+        <a
+          href="https://github.com/Kamalnrf/claude-plugins/issues/new?template=feedback.yml"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="text-sm text-muted-foreground hover:text-primary transition-colors font-medium"
+        >
+          Feedback
+        </a>
+        <a
+          href="https://github.com/Kamalnrf/claude-plugins"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="text-muted-foreground hover:text-primary transition-all hover:scale-110"
+        >
+          <GithubIcon size={24} client:load />
+        </a>
+      </div>
     </header>
 
     <main class="min-h-screen">
