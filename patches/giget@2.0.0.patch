@@ -1,0 +1,33 @@
+diff --git a/node_modules/giget/.bun-tag-25c539caabf4ce5 b/.bun-tag-25c539caabf4ce5
+new file mode 100644
+index 0000000000000000000000000000000000000000..e69de29bb2d1d6434b8b29ae775ad8c2e48c5391
+diff --git a/node_modules/giget/.bun-tag-2c08aaa1b9d1929d b/.bun-tag-2c08aaa1b9d1929d
+new file mode 100644
+index 0000000000000000000000000000000000000000..e69de29bb2d1d6434b8b29ae775ad8c2e48c5391
+diff --git a/node_modules/giget/.bun-tag-2f1835c24342eb9c b/.bun-tag-2f1835c24342eb9c
+new file mode 100644
+index 0000000000000000000000000000000000000000..e69de29bb2d1d6434b8b29ae775ad8c2e48c5391
+diff --git a/node_modules/giget/.bun-tag-4b23f19b0eba1db8 b/.bun-tag-4b23f19b0eba1db8
+new file mode 100644
+index 0000000000000000000000000000000000000000..e69de29bb2d1d6434b8b29ae775ad8c2e48c5391
+diff --git a/node_modules/giget/.bun-tag-5ffdf933eec8f4bb b/.bun-tag-5ffdf933eec8f4bb
+new file mode 100644
+index 0000000000000000000000000000000000000000..e69de29bb2d1d6434b8b29ae775ad8c2e48c5391
+diff --git a/node_modules/giget/.bun-tag-c6909702323317e8 b/.bun-tag-c6909702323317e8
+new file mode 100644
+index 0000000000000000000000000000000000000000..e69de29bb2d1d6434b8b29ae775ad8c2e48c5391
+diff --git a/dist/shared/giget.OCaTp9b-.mjs b/dist/shared/giget.OCaTp9b-.mjs
+index 0f909d38f599397cd2a14b6b399399ef93ebd2e6..c9993171d448b275050d3c7ebf66de433ae3acb0 100644
+--- a/dist/shared/giget.OCaTp9b-.mjs
++++ b/dist/shared/giget.OCaTp9b-.mjs
+@@ -18,7 +18,9 @@ import { pipeline } from 'node:stream';
+ import { spawnSync } from 'node:child_process';
+ import { homedir, tmpdir } from 'node:os';
+ import { promisify } from 'node:util';
+-import { fetch } from 'node-fetch-native/proxy';
++
++const {fetch} = require('node-fetch-native/proxy');
++
+ 
+ var commonjsGlobal = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
+ 
