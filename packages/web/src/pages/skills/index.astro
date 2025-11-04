@@ -1,6 +1,5 @@
 ---
 import Badge from "@/components/Badge.astro";
-import { InstallSkill } from "@/components/InstallSkill";
 import { PluginOrSkillsTabSwitcher } from "@/components/PluginOrSkillsTabSwitcher";
 import SkillBrowser from "@/components/SkillBrowser";
 import MarketplaceLayout from "@/layouts/MarketplaceLayout.astro";
@@ -16,9 +15,6 @@ const { skills, total } = await registryAPI.searchSkills({
 	limit: 20,
 	offset: 0,
 });
-
-// Use first skill for Quick Start instructions
-const quickStartSkill = skills[0];
 ---
 
 <MarketplaceLayout
@@ -47,16 +43,6 @@ const quickStartSkill = skills[0];
           <Badge variant="dotted">Claude Code 😉</Badge>
         </div>
       </div>
-      {quickStartSkill &&
-        <section class="flex flex-col gap-4">
-          <div class="flex items-center gap-2">
-            <h2 class="text-lg font-semibold text-foreground">
-        					Quick Start
-        		</h2>
-        		<div class="flex-1 h-px bg-border/30" />
-       	  </div>
-          <InstallSkill skill={quickStartSkill} client:load />
-      </section>}
     </section>
     <SkillBrowser initialQuery={searchQuery} initialSkills={skills} total={total} client:load />
   </div>
