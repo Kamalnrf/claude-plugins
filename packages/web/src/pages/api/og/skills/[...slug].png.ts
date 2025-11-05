@@ -1,6 +1,6 @@
 import type { APIRoute } from "astro";
 import { ImageResponse } from "@vercel/og";
-import { registryAPI } from "../../../../lib/api";
+import { registryAPI, sanitizeName } from "../../../../lib/api";
 
 export const GET: APIRoute = async ({ params }) => {
 	const { slug } = params;
@@ -10,7 +10,9 @@ export const GET: APIRoute = async ({ params }) => {
 		return new Response("Invalid slug", { status: 400 });
 	}
 
-	const [owner, marketplace, skillName] = parts;
+	// Sanitize skill name to remove any file extensions
+	const [owner, marketplace, skillNameRaw] = parts;
+	const skillName = sanitizeName(skillNameRaw);
 
 	try {
 		const skill = await registryAPI.getSkill(owner, marketplace, skillName);

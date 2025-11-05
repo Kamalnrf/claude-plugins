@@ -1,6 +1,16 @@
 const REGISTRY_BASE = "https://api.claude-plugins.dev";
 const CACHE_TTL = 1000 * 60 * 5; // 5 minutes
 
+/**
+ * Sanitizes skill/plugin names by removing file extensions
+ * @param name - The skill or plugin name that may contain a file extension
+ * @returns The sanitized name without file extension
+ */
+export function sanitizeName(name: string): string {
+	// Remove any file extension (.md, .txt, etc.)
+	return name.replace(/\.[^.]+$/, '');
+}
+
 export interface SearchParams {
 	q?: string; // Search query
 	category?: string; // Filter by category
@@ -225,10 +235,13 @@ export class RegistryAPI {
 		marketplace: string,
 		skillName: string,
 	): Promise<Skill> {
+		// Sanitize skill name to remove any file extensions
+		const sanitizedSkillName = sanitizeName(skillName);
+
 		return this.fetchWithCache(
-			`skill:${owner}/${marketplace}/${skillName}`,
+			`skill:${owner}/${marketplace}/${sanitizedSkillName}`,
 			async () => {
-				const url = `${REGISTRY_BASE}/api/skills/${owner}/${marketplace}/${skillName}`;
+				const url = `${REGISTRY_BASE}/api/skills/${owner}/${marketplace}/${sanitizedSkillName}`;
 				const response = await fetch(url, {
 					headers: { Accept: "application/json" },
 				});
