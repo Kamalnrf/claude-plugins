@@ -1,5 +1,4 @@
 import type { APIRoute } from "astro";
-import { sanitizeName } from "../../lib/api";
 
 export const GET: APIRoute = async ({ request }) => {
 	const url = new URL(request.url);
@@ -22,8 +21,7 @@ export const GET: APIRoute = async ({ request }) => {
 		);
 	}
 	// Sanitize skill name to remove any file extensions
-	const [owner, marketplace, skillNameRaw] = parts;
-	const skillName = sanitizeName(skillNameRaw);
+	const [owner, marketplace, skillName] = parts;
 
 	// 3. Fetch skill to get sourceUrl
 	try {
