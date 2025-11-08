@@ -77,8 +77,6 @@ export default function InfiniteSkillList({
 		return () => observer.disconnect();
 	}, [hasMore, isLoading, loadMore]);
 
-	console.log("SkillList =>", skills);
-
 	return (
 		<>
 			{/* Skills List */}
