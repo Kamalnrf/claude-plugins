@@ -1,6 +1,6 @@
 ---
 import MarketplaceLayout from "../../layouts/MarketplaceLayout.astro";
-import { registryAPI, sanitizeName } from "../../lib/api";
+import { registryAPI } from "../../lib/api";
 import { InstallSkill } from "../../components/InstallSkill";
 import { SkillDetailHeader } from "@/components/SkillDetailHeader";
 import Markdown from "@/components/Markdown.astro";
@@ -8,15 +8,17 @@ import { Button } from "@/components/ui/button";
 import {LinkIcon} from '@/components/ui/link-icon'
 
 const { slug } = Astro.params;
+console.log('Reached Here =>')
 const parts = slug?.split("/") || [];
-
+console.log('Parts =>', parts)
 if (parts.length !== 3) {
 	return Astro.redirect("/404");
 }
 
 // Sanitize skillName to remove any file extensions like .md
 const [owner, marketplace, skillNameRaw] = parts;
-const skillName = sanitizeName(skillNameRaw);
+const skillName = skillNameRaw
+console.log('Skill Name =>', skillName)
 const skill = await registryAPI.getSkill(owner, marketplace, skillName);
 const markdown = await fetch(skill.metadata.rawFileUrl).then(res => res.text())
 
