@@ -11,6 +11,11 @@ const renderer = new marked.Renderer();
 const originalLinkRenderer = renderer.link.bind(renderer);
 
 renderer.link = function(href, title, text) {
+  // Ensure href is a string before processing
+  if (typeof href !== 'string') {
+    return originalLinkRenderer(href, title, text);
+  }
+
   // Check if this is a relative link (doesn't start with http://, https://, mailto:, #, etc.)
   const isRelativeLink = href && !href.match(/^([a-z]+:)?\/\//i) && !href.startsWith('#') && !href.startsWith('mailto:');
 
