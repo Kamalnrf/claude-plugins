@@ -1,11 +1,49 @@
 ---
 import "github-markdown-css/github-markdown-dark.css";
 import matter from 'gray-matter';
-import { marked } from 'marked';
+import { Marked } from 'marked';
 
-const { content: markdown } = Astro.props;
+const { content: markdown, sourceUrl } = Astro.props;
 const { data: frontMatter, content } = matter(markdown);
-const parsedContent = marked(content);
+
+// Create a new Marked instance for this render
+const markedInstance = new Marked();
+
+// Configure marked to convert relative links to GitHub URLs
+markedInstance.use({
+  renderer: {
+    link({ href, title, text }) {
+      console.log('Href =>', href);
+      // Ensure href is a string before processing
+      if (typeof href !== 'string') {
+        // Return default link HTML
+        const titleAttr = title ? ` title="${title}"` : '';
+        return `<a href="${href}"${titleAttr}>${text}</a>`;
+      }
+
+      // Check if this is a relative link (doesn't start with http://, https://, mailto:, #, etc.)
+      const isRelativeLink = href && !href.match(/^([a-z]+:)?\/\//i) && !href.startsWith('#') && !href.startsWith('mailto:');
+      if (isRelativeLink && sourceUrl) {
+        // Parse sourceUrl - format: https://github.com/owner/repo/blob/branch/path/to/SKILL.md
+        // Example: https://github.com/bobmatnyc/claude-mpm/blob/main/src/claude_mpm/skills/bundled/debugging/verification-before-completion/SKILL.md
+        const githubUrlMatch = sourceUrl.replace
+        console.log('Github URL Match:', githubUrlMatch)
+
+        if (githubUrlMatch) {
+          // All internal links are within the skill directory
+          // Strip ./ prefix if present, otherwise use as-is
+          const resolvedPath = href.startsWith('./') ? href.substring(2) : href;
+          href = `${sourceUrl}/${resolvedPath}`;
+        }
+      }
+
+      const titleAttr = title ? ` title="${title}"` : '';
+      return `<a href="${href}"${titleAttr}>${text}</a>`;
+    }
+  }
+});
+
+const parsedContent = await markedInstance.parse(content);
 const entries = Object.entries(frontMatter);
 ---
 <article class="markdown-body mx-auto p-6 rounded">
