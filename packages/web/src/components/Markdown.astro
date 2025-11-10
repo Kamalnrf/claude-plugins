@@ -3,8 +3,53 @@ import "github-markdown-css/github-markdown-dark.css";
 import matter from 'gray-matter';
 import { marked } from 'marked';
 
-const { content: markdown } = Astro.props;
+const { content: markdown, sourceUrl } = Astro.props;
 const { data: frontMatter, content } = matter(markdown);
+
+// Configure marked to convert relative links to GitHub URLs
+const renderer = new marked.Renderer();
+const originalLinkRenderer = renderer.link.bind(renderer);
+
+renderer.link = function(href, title, text) {
+  // Check if this is a relative link (doesn't start with http://, https://, mailto:, #, etc.)
+  const isRelativeLink = href && !href.match(/^([a-z]+:)?\/\//i) && !href.startsWith('#') && !href.startsWith('mailto:');
+
+  if (isRelativeLink && sourceUrl) {
+    // Parse sourceUrl - format: https://github.com/owner/repo/tree/branch/path/to/skill
+    // Example: https://github.com/obra/superpowers-skills/tree/main/skills/collaboration/remembering-conversations
+    const githubUrlMatch = sourceUrl.match(/^https?:\/\/github\.com\/([^\/]+)\/([^\/]+)\/tree\/([^\/]+)\/(.+)$/);
+
+    if (githubUrlMatch) {
+      const [, owner, repo, branch, skillPath] = githubUrlMatch;
+
+      // Resolve relative link against the skill directory
+      let resolvedPath = href;
+      if (href.startsWith('./')) {
+        resolvedPath = href.substring(2);
+      } else if (href.startsWith('../')) {
+        // Handle parent directory references
+        const dirs = skillPath.split('/');
+        let path = href;
+        while (path.startsWith('../')) {
+          dirs.pop();
+          path = path.substring(3);
+        }
+        resolvedPath = dirs.length > 0 ? `${dirs.join('/')}/${path}` : path;
+      } else {
+        // Relative link without ./ prefix
+        resolvedPath = href;
+      }
+
+      // Construct the full GitHub blob URL (blob for files, not tree for directories)
+      const fullPath = `${skillPath}/${resolvedPath}`;
+      href = `https://github.com/${owner}/${repo}/blob/${branch}/${fullPath}`;
+    }
+  }
+
+  return originalLinkRenderer(href, title, text);
+};
+
+marked.setOptions({ renderer });
 const parsedContent = marked(content);
 const entries = Object.entries(frontMatter);
 ---
