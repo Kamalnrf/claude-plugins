@@ -20,20 +20,24 @@ renderer.link = function(href, title, text) {
   const isRelativeLink = href && !href.match(/^([a-z]+:)?\/\//i) && !href.startsWith('#') && !href.startsWith('mailto:');
 
   if (isRelativeLink && sourceUrl) {
-    // Parse sourceUrl - format: https://github.com/owner/repo/tree/branch/path/to/skill
-    // Example: https://github.com/obra/superpowers-skills/tree/main/skills/collaboration/remembering-conversations
-    const githubUrlMatch = sourceUrl.match(/^https?:\/\/github\.com\/([^\/]+)\/([^\/]+)\/tree\/([^\/]+)\/(.+)$/);
+    // Parse sourceUrl - format: https://github.com/owner/repo/blob/branch/path/to/SKILL.md
+    // Example: https://github.com/bobmatnyc/claude-mpm/blob/main/src/claude_mpm/skills/bundled/debugging/verification-before-completion/SKILL.md
+    const githubUrlMatch = sourceUrl.match(/^https?:\/\/github\.com\/([^\/]+)\/([^\/]+)\/blob\/([^\/]+)\/(.+)$/);
 
     if (githubUrlMatch) {
-      const [, owner, repo, branch, skillPath] = githubUrlMatch;
+      const [, owner, repo, branch, filePath] = githubUrlMatch;
+
+      // Get the directory containing SKILL.md
+      const directory = filePath.substring(0, filePath.lastIndexOf('/'));
 
       // Resolve relative link against the skill directory
       let resolvedPath = href;
       if (href.startsWith('./')) {
+        // ./file.md -> same directory as SKILL.md
         resolvedPath = href.substring(2);
       } else if (href.startsWith('../')) {
-        // Handle parent directory references
-        const dirs = skillPath.split('/');
+        // ../file.md -> parent directory
+        const dirs = directory.split('/');
         let path = href;
         while (path.startsWith('../')) {
           dirs.pop();
@@ -41,12 +45,12 @@ renderer.link = function(href, title, text) {
         }
         resolvedPath = dirs.length > 0 ? `${dirs.join('/')}/${path}` : path;
       } else {
-        // Relative link without ./ prefix
+        // file.md -> same directory as SKILL.md (no prefix)
         resolvedPath = href;
       }
 
-      // Construct the full GitHub blob URL (blob for files, not tree for directories)
-      const fullPath = `${skillPath}/${resolvedPath}`;
+      // Construct the full GitHub blob URL
+      const fullPath = directory ? `${directory}/${resolvedPath}` : resolvedPath;
       href = `https://github.com/${owner}/${repo}/blob/${branch}/${fullPath}`;
     }
   }
