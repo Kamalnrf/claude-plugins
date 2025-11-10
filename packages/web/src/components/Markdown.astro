@@ -1,65 +1,57 @@
 ---
 import "github-markdown-css/github-markdown-dark.css";
 import matter from 'gray-matter';
-import { marked } from 'marked';
+import { Marked } from 'marked';
 
 const { content: markdown, sourceUrl } = Astro.props;
 const { data: frontMatter, content } = matter(markdown);
 
+// Create a new Marked instance for this render
+const markedInstance = new Marked();
+
 // Configure marked to convert relative links to GitHub URLs
-const renderer = new marked.Renderer();
-const originalLinkRenderer = renderer.link.bind(renderer);
-
-renderer.link = function(href, title, text) {
-  // Ensure href is a string before processing
-  if (typeof href !== 'string') {
-    return originalLinkRenderer(href, title, text);
-  }
-
-  // Check if this is a relative link (doesn't start with http://, https://, mailto:, #, etc.)
-  const isRelativeLink = href && !href.match(/^([a-z]+:)?\/\//i) && !href.startsWith('#') && !href.startsWith('mailto:');
-
-  if (isRelativeLink && sourceUrl) {
-    // Parse sourceUrl - format: https://github.com/owner/repo/blob/branch/path/to/SKILL.md
-    // Example: https://github.com/bobmatnyc/claude-mpm/blob/main/src/claude_mpm/skills/bundled/debugging/verification-before-completion/SKILL.md
-    const githubUrlMatch = sourceUrl.match(/^https?:\/\/github\.com\/([^\/]+)\/([^\/]+)\/blob\/([^\/]+)\/(.+)$/);
-
-    if (githubUrlMatch) {
-      const [, owner, repo, branch, filePath] = githubUrlMatch;
-
-      // Get the directory containing SKILL.md
-      const directory = filePath.substring(0, filePath.lastIndexOf('/'));
-
-      // Resolve relative link against the skill directory
-      let resolvedPath = href;
-      if (href.startsWith('./')) {
-        // ./file.md -> same directory as SKILL.md
-        resolvedPath = href.substring(2);
-      } else if (href.startsWith('../')) {
-        // ../file.md -> parent directory
-        const dirs = directory.split('/');
-        let path = href;
-        while (path.startsWith('../')) {
-          dirs.pop();
-          path = path.substring(3);
-        }
-        resolvedPath = dirs.length > 0 ? `${dirs.join('/')}/${path}` : path;
-      } else {
-        // file.md -> same directory as SKILL.md (no prefix)
-        resolvedPath = href;
+markedInstance.use({
+  renderer: {
+    link({ href, title, text }) {
+      // Ensure href is a string before processing
+      if (typeof href !== 'string') {
+        // Return default link HTML
+        const titleAttr = title ? ` title="${title}"` : '';
+        return `<a href="${href}"${titleAttr}>${text}</a>`;
       }
 
-      // Construct the full GitHub blob URL
-      const fullPath = directory ? `${directory}/${resolvedPath}` : resolvedPath;
-      href = `https://github.com/${owner}/${repo}/blob/${branch}/${fullPath}`;
+      // Check if this is a relative link (doesn't start with http://, https://, mailto:, #, etc.)
+      const isRelativeLink = href && !href.match(/^([a-z]+:)?\/\//i) && !href.startsWith('#') && !href.startsWith('mailto:');
+
+      if (isRelativeLink && sourceUrl) {
+        // Parse sourceUrl - format: https://github.com/owner/repo/blob/branch/path/to/SKILL.md
+        // Example: https://github.com/bobmatnyc/claude-mpm/blob/main/src/claude_mpm/skills/bundled/debugging/verification-before-completion/SKILL.md
+        const githubUrlMatch = sourceUrl.match(/^https?:\/\/github\.com\/([^\/]+)\/([^\/]+)\/blob\/([^\/]+)\/(.+)$/);
+
+        if (githubUrlMatch) {
+          const [, owner, repo, branch, filePath] = githubUrlMatch;
+
+          // Get the directory containing SKILL.md
+          const directory = filePath.substring(0, filePath.lastIndexOf('/'));
+
+          // All internal links are within the skill directory
+          // Strip ./ prefix if present, otherwise use as-is
+          const resolvedPath = href.startsWith('./') ? href.substring(2) : href;
+
+          // Construct the full GitHub blob URL
+          const fullPath = `${directory}/${resolvedPath}`;
+          href = `https://github.com/${owner}/${repo}/blob/${branch}/${fullPath}`;
+        }
+      }
+
+      // Return the modified link HTML
+      const titleAttr = title ? ` title="${title}"` : '';
+      return `<a href="${href}"${titleAttr}>${text}</a>`;
     }
   }
+});
 
-  return originalLinkRenderer(href, title, text);
-};
-
-marked.setOptions({ renderer });
-const parsedContent = marked(content);
+const parsedContent = await markedInstance.parse(content);
 const entries = Object.entries(frontMatter);
 ---
 <article class="markdown-body mx-auto p-6 rounded">
