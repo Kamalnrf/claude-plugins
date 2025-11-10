@@ -13,6 +13,7 @@ const markedInstance = new Marked();
 markedInstance.use({
   renderer: {
     link({ href, title, text }) {
+      console.log('Href =>', href);
       // Ensure href is a string before processing
       if (typeof href !== 'string') {
         // Return default link HTML
@@ -22,29 +23,20 @@ markedInstance.use({
 
       // Check if this is a relative link (doesn't start with http://, https://, mailto:, #, etc.)
       const isRelativeLink = href && !href.match(/^([a-z]+:)?\/\//i) && !href.startsWith('#') && !href.startsWith('mailto:');
-
       if (isRelativeLink && sourceUrl) {
         // Parse sourceUrl - format: https://github.com/owner/repo/blob/branch/path/to/SKILL.md
         // Example: https://github.com/bobmatnyc/claude-mpm/blob/main/src/claude_mpm/skills/bundled/debugging/verification-before-completion/SKILL.md
-        const githubUrlMatch = sourceUrl.match(/^https?:\/\/github\.com\/([^\/]+)\/([^\/]+)\/blob\/([^\/]+)\/(.+)$/);
+        const githubUrlMatch = sourceUrl.replace
+        console.log('Github URL Match:', githubUrlMatch)
 
         if (githubUrlMatch) {
-          const [, owner, repo, branch, filePath] = githubUrlMatch;
-
-          // Get the directory containing SKILL.md
-          const directory = filePath.substring(0, filePath.lastIndexOf('/'));
-
           // All internal links are within the skill directory
           // Strip ./ prefix if present, otherwise use as-is
           const resolvedPath = href.startsWith('./') ? href.substring(2) : href;
-
-          // Construct the full GitHub blob URL
-          const fullPath = `${directory}/${resolvedPath}`;
-          href = `https://github.com/${owner}/${repo}/blob/${branch}/${fullPath}`;
+          href = `${sourceUrl}/${resolvedPath}`;
         }
       }
 
-      // Return the modified link HTML
       const titleAttr = title ? ` title="${title}"` : '';
       return `<a href="${href}"${titleAttr}>${text}</a>`;
     }
