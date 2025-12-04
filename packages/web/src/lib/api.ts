@@ -7,6 +7,8 @@ export interface SearchParams {
 	limit?: number; // Default: 20, Max: 100
 	offset?: number; // Pagination offset
 	hasSkills?: boolean;
+	orderBy?: "downloads" | "stars"; // Sort field
+	order?: "asc" | "desc"; // Sort direction
 }
 
 export interface Plugin {
@@ -71,6 +73,8 @@ export interface SkillSearchParams {
 	q?: string;
 	limit?: number;
 	offset?: number;
+	orderBy?: "downloads" | "stars"; // Sort field
+	order?: "asc" | "desc"; // Sort direction
 }
 
 export interface SkillSearchResponse {

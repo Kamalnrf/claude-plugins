@@ -7,6 +7,8 @@ export const GET: APIRoute = async ({ request }) => {
 	const hasSkills = url.searchParams.get("hasSkills") === "true";
 	const limit = parseInt(url.searchParams.get("limit") || "20", 10);
 	const offset = parseInt(url.searchParams.get("offset") || "0", 10);
+	const orderBy = url.searchParams.get("orderBy") as "downloads" | "stars" | null;
+	const order = url.searchParams.get("order") as "asc" | "desc" | null;
 
 	try {
 		const result = await registryAPI.searchPlugins({
@@ -14,6 +16,8 @@ export const GET: APIRoute = async ({ request }) => {
 			limit,
 			offset,
 			hasSkills,
+			...(orderBy && { orderBy }),
+			...(order && { order }),
 		});
 
 		return new Response(JSON.stringify(result), {
