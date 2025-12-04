@@ -9,6 +9,8 @@ import { registryAPI } from "../lib/api";
 const url = new URL(Astro.request.url);
 const searchQuery = url.searchParams.get("q") || "";
 const hasSkills = url.searchParams.get("hasSkills") === "true";
+const orderBy = url.searchParams.get("orderBy") as "downloads" | "stars" | null;
+const order = url.searchParams.get("order") as "asc" | "desc" | null;
 
 // Fetch initial plugins with SSR
 const { plugins, total } = await registryAPI.searchPlugins({
@@ -16,6 +18,8 @@ const { plugins, total } = await registryAPI.searchPlugins({
 	limit: 20,
 	offset: 0,
 	hasSkills,
+	...(orderBy && { orderBy }),
+	...(order && { order }),
 });
 ---
 
@@ -98,6 +102,8 @@ const { plugins, total } = await registryAPI.searchPlugins({
       initialQuery={searchQuery}
       initialHasSkills={hasSkills}
       total={total}
+      initialOrderBy={orderBy}
+      initialOrder={order}
       client:load
     />
   </div>

@@ -49,6 +49,13 @@ export default function InfinitePluginList({
 				params.set("hasSkills", "true");
 			}
 
+			// Add sort params from URL
+			const url = new URL(window.location.href);
+			const orderBy = url.searchParams.get("orderBy");
+			const order = url.searchParams.get("order");
+			if (orderBy) params.set("orderBy", orderBy);
+			if (order) params.set("order", order);
+
 			const response = await fetch(`/api/plugins?${params}`);
 			const data = await response.json();
 

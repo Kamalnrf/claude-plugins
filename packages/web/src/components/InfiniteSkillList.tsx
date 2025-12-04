@@ -43,6 +43,13 @@ export default function InfiniteSkillList({
 				offset: skills.length.toString(),
 			});
 
+			// Add sort params from URL
+			const url = new URL(window.location.href);
+			const orderBy = url.searchParams.get("orderBy");
+			const order = url.searchParams.get("order");
+			if (orderBy) params.set("orderBy", orderBy);
+			if (order) params.set("order", order);
+
 			const response = await fetch(`/api/skills?${params}`);
 			const data = await response.json();
 

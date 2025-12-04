@@ -6,9 +6,17 @@ export const GET: APIRoute = async ({ request }) => {
 	const q = url.searchParams.get("q") || "";
 	const limit = parseInt(url.searchParams.get("limit") || "20", 10);
 	const offset = parseInt(url.searchParams.get("offset") || "0", 10);
+	const orderBy = url.searchParams.get("orderBy") as "downloads" | "stars" | null;
+	const order = url.searchParams.get("order") as "asc" | "desc" | null;
 
 	try {
-		const result = await registryAPI.searchSkills({ q, limit, offset });
+		const result = await registryAPI.searchSkills({
+			q,
+			limit,
+			offset,
+			...(orderBy && { orderBy }),
+			...(order && { order }),
+		});
 
 		return new Response(JSON.stringify(result), {
 			status: 200,

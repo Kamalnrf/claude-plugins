@@ -8,12 +8,16 @@ import { registryAPI } from "@/lib/api";
 // Get search params from URL
 const url = new URL(Astro.request.url);
 const searchQuery = url.searchParams.get("q") || "";
+const orderBy = url.searchParams.get("orderBy") as "downloads" | "stars" | null;
+const order = url.searchParams.get("order") as "asc" | "desc" | null;
 
 // Fetch initial skills with SSR
 const { skills, total } = await registryAPI.searchSkills({
 	q: searchQuery,
 	limit: 20,
 	offset: 0,
+	...(orderBy && { orderBy }),
+	...(order && { order }),
 });
 ---
 
@@ -44,6 +48,6 @@ const { skills, total } = await registryAPI.searchSkills({
         </div>
       </div>
     </section>
-    <SkillBrowser initialQuery={searchQuery} initialSkills={skills} total={total} client:load />
+    <SkillBrowser initialQuery={searchQuery} initialSkills={skills} total={total} initialOrderBy={orderBy} initialOrder={order} client:load />
   </div>
 </MarketplaceLayout>

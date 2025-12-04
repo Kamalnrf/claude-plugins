@@ -1,4 +1,4 @@
-import { Search, Sparkles } from "lucide-react";
+import { Search, Sparkles, SortDescIcon } from "lucide-react";
 import { useDeferredValue, useEffect, useState } from "react";
 import { Input } from "@/components/ui/input";
 import type { Plugin } from "@/lib/api";
@@ -9,7 +9,16 @@ interface PluginBrowserProps {
 	initialQuery: string;
 	initialHasSkills: boolean;
 	total: number;
+	initialOrderBy?: "downloads" | "stars" | null;
+	initialOrder?: "asc" | "desc" | null;
 }
+
+type SortOption =
+	| "relevance"
+	| "downloads-desc"
+	| "downloads-asc"
+	| "stars-desc"
+	| "stars-asc";
 
 // Format number helper
 function formatNumber(num: number): string {
@@ -24,6 +33,8 @@ export default function PluginBrowser({
 	initialQuery,
 	total: initialTotal,
 	initialHasSkills,
+	initialOrderBy = null,
+	initialOrder = null,
 }: PluginBrowserProps) {
 	const [{ plugins, total }, setPlugins] = useState({
 		plugins: initialPlugins,
@@ -45,13 +56,39 @@ export default function PluginBrowser({
 		);
 	};
 
+	// Sort option from URL
+	const getSortFromURL = (): SortOption => {
+		if (typeof window === "undefined") {
+			if (!initialOrderBy) return "relevance";
+			return `${initialOrderBy}-${initialOrder || "desc"}` as SortOption;
+		}
+
+		const params = new URLSearchParams(window.location.search);
+		const orderBy = params.get("orderBy");
+		const order = params.get("order") || "desc";
+
+		if (!orderBy) return "relevance";
+		return `${orderBy}-${order}` as SortOption;
+	};
+
+	// Convert sort option to URL params
+	const sortToParams = (
+		sort: SortOption,
+	): { orderBy?: string; order?: string } => {
+		if (sort === "relevance") return {};
+
+		const [orderBy, order] = sort.split("-");
+		return { orderBy, order };
+	};
+
 	const [searchQuery, setSearchQuery] = useState(getSearchQuery());
 	const [hasSkillsFilter, setHasSkillsFilter] = useState<boolean>(
 		getSkillsFilter(),
 	);
+	const [sortOption, setSortOption] = useState<SortOption>(getSortFromURL());
 	const deferredSearchQuery = useDeferredValue(searchQuery);
 
-	// Fetch results when deferred query or filter changes
+	// Fetch results when deferred query, filter, or sort changes
 	useEffect(() => {
 		const fetchPlugins = async () => {
 			try {
@@ -64,6 +101,10 @@ export default function PluginBrowser({
 				if (hasSkillsFilter) {
 					params.set("hasSkills", "true");
 				}
+
+				const { orderBy, order } = sortToParams(sortOption);
+				if (orderBy) params.set("orderBy", orderBy);
+				if (order) params.set("order", order);
 
 				const response = await fetch(`/api/plugins?${params}`);
 				const data = await response.json();
@@ -78,7 +119,7 @@ export default function PluginBrowser({
 		};
 
 		fetchPlugins();
-	}, [deferredSearchQuery, hasSkillsFilter]);
+	}, [deferredSearchQuery, hasSkillsFilter, sortOption]);
 
 	const handleInputChange = (value: string) => {
 		// Update URL immediately
@@ -112,6 +153,24 @@ export default function PluginBrowser({
 		window.history.pushState({}, "", url.toString());
 	};
 
+	const handleSortChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+		const value = e.target.value as SortOption;
+		setSortOption(value);
+
+		const url = new URL(window.location.href);
+
+		if (value === "relevance") {
+			url.searchParams.delete("orderBy");
+			url.searchParams.delete("order");
+		} else {
+			const { orderBy, order } = sortToParams(value);
+			if (orderBy) url.searchParams.set("orderBy", orderBy);
+			if (order) url.searchParams.set("order", order);
+		}
+
+		window.history.pushState({}, "", url.toString());
+	};
+
 	return (
 		<>
 			<section className="flex flex-col gap-3 sticky top-0 z-10 backdrop-blur-md bg-background/80 pt-2">
@@ -122,6 +181,22 @@ export default function PluginBrowser({
 					<div className="flex-1 h-px bg-border/30"></div>
 					<div className="text-xs font-medium text-muted-foreground/70 tabular-nums px-2.5 py-1 bg-muted/30 rounded-full border border-border/30">
 						{formatNumber(total)} {total === 1 ? "plugin" : "plugins"}
+					</div>
+					<div className="relative">
+						<select
+							id="sort-select"
+							value={sortOption}
+							onChange={handleSortChange}
+							className="h-8 pl-2 pr-6 rounded-md border border-border/50 bg-background/50 text-xs font-medium text-muted-foreground hover:bg-muted/50 focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all appearance-none cursor-pointer"
+							aria-label="Sort plugins"
+						>
+							<option value="relevance">Relevance</option>
+							<option value="downloads-desc">Most Downloads</option>
+							<option value="downloads-asc">Least Downloads</option>
+							<option value="stars-desc">Most Stars</option>
+							<option value="stars-asc">Least Stars</option>
+						</select>
+						<SortDescIcon className="absolute right-2 top-1/2 -translate-y-1/2 w-3 h-3 text-muted-foreground pointer-events-none" />
 					</div>
 				</div>
 				<form onSubmit={(e) => e.preventDefault()} aria-label="Search plugins">
