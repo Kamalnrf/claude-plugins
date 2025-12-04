@@ -189,7 +189,6 @@ export default function SkillBrowser({
 				initialSkills={skills}
 				total={total}
 				searchQuery={searchQuery}
-				sortOption={sortOption}
 				onSearchChange={handleBadgeClick}
 			/>
 		</>
