@@ -4,6 +4,7 @@ import { ImageResponse } from '@vercel/og';
 export const GET: APIRoute = async () => {
   const html = {
     type: 'div',
+    key: 'og-image',
     props: {
       style: {
         height: '100%',

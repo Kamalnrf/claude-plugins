@@ -54,7 +54,7 @@ export function SkillCard({ skill }: SkillCardProps) {
 									className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors w-fit"
 								>
 									<GithubIcon size={12} className="shrink-0" />
-									<span className="font-medium">{skill.namespace.split('/').slice(0, 2).join('/')}</span>
+									<span className="font-medium">{skill.namespace.replace('_', '-').split('/').slice(0, 2).join('/')}</span>
 								</a>
 							</ItemContent>
 						</ItemHeader>

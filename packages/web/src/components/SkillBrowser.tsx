@@ -163,9 +163,7 @@ export default function SkillBrowser({
 						>
 							<option value="relevance">Relevance</option>
 							<option value="downloads-desc">Most Downloads</option>
-							<option value="downloads-asc">Least Downloads</option>
 							<option value="stars-desc">Most Stars</option>
-							<option value="stars-asc">Least Stars</option>
 						</select>
 						<SortDescIcon className="absolute right-2 top-1/2 -translate-y-1/2 w-3 h-3 text-muted-foreground pointer-events-none" />
 					</div>
@@ -189,7 +187,6 @@ export default function SkillBrowser({
 				initialSkills={skills}
 				total={total}
 				searchQuery={searchQuery}
-				sortOption={sortOption}
 				onSearchChange={handleBadgeClick}
 			/>
 		</>
