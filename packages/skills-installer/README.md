@@ -1,0 +1,128 @@
+# skills-installer
+
+A CLI tool to install and manage agent skills that comply with the [agentskills spec](https://agentskills.io) across multiple AI coding clients.
+Browse and discover available skills at [claude-plugins.dev/skills](https://claude-plugins.dev/skills).
+
+## Features
+
+- 🚀 **Simple CLI** - Clean, intuitive command-line interface
+- 📦 **Universal Registry** - Access skills all public agent skills
+- 🌍 **Global & Local** - Install skills globally or per-project
+- 🎯 **Multi-Client Support** - Install skills for different coding clients
+
+## Installation
+
+```bash
+npm install -g skills-installer
+```
+
+Or use directly with `npx`:
+
+```bash
+npx skills-installer install @anthropics/skills/frontend-design
+```
+
+## What are Agent Skills?
+
+Agent Skills are specialized capabilities that extend AI coding assistants like Claude Code. Each skill follows the [agentskills specification](https://agentskills.io) - a standard format for defining AI agent capabilities through markdown files with structured instructions.
+
+
+## Usage
+
+### Install a skill globally
+
+```bash
+skills-installer install @anthropics/skills/frontend-design
+```
+
+Skills installed globally are available across all projects using the selected client.
+
+### Install a skill locally
+
+```bash
+skills-installer install @anthropics/skills/pdf --local
+```
+
+Local skills are only available in the current project directory.
+
+### Update an existing skill
+
+Simply run the install command again - it will automatically update:
+
+```bash
+skills-installer install @anthropics/skills/frontend-design
+```
+
+### List installed skills
+
+```bash
+skills-installer list
+```
+
+Shows all installed skills with their installation scope (global/local) and paths.
+
+### Target specific clients
+
+```bash
+skills-installer install @anthropics/skills/xlsx --client claude-code
+```
+
+Currently supported clients:
+- `claude-code` (default)
+
+More clients coming soon!
+
+## Commands
+
+| Command | Description |
+|---------|-------------|
+| `install <skill>` | Install or update an agent skill |
+| `list` | List all installed skills |
+| `help` | Show help message |
+
+## Options
+
+| Option | Alias | Description |
+|--------|-------|-------------|
+| `--client <name>` | | Target AI coding client (default: claude-code) |
+| `--local` | `-l` | Install to current directory instead of globally |
+
+## Skill Identifier Format
+
+Skills are identified using the format: `@owner/repo/skill-name`
+
+Examples:
+- `@anthropics/skills/frontend-design`
+- `@anthropics/skills/pdf`
+- `@anthropics/skills/xlsx`
+
+## Where are skills installed?
+
+**Global installation (claude-code):**
+- `~/.claude/skills/`
+
+**Local installation:**
+- `./.claude/skills/` (in your current directory)
+
+## Examples
+
+```bash
+# Install the frontend-design skill globally
+skills-installer install @anthropics/claude-code/frontend-design
+
+# Install a skill locally for current project
+skills-installer install @anthropics/claude-code/frontend-design --local
+
+# List all installed skills
+skills-installer list
+
+# Update an existing skill to latest version
+skills-installer install @anthropics/claude-code/frontend-design
+
+# Install skill for a specific client
+skills-installer install @anthropics/claude-code/frontend-design --client vscode
+```
+
+## License
+
+MIT

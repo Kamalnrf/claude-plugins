@@ -1,0 +1,40 @@
+{
+  "name": "skills-installer",
+  "version": "0.1.0",
+  "description": "Install agent skills across multiple clients that support agentskills.io",
+  "type": "module",
+  "bin": {
+    "skills-installer": "./dist/cli.js"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "bun build src/cli.ts --target=node --outdir=dist",
+    "build:compile": "bun build --compile --minify --sourcemap src/cli.ts --outfile=dist/skills-installer",
+    "test": "bun test",
+    "dev": "bun run src/cli.ts",
+    "publish:npm": "bun run build && npm publish"
+  },
+  "dependencies": {
+    "@clack/prompts": "^0.7.0",
+    "giget": "^2.0.0",
+    "picocolors": "^1.1.1"
+  },
+  "devDependencies": {
+    "bun-types": "latest"
+  },
+  "keywords": [
+    "skills",
+    "claude-code",
+    "codex",
+    "amp",
+    "cursor",
+    "copilot",
+    "agent",
+    "cli",
+    "installer"
+  ],
+  "author": "Kamal <https://github.com/Kamalnrf>",
+  "license": "MIT"
+}

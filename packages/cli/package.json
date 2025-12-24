@@ -16,7 +16,8 @@
     "dev": "bun run src/index.ts",
     "test": "bun test",
     "build": "bun build src/index.ts --outdir=dist --target=node",
-    "prepublishOnly": "bun run build"
+    "prepublishOnly": "bun run build",
+    "publish:npm": "bun run build && npm publish"
   },
   "engines": {
     "node": ">=18.0.0"
