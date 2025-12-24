@@ -35,6 +35,14 @@ export async function install(
 
 	// 3. Determine paths (pure functions)
 	const scope = options.local ? "local" : "global";
+
+	// Show warning if global requested but not supported
+	if (scope === "global" && !config.globalDir) {
+		note(
+			`Client "${config.name}" does not support global installation.\nInstalling to project directory instead.`,
+		);
+	}
+
 	const installPath = getSkillPath(config, scope, identifier.skillName);
 
 	// 4. Check for existing installation

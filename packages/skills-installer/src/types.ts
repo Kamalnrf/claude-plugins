@@ -15,7 +15,7 @@ export interface SkillMetadata {
 
 export interface ClientConfig {
 	name: string;
-	globalDir: string;
+	globalDir?: string;
 	localDir: string;
 }
 

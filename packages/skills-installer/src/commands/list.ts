@@ -45,12 +45,15 @@ const scanSkillsDir = async (
 const getClientSkills = async (
 	config: ClientConfig,
 ): Promise<InstalledSkill[]> => {
-	const [global, local] = await Promise.all([
-		scanSkillsDir(config.globalDir, config.name, "global"),
-		scanSkillsDir(config.localDir, config.name, "local"),
-	]);
+	const scans = [scanSkillsDir(config.localDir, config.name, "local")];
 
-	return [...global, ...local];
+	// Only scan global if supported
+	if (config.globalDir) {
+		scans.push(scanSkillsDir(config.globalDir, config.name, "global"));
+	}
+
+	const results = await Promise.all(scans);
+	return results.flat();
 };
 
 /**
