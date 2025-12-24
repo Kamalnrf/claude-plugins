@@ -69,8 +69,14 @@ skills-installer install @anthropics/skills/xlsx --client claude-code
 
 Currently supported clients:
 - `claude-code` (default)
-
-More clients coming soon!
+- `codex`
+- `cursor`
+- `github`
+- `letta`
+- `vscode`
+- `amp`
+- `goose`
+- `opencode`
 
 ## Commands
 

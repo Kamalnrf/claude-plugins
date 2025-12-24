@@ -5,7 +5,13 @@ import type { ClientConfig, InstallScope } from "../types.js";
 export const getInstallDir = (
 	config: ClientConfig,
 	scope: InstallScope,
-): string => (scope === "global" ? config.globalDir : config.localDir);
+): string => {
+	if (scope === "global" && !config.globalDir) {
+		// Fallback to local for clients that don't support global
+		return config.localDir;
+	}
+	return scope === "global" ? config.globalDir! : config.localDir;
+};
 
 export const getSkillPath = (
 	config: ClientConfig,
