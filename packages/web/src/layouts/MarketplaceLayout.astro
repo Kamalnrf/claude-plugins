@@ -3,6 +3,7 @@ import { ClientRouter } from 'astro:transitions'
 import Analytics from '@vercel/analytics/astro';
 import "../styles/global.css";
 import { GithubIcon } from "../components/ui/github";
+import { DiscordIcon } from "../components/ui/discord";
 
 interface Props {
   title?: string;
@@ -70,7 +71,7 @@ const fullOgImage = ogImage.startsWith('http') ? ogImage : `${siteUrl}${ogImage}
     <ClientRouter />
   </head>
   <body class="max-w-4xl mx-auto overflow-x-hidden">
-    <header transition:persist class="flex items-center justify-between px-4 md:px-6 pt-10 pb-4 border-b border-border/50">
+    <header transition:persist class="flex items-start md:items-center justify-between px-4 md:px-6 pt-10 pb-4 border-b border-border/50">
       <div>
         <a
           href="/"
@@ -84,12 +85,20 @@ const fullOgImage = ogImage.startsWith('http') ? ogImage : `${siteUrl}${ogImage}
       </div>
       <div class="flex items-center gap-4">
         <a
-          href="https://github.com/Kamalnrf/claude-plugins/issues/new?template=feedback.yml"
+          href="https://discord.gg/K4TbR3d7"
           target="_blank"
           rel="noopener noreferrer"
           class="text-sm text-muted-foreground hover:text-primary transition-colors font-medium"
         >
           Feedback
+        </a>
+        <a
+          href="https://discord.gg/Pt9uN4FXR4"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="text-muted-foreground hover:text-primary transition-all hover:scale-110"
+        >
+          <DiscordIcon size={24} client:load />
         </a>
         <a
           href="https://github.com/Kamalnrf/claude-plugins"
