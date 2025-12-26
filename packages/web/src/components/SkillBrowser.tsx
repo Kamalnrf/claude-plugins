@@ -177,7 +177,7 @@ export default function SkillBrowser({
 							value={searchQuery}
 							onChange={(e) => handleInputChange(e.target.value)}
 							placeholder="Search by name, author, or keyword..."
-							aria-label="Search for Claude Code skills"
+							aria-label="Search for agent skills"
 							className="h-9 pl-9 text-base md:text-sm bg-background/50 backdrop-blur-sm border-border/50 focus:border-primary/50 focus:ring-2 focus:ring-primary/10 transition-all"
 						/>
 					</div>

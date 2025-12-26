@@ -28,15 +28,15 @@ export function SkillDetailHeader({ skill }: SkillDetailHeaderProps) {
 			<Breadcrumb className="mb-2">
 				<BreadcrumbList>
 					<BreadcrumbItem>
-						<BreadcrumbLink
-							href="#"
-							onClick={(e) => {
-								e.preventDefault();
-								window.history.back();
-							}}
-						>
-							Skills
-						</BreadcrumbLink>
+					<BreadcrumbLink
+						href="#"
+						onClick={(e) => {
+							e.preventDefault();
+							window.history.back();
+						}}
+					>
+						Agent Skills
+					</BreadcrumbLink>
 					</BreadcrumbItem>
 				</BreadcrumbList>
 			</Breadcrumb>
