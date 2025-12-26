@@ -5,7 +5,8 @@ type Props = {
 };
 
 export function PluginOrSkillsTabSwitcher({ selectedTab }: Props) {
-	const setSelectedTab = (tab: "plugins" | "skills") => {
+	const setSelectedTab = (value: string) => {
+		const tab = value as "plugins" | "skills";
 		let url = `/${tab}`;
 		if (tab === "plugins") {
 			url = "/";
@@ -23,8 +24,8 @@ export function PluginOrSkillsTabSwitcher({ selectedTab }: Props) {
 			className="w-full max-w-[400px]"
 		>
 			<TabsList>
-				<TabsTrigger value="plugins">Browse Plugins</TabsTrigger>
-				<TabsTrigger value="skills">Browse Skills</TabsTrigger>
+				<TabsTrigger value="plugins">Browse Claude Plugins</TabsTrigger>
+				<TabsTrigger value="skills">Browse Agent Skills</TabsTrigger>
 			</TabsList>
 		</Tabs>
 	);

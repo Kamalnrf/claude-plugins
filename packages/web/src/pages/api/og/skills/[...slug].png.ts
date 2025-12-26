@@ -44,17 +44,17 @@ export const GET: APIRoute = async ({ params }) => {
 								flexDirection: "column",
 							},
 							children: [
-								{
-									type: "div",
-									props: {
-										style: {
-											fontSize: "24px",
-											color: "#a8b3c7",
-											marginBottom: "16px",
-										},
-										children: "Claude Skills",
+							{
+								type: "div",
+								props: {
+									style: {
+										fontSize: "24px",
+										color: "#a8b3c7",
+										marginBottom: "16px",
 									},
+									children: "Agent Skills",
 								},
+							},
 								{
 									type: "h1",
 									props: {
@@ -183,17 +183,38 @@ export const GET: APIRoute = async ({ params }) => {
 										],
 									},
 								},
-								{
-									type: "div",
-									props: {
-										style: {
-											fontSize: "22px",
-											color: "#6B7280",
-											marginTop: "0px",
-										},
-										children: `${owner}/${marketplace} • claude-plugins.dev`,
+							{
+								type: "div",
+								props: {
+									style: {
+										display: "flex",
+										flexDirection: "column",
+										gap: "8px",
 									},
+									children: [
+										{
+											type: "div",
+											props: {
+												style: {
+													fontSize: "20px",
+													color: "#a8b3c7",
+												},
+												children: "Works with Claude, Cursor, OpenCode, Codex & more",
+											},
+										},
+										{
+											type: "div",
+											props: {
+												style: {
+													fontSize: "22px",
+													color: "#6B7280",
+												},
+												children: `${owner}/${marketplace} • claude-plugins.dev`,
+											},
+										},
+									],
 								},
+							},
 							],
 						},
 					},

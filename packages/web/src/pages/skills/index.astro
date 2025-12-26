@@ -22,19 +22,21 @@ const { skills, total } = await registryAPI.searchSkills({
 ---
 
 <MarketplaceLayout
-  title="Discover Claude Skills",
-  description={`Discover and install Claude Skills from across GitHub. Auto-indexed, open‑source, and community‑maintained, search ${total}+ skills, track downloads, and quickly add capabilities to Claude/ Claude Code.`}
+  title="Discover Agent Skills"
+  description={`Discover and install Agent Skills from across GitHub. Works with Claude, Cursor, OpenCode, Codex, and more. Auto-indexed, open‑source, and community‑maintained. Search ${total}+ skills, track downloads, and quickly add capabilities to your AI coding assistant.`}
+  ogImage="/api/og/skills-index.png"
 >
   <div class="px-4 py-4 md:px-6 md:py-6 flex flex-col gap-6">
     <PluginOrSkillsTabSwitcher transition:persist client:load selectedTab="skills" />
     <section class="flex flex-col gap-5" transition:animate="fade" transition:name="hero">
       <div class="flex flex-col gap-2.5">
         <h1 class="text-2xl font-serif font-bold tracking-tight bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
-          Discover Claude Skills
+          Discover Agent Skills
         </h1>
         <p class="text-base text-muted-foreground/80 leading-relaxed break-words">
-          Discover and Install <strong>Claude skills</strong> quickly.
-          All public skills in Github are auto-indexed and made available for quickly discovering and installing.
+          Discover and install <strong>Agent Skills</strong> for Claude, Cursor, OpenCode, Codex, and other AI coding assistants.
+          Built on the open <a href="https://agentskills.io" class="underline hover:text-primary">agentskills</a> spec.
+          All public skills on GitHub are auto-indexed and made available for quickly discovering and installing.
           <a href="https://github.com/Kamalnrf/claude-plugins" class="underline hover:text-primary">Open-source</a> and community-maintained.
         </p>
       </div>

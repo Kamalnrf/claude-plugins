@@ -38,7 +38,7 @@ export const GET: APIRoute = async () => {
                     fontFamily: 'Georgia, serif',
                     letterSpacing: '-0.02em',
                   },
-                  children: 'Claude Code Plugins',
+                  children: 'Agent Skills',
                 },
               },
               {
@@ -48,10 +48,23 @@ export const GET: APIRoute = async () => {
                     fontSize: '32px',
                     color: '#a8b3c7',
                     margin: '0',
+                    marginBottom: '20px',
+                    fontFamily: 'system-ui, sans-serif',
+                  },
+                  children: 'Agent Skills for AI Coding Agents',
+                },
+              },
+              {
+                type: 'p',
+                props: {
+                  style: {
+                    fontSize: '24px',
+                    color: '#a8b3c7',
+                    margin: '0',
                     marginBottom: '40px',
                     fontFamily: 'system-ui, sans-serif',
                   },
-                  children: 'Install Claude plugins with one command',
+                  children: 'Works with Claude, Cursor, OpenCode, Codex & more',
                 },
               },
               {
@@ -61,8 +74,8 @@ export const GET: APIRoute = async () => {
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    backgroundColor: '#2d2b28', // Using card color from design system
-                    border: '2px solid #393734', // Using border color from design system
+                    backgroundColor: '#2d2b28',
+                    border: '2px solid #393734',
                     borderRadius: '12px',
                     padding: '24px 48px',
                     marginBottom: '60px',
@@ -72,10 +85,10 @@ export const GET: APIRoute = async () => {
                     props: {
                       style: {
                         fontSize: '28px',
-                        color: '#fb923c', // Using orange-400 to match brand gradient
+                        color: '#fb923c',
                         fontFamily: 'Menlo, Monaco, monospace',
                       },
-                      children: 'npx claude-plugins install',
+                      children: 'npx skills-installer install',
                     },
                   },
                 },
@@ -104,3 +117,4 @@ export const GET: APIRoute = async () => {
     height: 630,
   });
 };
+

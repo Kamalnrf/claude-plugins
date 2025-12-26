@@ -6,7 +6,7 @@ const siteUrl = "https://claude-plugins.dev";
 export const GET: APIRoute = async () => {
 	try {
 		const skillsResponse = await registryAPI.searchSkills({
-			limit: 10000,
+			limit: 50000,
 		});
 		const skills = skillsResponse.skills || [];
 
