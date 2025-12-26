@@ -39,7 +39,7 @@ export function CommandBox({
       {...props}
     >
       <span className="select-none text-muted-foreground/50 text-[10px]">$</span>
-      <span className="flex-1 whitespace-nowrap text-muted-foreground group-hover:text-foreground transition-colors text-[11px] overflow-auto scroll-smooth">
+      <span className="flex-1 whitespace-nowrap text-muted-foreground group-hover:text-foreground transition-colors text-[11px] overflow-auto scroll-smooth scrollbar-hide">
         {command}
       </span>
       <CopyInstallButton ref={copyButtonRef} command={command} />
