@@ -24,7 +24,7 @@ const { skills, total } = await registryAPI.searchSkills({
 <MarketplaceLayout
   title="Discover Agent Skills"
   description={`Discover and install Agent Skills from across GitHub. Works with Claude, Cursor, OpenCode, Codex, and more. Auto-indexed, open‑source, and community‑maintained. Search ${total}+ skills, track downloads, and quickly add capabilities to your AI coding assistant.`}
-  ogImage="/api/og/skills/index.png"
+  ogImage="/api/og/skills-index.png"
 >
   <div class="px-4 py-4 md:px-6 md:py-6 flex flex-col gap-6">
     <PluginOrSkillsTabSwitcher transition:persist client:load selectedTab="skills" />
