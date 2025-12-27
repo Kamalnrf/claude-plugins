@@ -76,11 +76,20 @@ const fullOgImage = ogImage.startsWith('http') ? ogImage : `${siteUrl}${ogImage}
           "alternateName": "Agent Skills Directory",
           "url": "https://claude-plugins.dev",
           "description": "Community registry for Claude plugins and Agent Skills compatible with Claude, Cursor, VS Code, OpenCode, Codex, Amp Code, Letta, and Goose",
-          "potentialAction": {
-            "@type": "SearchAction",
-            "target": "https://claude-plugins.dev/?q={search_term_string}",
-            "query-input": "required name=search_term_string"
-          }
+          "potentialAction": [
+            {
+              "@type": "SearchAction",
+              "name": "Search Claude Plugins",
+              "target": "https://claude-plugins.dev/?q={search_term_string}",
+              "query-input": "required name=search_term_string"
+            },
+            {
+              "@type": "SearchAction",
+              "name": "Search Agent Skills",
+              "target": "https://claude-plugins.dev/skills?q={search_term_string}",
+              "query-input": "required name=search_term_string"
+            }
+          ]
         },
         {
           "@type": "Organization",
