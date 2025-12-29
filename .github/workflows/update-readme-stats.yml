@@ -33,7 +33,7 @@ jobs:
       
       - name: Update README
         run: |
-          sed -i -E "s/discovering [0-9,]+ Claude plugins and [0-9,]+ agent skills/discovering ${{ steps.counts.outputs.plugins }} Claude plugins and ${{ steps.counts.outputs.skills }} agent skills/" README.md
+          sed -i -E "s/discovering [0-9,]+ Claude Code plugins and [0-9,]+ agent skills/discovering ${{ steps.counts.outputs.plugins }} Claude Code plugins and ${{ steps.counts.outputs.skills }} agent skills/" README.md
       
       - name: Check for changes
         id: diff
