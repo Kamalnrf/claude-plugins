@@ -36,7 +36,7 @@ Discovering, installing, and managing plugins and skills across AI coding agents
 
 Explore available Claude Code plugins and agent skills at **[claude-plugins.dev](https://claude-plugins.dev)**
 
-Our [registry](https://www.val.town/x/kamalnrf/claude-plugins-registry) automatically discovers and indexes all public Claude Code plugins and agent skills on GitHub every 10 minutes.
+Our [registry](https://www.val.town/x/kamalnrf/claude-plugins-registry) automatically discovers and indexes all public Claude Code plugins and agent skills on GitHub.
 
 ## Two CLI Tools
 
