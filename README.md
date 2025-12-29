@@ -1,131 +1,123 @@
-# Claude Plugins CLI
+# Claude Plugins
 
-Manage _ALL_ Claude Code plugins in one place.
+A plugin manager and skills installer for AI coding agents.
 
-> You must be on at least [Claude Code v2.0.12](https://x.com/claudeai/status/1976332881409737124) to be able to use the Claude Plugins CLI
+[![npm version](https://img.shields.io/npm/v/claude-plugins)](https://www.npmjs.com/package/claude-plugins)
+[![npm version](https://img.shields.io/npm/v/skills-installer)](https://www.npmjs.com/package/skills-installer)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-## Discover Plugins
+## Quick Start
 
-Explore available plugins and skills at **[claude-plugins.dev](https://claude-plugins.dev)**
-
-Currently indexing **1200+ plugins** from GitHub repositories. Our [registry](https://www.val.town/x/kamalnrf/claude-plugins-registry) automatically discovers and indexes all public Claude Code plugins on GitHub every 10 minutes for easy discovery and installation.
-
-## Usage
-
-With `npx`:
-
+**Install a Claude plugin:**
 ```bash
-# Install a plugin
-npx claude-plugins install @anthropics/claude-code-plugins/pr-review-toolkit
-
-# List installed plugins
-npx claude-plugins list
-
-# Enable/disable plugins
-npx claude-plugins enable plugin-name
-npx claude-plugins disable plugin-name
+npx claude-plugins install @EveryInc/every-marketplace/compounding-engineering
 ```
 
-Or globally:
+> [!IMPORTANT]
+> Requires [Claude Code v2.0.12](https://x.com/claudeai/status/1976332881409737124) or later for plugin support.
+
+**Install an agent skill (works with [agentskills](https://agentskills.io)-compatible clients):**
+```bash
+npx skills-installer install @anthropics/claude-code/frontend-design
+```
+
+> [!IMPORTANT]
+> Check [agentskills](https://agentskills.io) to see if your client supports skills.
+
+## Why Use This?
+
+Discovering, installing, and managing plugins and skills across AI coding agents can be fragmented. This project provides:
+
+- **One registry** for discovering 8,635 Claude Code plugins and 46,437 agent skills at [claude-plugins.dev](https://claude-plugins.dev)
+- **Two focused CLIs** — `claude-plugins` for Claude Code plugins, `skills-installer` for agent skills
+- **Multi-client support** — Install skills for Claude, Cursor, OpenCode, Codex, VS Code,  Amp Code, Goose, Letta.
+
+## Discover
+
+Explore available Claude Code plugins and agent skills at **[claude-plugins.dev](https://claude-plugins.dev)**
+
+Our [registry](https://www.val.town/x/kamalnrf/claude-plugins-registry) automatically discovers and indexes all public Claude Code plugins and agent skills on GitHub every 10 minutes.
+
+## Two CLI Tools
+
+This project provides two command-line tools:
+
+### claude-plugins
+
+Manage Claude Code plugins — install, enable, disable, and list.
 
 ```bash
 npm install -g claude-plugins
 ```
 
-![usage-demo](https://github.com/user-attachments/assets/45598f81-1718-4c5b-9824-37e4f297fc61)
-
-## Commands
-
-### `install <plugin-identifier>`
-
-Install a plugin from the registry:
-
-All plugins must be registered @ central registry. Currently we scour Github for public plugins.
-
-### `list`
-
-View all installed plugins grouped by marketplace:
-
-```bash
-npx claude-plugins list
-```
-
-Output shows enabled (✓) and disabled (✗) plugins.
-
-### `enable <plugin-name>`
-
-Re-enable a previously disabled plugin:
-
-```bash
-npx claude-plugins enable plugin-name
-```
-
-### `disable <plugin-name>`
-
-Disable an installed plugin:
-
-```bash
-npx claude-plugins disable plugin-name
-```
-
-The plugin can be re-enabled later.
-
-## Plugin Resolution
-
-The CLI resolves all plugin identifiers via a [lightweight registry](https://www.val.town/x/kamalnrf/claude-plugins-registry)(npm-style):
-
-1. **@author/marketplace/plugin** → API lookup at `https://api.claude-plugins.dev/api/resolve/author/marketplace/plugin`
-2. **namespace/plugin** → API lookup at `https://api.claude-plugins.dev/api/resolve/namespace/plugin`
-3. **plugin** → API lookup at `https://api.claude-plugins.dev/api/resolve/plugin`
-
-Today, we are [indexing all publicly available plugins](https://www.val.town/x/kamalnrf/claude-plugins-registry) on Github every 10 mins, so no additional changes required to get your plugin added. And every public plugin is available for easy installation.
-
-## How It Works
-
-The plugin manager uses a centralized registry to resolve plugin identifiers to Git repositories:
-
-1. You run `npx claude-plugins install @namespace/name`
-2. CLI queries the registry API
-3. Registry returns the Git URL
-4. CLI clones and validates the plugin
-5. Plugin is enabled in Claude Code
+| Command | Description |
+|---------|-------------|
+| `install <plugin>` | Install a plugin from the registry |
+| `list` | View installed plugins |
+| `enable <name>` | Enable a disabled plugin |
+| `disable <name>` | Disable a plugin |
 
 Plugins are installed to `~/.claude/plugins/marketplaces/`
 
-## Architecture
+### skills-installer
 
-This repository contains:
+Install [Agent Skills](https://agentskills.io) across multiple AI coding clients.
 
-- **CLI** (`packages/cli`) - Command-line tool for managing plugins
-- **Registry API** - Central plugin registry on Val Town that auto-indexes GitHub
-- **Web** (`packages/web`) - Plugin discovery website with skills filtering
+```bash
+npm install -g skills-installer
+```
 
-**Registry API:** [val.town/x/kamalnrf/claude-plugins-registry](https://www.val.town/x/kamalnrf/claude-plugins-registry)
+| Command | Description |
+|---------|-------------|
+| `install <skill>` | Install or update a skill |
+| `list` | List installed skills |
 
-### Skills Support
+**Options:**
+- `--client <name>` — Target client (default: claude-code)
+- `--local` or `-l` — Install to current directory only
 
-Many plugins now include [Claude Skills](https://docs.claude.com/en/docs/claude-code/skills) - reusable capabilities that extend Claude Code's functionality. Browse and filter plugins by skills on [claude-plugins.dev](https://claude-plugins.dev).
+Skills are installed to `~/.claude/skills/` (global) or `./.claude/skills/` (local)
 
-## Roadmap
+### Supported Clients
 
-- [ ] Search command with API integration (API endpoint exists, CLI command not implemented yet)
-- [ ] Plugin update/upgrade command
-- [ ] Version pinning
-- [ ] Plugin signatures/verification
-- [ ] Plugin interoperability between different coding agents (e.g., Claude Code, Gemini CLI, Codex)
-- [ ] Plugin owners being able to update the plugin identifier
+| Client | Flag |
+|--------|------|
+| Claude Code | `--client claude-code` (default) |
+| Cursor | `--client cursor` |
+| VS Code | `--client vscode` |
+| Codex | `--client codex` |
+| Amp Code | `--client amp` |
+| OpenCode | `--client opencode` |
+| Goose | `--client goose` |
+| Letta | `--client letta` |
+| GitHub | `--client github` |
+
+## How It Works
+
+Both tools resolve identifiers via our [registry](https://www.val.town/x/kamalnrf/claude-plugins-registry):
+
+1. Run install command with identifier (e.g., `@owner/repo/name`)
+2. Registry returns the Git repository URL
+3. CLI clones and installs the plugin or skill
+
+## Star History
+
+Found this project useful? A star helps others find it too!
+
+[![Star History Chart](https://api.star-history.com/svg?repos=Kamalnrf/claude-plugins&type=Date)](https://star-history.com/#Kamalnrf/claude-plugins&Date)
 
 ## Development
 
 See [CLI README](packages/cli/README.md) for development instructions.
 
+**Tech stack:**
+- [Bun](https://bun.sh) for CLI
+- [Val Town](https://val.town) for registry API
+- [Astro](https://astro.build) for web app
+
 ## Contributing
 
-Contributions welcome! This project uses:
-
-- Bun for the CLI
-- Val Town for the API
-- Astro for Web App
+Contributions welcome! Open an issue or submit a PR.
 
 ## License
 

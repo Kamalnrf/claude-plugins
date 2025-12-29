@@ -1,0 +1,65 @@
+# Updates README with current plugin/skill counts from the registry API
+# Runs weekly and uses force-push amend to minimize commit noise
+
+name: Update README Stats
+
+on:
+  schedule:
+    - cron: '0 9 * * 1'  # Every Monday at 9 AM UTC
+  workflow_dispatch:      # Manual trigger for testing
+
+jobs:
+  update-stats:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 2  # Need previous commit to check message
+      
+      - name: Fetch counts from API
+        id: counts
+        run: |
+          # Function to add thousand separators (works on all platforms)
+          add_commas() { echo $1 | rev | sed 's/.\{3\}/&,/g' | rev | sed 's/^,//'; }
+          
+          PLUGINS=$(curl -s 'https://claude-plugins.dev/api/plugins?limit=1' | jq '.total')
+          SKILLS=$(curl -s 'https://claude-plugins.dev/api/skills?limit=1' | jq '.total')
+          
+          PLUGINS_FMT=$(add_commas $PLUGINS)
+          SKILLS_FMT=$(add_commas $SKILLS)
+          
+          echo "plugins=$PLUGINS_FMT" >> $GITHUB_OUTPUT
+          echo "skills=$SKILLS_FMT" >> $GITHUB_OUTPUT
+      
+      - name: Update README
+        run: |
+          sed -i -E "s/discovering [0-9,]+ Claude plugins and [0-9,]+ agent skills/discovering ${{ steps.counts.outputs.plugins }} Claude plugins and ${{ steps.counts.outputs.skills }} agent skills/" README.md
+      
+      - name: Check for changes
+        id: diff
+        run: |
+          if git diff --quiet README.md; then
+            echo "changed=false" >> $GITHUB_OUTPUT
+          else
+            echo "changed=true" >> $GITHUB_OUTPUT
+          fi
+      
+      - name: Commit and push
+        if: steps.diff.outputs.changed == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          
+          LAST_MSG=$(git log -1 --pretty=%s)
+          if [[ "$LAST_MSG" == "[bot] Update README stats"* ]]; then
+            # Amend previous stats commit
+            git add README.md
+            git commit --amend --no-edit
+            git push --force
+          else
+            # Create new commit
+            git add README.md
+            git commit -m "[bot] Update README stats"
+            git push
+          fi
+
