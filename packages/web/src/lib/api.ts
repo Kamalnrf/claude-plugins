@@ -1,4 +1,4 @@
-const REGISTRY_BASE = "https://api.claude-plugins.dev/";
+const REGISTRY_BASE = "https://api.claude-plugins.dev";
 const CACHE_TTL = 1000 * 60 * 5; // 5 minutes
 
 export interface SearchParams {
