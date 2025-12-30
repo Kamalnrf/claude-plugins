@@ -14,7 +14,6 @@ jobs:
     steps:
       - uses: actions/checkout@v5
         with:
-          token: ${{ secrets.README_STATS_TOKEN }}
           fetch-depth: 0
 
       - name: Fetch counts from API
@@ -49,7 +48,6 @@ jobs:
         if: steps.diff.outputs.changed == 'true'
         uses: peter-evans/create-pull-request@v6
         with:
-          token: ${{ secrets.README_STATS_TOKEN }}
           commit-message: "[bot] Update README stats"
           branch: bot/update-readme-stats
           delete-branch: true
