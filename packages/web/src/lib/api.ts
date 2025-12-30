@@ -1,4 +1,4 @@
-const REGISTRY_BASE = "https://kamalnrf--019b5039071c71f89b185d3e047dabcb.web.val.run";
+const REGISTRY_BASE = "https://api.claude-plugins.dev";
 const CACHE_TTL = 1000 * 60 * 5; // 5 minutes
 
 export interface SearchParams {
