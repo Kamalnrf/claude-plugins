@@ -3,19 +3,24 @@ import { downloadTemplate } from "giget";
 /**
  * Normalize GitHub path for giget
  * Removes /tree/<branch>/ segment from GitHub URLs
+ * Handles root-level skills by stripping trailing SKILL.md
  */
-const normalizeGithubPath = (inputUrl: string): string => {
+export const normalizeGithubPath = (inputUrl: string): string => {
 	const withoutProtocol = inputUrl.replace(/^https?:\/\//i, "");
 	const afterHost = withoutProtocol.replace(/^github\.com\/?/i, "");
 
-	// Remove /tree/<branch>/ segment
+	// Remove /tree/<branch>/ segment (with optional trailing path for root-level skills)
 	const cleaned = afterHost.replace(
-		/^([^/]+)\/([^/]+)\/tree\/[^/]+\/(.*)$/i,
-		(_m, owner: string, repo: string, rest: string) =>
-			`${owner}/${repo}/${rest}`,
+		/^([^/]+)\/([^/]+)\/tree\/[^/]+(?:\/(.*))?$/i,
+		(_m, owner: string, repo: string, rest?: string) =>
+			rest ? `${owner}/${repo}/${rest}` : `${owner}/${repo}`,
 	);
 
-	return cleaned.replace(/\/+$/, "");
+	// Strip trailing SKILL.md - it's a file, not a directory
+	// giget expects directory paths, not file paths
+	const withoutSkillMd = cleaned.replace(/\/SKILL\.md$/i, "");
+
+	return withoutSkillMd.replace(/\/+$/, "");
 };
 
 /**

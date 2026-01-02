@@ -64,21 +64,32 @@ export async function isGitRepo(repoPath: string): Promise<boolean> {
 	}
 }
 
+/**
+ * Normalize GitHub path for giget
+ * Removes /tree/<branch>/ segment from GitHub URLs
+ * Handles root-level skills by stripping trailing SKILL.md
+ */
 export function normalizeGithubPath(inputUrl: string): string {
   // Example inputs:
   // https://github.com/anthropics/claude-cookbooks/tree/main/skills/custom_skills/analyzing-financial-statements
   // https://github.com/anthropics/claude-cookbooks/skills/custom_skills/analyzing-financial-statements
   // github.com/anthropics/claude-cookbooks/tree/main/skills/custom_skills/analyzing-financial-statements
+  // https://github.com/owner/repo/tree/main (root-level skill)
+  // https://github.com/owner/repo/tree/main/SKILL.md (root-level skill pointing to file)
 
   const withoutProtocol = inputUrl.replace(/^https?:\/\//i, '');
   const afterHost = withoutProtocol.replace(/^github\.com\/?/i, '');
 
-  // If the URL contains /tree/<branch>/, remove that segment (owner/repo/tree/branch/path -> owner/repo/path)
-  // This regex finds "owner/repo/tree/<branch>/" and removes it
+  // Remove /tree/<branch>/ segment (with optional trailing path for root-level skills)
+  // This regex finds "owner/repo/tree/<branch>/" or "owner/repo/tree/<branch>" and removes it
   const cleaned = afterHost.replace(
-    /^([^/]+)\/([^/]+)\/tree\/[^/]+\/(.*)$/i,
-    (_m, owner: string, repo: string, rest: string) => `${owner}/${repo}/${rest}`
+    /^([^/]+)\/([^/]+)\/tree\/[^/]+(?:\/(.*))?$/i,
+    (_m, owner: string, repo: string, rest?: string) => rest ? `${owner}/${repo}/${rest}` : `${owner}/${repo}`
   );
 
-  return cleaned.replace(/\/+$/,'');
+  // Strip trailing SKILL.md - it's a file, not a directory
+  // giget expects directory paths, not file paths
+  const withoutSkillMd = cleaned.replace(/\/SKILL\.md$/i, '');
+
+  return withoutSkillMd.replace(/\/+$/,'');
 }
