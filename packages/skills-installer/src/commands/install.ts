@@ -43,8 +43,14 @@ export async function install(
 		);
 	}
 
-	const installPath = getSkillPath(config, scope, identifier.skillName);
+	// 5. Resolve skill from registry
+	s.start("Resolving skill from registry...");
+	const metadata = await resolveSkill(identifier);
+	if (identifier.skillName.includes('.md') && metadata?.name) {
+		identifier.skillName = metadata?.name.split(' ').join('-')
+	}
 
+	const installPath = getSkillPath(config, scope, identifier.skillName);
 	// 4. Check for existing installation
 	const isUpdate = existsSync(installPath);
 	if (isUpdate) {
@@ -53,10 +59,6 @@ export async function install(
 			"Updating Skill",
 		);
 	}
-
-	// 5. Resolve skill from registry
-	s.start("Resolving skill from registry...");
-	const metadata = await resolveSkill(identifier);
 
 	if (!metadata) {
 		s.stop("Failed to resolve");
