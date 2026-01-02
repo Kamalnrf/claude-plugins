@@ -2,8 +2,10 @@
 
 A plugin manager and skills installer for AI coding agents.
 
-[![npm version](https://img.shields.io/npm/v/claude-plugins)](https://www.npmjs.com/package/claude-plugins)
-[![npm version](https://img.shields.io/npm/v/skills-installer)](https://www.npmjs.com/package/skills-installer)
+[![Claude Code Plugins](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fclaude-plugins.dev%2Fapi%2Fplugins%3Flimit%3D1&query=%24.total&label=Claude%20Code%20Plugins&color=blue)](https://claude-plugins.dev)
+[![Agent Skills](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fclaude-plugins.dev%2Fapi%2Fskills%3Flimit%3D1&query=%24.total&label=Agent%20Skills&color=green)](https://claude-plugins.dev/skills)
+[![claude-plugins](https://img.shields.io/npm/v/claude-plugins?label=claude-plugins)](https://www.npmjs.com/package/claude-plugins)
+[![skills-installer](https://img.shields.io/npm/v/skills-installer?label=skills-installer)](https://www.npmjs.com/package/skills-installer)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 ## Quick Start
