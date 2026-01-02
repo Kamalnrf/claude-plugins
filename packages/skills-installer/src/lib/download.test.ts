@@ -8,7 +8,10 @@ describe("normalizeGithubPath", () => {
 				normalizeGithubPath(
 					"https://github.com/anthropics/claude-cookbooks/tree/main/skills/analyzing-financial-statements",
 				),
-			).toBe("anthropics/claude-cookbooks/skills/analyzing-financial-statements");
+			).toEqual({
+				path: "anthropics/claude-cookbooks/skills/analyzing-financial-statements",
+				branch: "main",
+			});
 		});
 
 		test("handles URL without protocol", () => {
@@ -16,7 +19,10 @@ describe("normalizeGithubPath", () => {
 				normalizeGithubPath(
 					"github.com/anthropics/claude-cookbooks/tree/main/skills/my-skill",
 				),
-			).toBe("anthropics/claude-cookbooks/skills/my-skill");
+			).toEqual({
+				path: "anthropics/claude-cookbooks/skills/my-skill",
+				branch: "main",
+			});
 		});
 
 		test("handles deeply nested paths", () => {
@@ -24,7 +30,10 @@ describe("normalizeGithubPath", () => {
 				normalizeGithubPath(
 					"https://github.com/owner/repo/tree/main/skills/custom_skills/sub/deep/skill",
 				),
-			).toBe("owner/repo/skills/custom_skills/sub/deep/skill");
+			).toEqual({
+				path: "owner/repo/skills/custom_skills/sub/deep/skill",
+				branch: "main",
+			});
 		});
 
 		test("handles different branch names", () => {
@@ -32,7 +41,10 @@ describe("normalizeGithubPath", () => {
 				normalizeGithubPath(
 					"https://github.com/owner/repo/tree/develop/skills/my-skill",
 				),
-			).toBe("owner/repo/skills/my-skill");
+			).toEqual({
+				path: "owner/repo/skills/my-skill",
+				branch: "develop",
+			});
 		});
 
 		test("handles branch names with slashes (limited support)", () => {
@@ -44,7 +56,10 @@ describe("normalizeGithubPath", () => {
 				normalizeGithubPath(
 					"https://github.com/owner/repo/tree/feature/new-skill/skills/my-skill",
 				),
-			).toBe("owner/repo/new-skill/skills/my-skill");
+			).toEqual({
+				path: "owner/repo/new-skill/skills/my-skill",
+				branch: "feature",
+			});
 		});
 	});
 
@@ -54,7 +69,10 @@ describe("normalizeGithubPath", () => {
 				normalizeGithubPath(
 					"https://github.com/FrancyJGLisboa/agent-skill-creator/tree/main",
 				),
-			).toBe("FrancyJGLisboa/agent-skill-creator");
+			).toEqual({
+				path: "FrancyJGLisboa/agent-skill-creator",
+				branch: "main",
+			});
 		});
 
 		test("handles tree/branch/SKILL.md (file path)", () => {
@@ -62,7 +80,10 @@ describe("normalizeGithubPath", () => {
 				normalizeGithubPath(
 					"https://github.com/FrancyJGLisboa/agent-skill-creator/tree/main/SKILL.md",
 				),
-			).toBe("FrancyJGLisboa/agent-skill-creator");
+			).toEqual({
+				path: "FrancyJGLisboa/agent-skill-creator",
+				branch: "main",
+			});
 		});
 
 		test("handles repo URL without tree/branch", () => {
@@ -70,7 +91,10 @@ describe("normalizeGithubPath", () => {
 				normalizeGithubPath(
 					"https://github.com/FrancyJGLisboa/agent-skill-creator",
 				),
-			).toBe("FrancyJGLisboa/agent-skill-creator");
+			).toEqual({
+				path: "FrancyJGLisboa/agent-skill-creator",
+				branch: undefined,
+			});
 		});
 
 		test("handles SKILL.md with different casing", () => {
@@ -78,13 +102,19 @@ describe("normalizeGithubPath", () => {
 				normalizeGithubPath(
 					"https://github.com/owner/repo/tree/main/skill.md",
 				),
-			).toBe("owner/repo");
+			).toEqual({
+				path: "owner/repo",
+				branch: "main",
+			});
 
 			expect(
 				normalizeGithubPath(
 					"https://github.com/owner/repo/tree/main/SKILL.MD",
 				),
-			).toBe("owner/repo");
+			).toEqual({
+				path: "owner/repo",
+				branch: "main",
+			});
 		});
 	});
 
@@ -94,7 +124,10 @@ describe("normalizeGithubPath", () => {
 				normalizeGithubPath(
 					"https://github.com/owner/repo/tree/main/skills/my-skill/SKILL.md",
 				),
-			).toBe("owner/repo/skills/my-skill");
+			).toEqual({
+				path: "owner/repo/skills/my-skill",
+				branch: "main",
+			});
 		});
 
 		test("does not strip SKILL.md from middle of path", () => {
@@ -103,7 +136,10 @@ describe("normalizeGithubPath", () => {
 				normalizeGithubPath(
 					"https://github.com/owner/repo/tree/main/SKILL.md/nested",
 				),
-			).toBe("owner/repo/SKILL.md/nested");
+			).toEqual({
+				path: "owner/repo/SKILL.md/nested",
+				branch: "main",
+			});
 		});
 	});
 
@@ -113,7 +149,10 @@ describe("normalizeGithubPath", () => {
 				normalizeGithubPath(
 					"https://github.com/owner/repo/tree/main/skills/my-skill/",
 				),
-			).toBe("owner/repo/skills/my-skill");
+			).toEqual({
+				path: "owner/repo/skills/my-skill",
+				branch: "main",
+			});
 		});
 
 		test("handles http protocol", () => {
@@ -121,7 +160,10 @@ describe("normalizeGithubPath", () => {
 				normalizeGithubPath(
 					"http://github.com/owner/repo/tree/main/skills/my-skill",
 				),
-			).toBe("owner/repo/skills/my-skill");
+			).toEqual({
+				path: "owner/repo/skills/my-skill",
+				branch: "main",
+			});
 		});
 
 		test("handles URL without tree segment", () => {
@@ -129,7 +171,10 @@ describe("normalizeGithubPath", () => {
 				normalizeGithubPath(
 					"https://github.com/owner/repo/skills/my-skill",
 				),
-			).toBe("owner/repo/skills/my-skill");
+			).toEqual({
+				path: "owner/repo/skills/my-skill",
+				branch: undefined,
+			});
 		});
 
 		test("handles master branch", () => {
@@ -137,7 +182,10 @@ describe("normalizeGithubPath", () => {
 				normalizeGithubPath(
 					"https://github.com/owner/repo/tree/master/skills/my-skill",
 				),
-			).toBe("owner/repo/skills/my-skill");
+			).toEqual({
+				path: "owner/repo/skills/my-skill",
+				branch: "master",
+			});
 		});
 	});
 });
