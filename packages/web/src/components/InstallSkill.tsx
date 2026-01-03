@@ -1,7 +1,7 @@
 import { DownloadIcon } from "./ui/download";
 import { ClaudeCodeIcon, ClaudeIcon } from "@/components/ui/claude-icons";
 import { PackageIcon } from "@/components/ui/package-icon";
-import { CommandBox } from "@/components/CommandBox";
+import { CommandBoxWithRunner } from "@/components/CommandBoxWithRunner";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import type { Skill } from "@/lib/api";
 import { CodexIcon } from "./ui/codex-icon";
@@ -106,8 +106,8 @@ export function InstallSkill({ skill }: Props) {
 	};
 
 	const renderCliInstructions = (clientId: string, supportsGlobal: boolean) => {
-		const projectSkill = `npx skills-installer install ${skill.namespace} --local --client ${clientId}`;
-		const personalSkill = `npx skills-installer install ${skill.namespace} --client ${clientId}`;
+		const projectSkill = `skills-installer install ${skill.namespace} --local --client ${clientId}`;
+		const personalSkill = `skills-installer install ${skill.namespace} --client ${clientId}`;
 
 		return (
 			<div className="flex flex-col gap-4">
@@ -125,7 +125,7 @@ export function InstallSkill({ skill }: Props) {
 							<p className="text-sm text-muted-foreground">
 								Applies to all projects globally.
 							</p>
-							<CommandBox command={personalSkill} />
+							<CommandBoxWithRunner command={personalSkill} />
 						</div>
 						<div className="flex flex-col gap-2">
 							<div className="flex items-center gap-2">
@@ -139,7 +139,7 @@ export function InstallSkill({ skill }: Props) {
 							<p className="text-sm text-muted-foreground">
 								Applies to current project only. Run this command in your project root.
 							</p>
-							<CommandBox command={projectSkill} />
+							<CommandBoxWithRunner command={projectSkill} />
 						</div>
 					</>
 				) : (
@@ -155,7 +155,7 @@ export function InstallSkill({ skill }: Props) {
 						<p className="text-sm text-muted-foreground">
 							Run this command in your project root.
 						</p>
-						<CommandBox command={projectSkill} />
+						<CommandBoxWithRunner command={projectSkill} />
 					</div>
 				)}
 			</div>
