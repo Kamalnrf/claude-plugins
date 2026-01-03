@@ -1,0 +1,28 @@
+==================== HOOK TRIGGERED ====================
+Timestamp: Tue 30 Dec 2025 21:52:59 IST
+
+Environment Variables:
+CLAUDE_CODE_ENTRYPOINT=cli
+CLAUDE_PLUGIN_ROOT=/Users/kamal/workspace/claude-plugins/packages/plugins/claude-skills-usage-tracker
+CLAUDE_PROJECT_DIR=/Users/kamal/workspace/docz
+
+STDIN Content:
+{"session_id":"be96c7db-2274-4f66-a685-68c541fba0ec","transcript_path":"/Users/kamal/.claude/projects/-Users-kamal-workspace-docz/be96c7db-2274-4f66-a685-68c541fba0ec.jsonl","cwd":"/Users/kamal/workspace/docz","permission_mode":"default","hook_event_name":"PreToolUse","tool_name":"Skill","tool_input":{"skill":"frontend-design","args":"create a simple ping pong game"},"tool_use_id":"toolu_01PB5KtUp9dUgDCaKavgTeZA"}
+Arguments (0):
+
+========================================================
+
+==================== HOOK TRIGGERED ====================
+Timestamp: Tue 30 Dec 2025 21:53:28 IST
+
+Environment Variables:
+CLAUDE_CODE_ENTRYPOINT=cli
+CLAUDE_PLUGIN_ROOT=/Users/kamal/workspace/claude-plugins/packages/plugins/claude-skills-usage-tracker
+CLAUDE_PROJECT_DIR=/Users/kamal/workspace/docz
+
+STDIN Content:
+{"session_id":"be96c7db-2274-4f66-a685-68c541fba0ec","transcript_path":"/Users/kamal/.claude/projects/-Users-kamal-workspace-docz/be96c7db-2274-4f66-a685-68c541fba0ec.jsonl","cwd":"/Users/kamal/workspace/docz","permission_mode":"default","hook_event_name":"PostToolUse","tool_name":"Skill","tool_input":{"skill":"frontend-design","args":"create a simple ping pong game"},"tool_response":{"success":true,"commandName":"frontend-design"},"tool_use_id":"toolu_01PB5KtUp9dUgDCaKavgTeZA"}
+Arguments (0):
+
+========================================================
+
