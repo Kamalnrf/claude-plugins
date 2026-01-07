@@ -15,7 +15,7 @@ try {
 } catch (error) {
   // YAML parsing failed - treat entire content as markdown body
   // This handles skills with invalid frontmatter (e.g., unquoted colons in descriptions)
-  console.error('Failed to parse frontmatter:', error);
+  console.warn('Failed to parse frontmatter:', error);
 }
 
 // Create a new Marked instance for this render
