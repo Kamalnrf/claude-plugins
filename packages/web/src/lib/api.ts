@@ -1,5 +1,32 @@
 const REGISTRY_BASE = "https://api.claude-plugins.dev";
 const CACHE_TTL = 1000 * 60 * 5; // 5 minutes
+const MAX_RETRIES = 3;
+const INITIAL_DELAY_MS = 500; // Exponential backoff: 500ms, 1000ms, 2000ms
+
+async function fetchWithRetry(
+	url: string | URL,
+	options?: RequestInit,
+	retries = MAX_RETRIES,
+): Promise<Response> {
+	let lastError: Error | undefined;
+
+	for (let attempt = 0; attempt < retries; attempt++) {
+		try {
+			const response = await fetch(url, options);
+			return response;
+		} catch (error) {
+			lastError = error as Error;
+
+			// Don't retry on the last attempt
+			if (attempt < retries - 1) {
+				const delay = INITIAL_DELAY_MS * Math.pow(2, attempt);
+				await new Promise((resolve) => setTimeout(resolve, delay));
+			}
+		}
+	}
+
+	throw lastError;
+}
 
 export interface SearchParams {
 	q?: string; // Search query
@@ -109,7 +136,7 @@ export class RegistryAPI {
 				if (value !== undefined) url.searchParams.set(key, String(value));
 			});
 
-			const response = await fetch(url, {
+			const response = await fetchWithRetry(url, {
 				headers: { Accept: "application/json" },
 			});
 
@@ -130,7 +157,7 @@ export class RegistryAPI {
 			`resolve:${owner}/${marketplace}/${plugin}`,
 			async () => {
 				const url = `${REGISTRY_BASE}/api/resolve/${owner}/${marketplace}/${plugin}`;
-				const response = await fetch(url, {
+				const response = await fetchWithRetry(url, {
 					headers: { Accept: "application/json" },
 				});
 
@@ -152,7 +179,7 @@ export class RegistryAPI {
 			`stats:${owner}/${marketplace}/${plugin}`,
 			async () => {
 				const url = `${REGISTRY_BASE}/api/plugins/${owner}/${marketplace}/${plugin}/stats`;
-				const response = await fetch(url, {
+				const response = await fetchWithRetry(url, {
 					headers: { Accept: "application/json" },
 				});
 
@@ -173,11 +200,11 @@ export class RegistryAPI {
 		const [owner, repo] = match[1].replace(".git", "").split("/");
 		const readmeUrl = `https://raw.githubusercontent.com/${owner}/${repo}/main/README.md`;
 
-		const response = await fetch(readmeUrl);
+		const response = await fetchWithRetry(readmeUrl);
 		if (!response.ok) {
 			// Fallback to master branch
 			const fallbackUrl = readmeUrl.replace("/main/", "/master/");
-			const fallback = await fetch(fallbackUrl);
+			const fallback = await fetchWithRetry(fallbackUrl);
 			if (!fallback.ok) throw new Error("README not found");
 			return fallback.text();
 		}
@@ -211,7 +238,7 @@ export class RegistryAPI {
 					if (value !== undefined) url.searchParams.set(key, String(value));
 				});
 
-				const response = await fetch(url, {
+				const response = await fetchWithRetry(url, {
 					headers: { Accept: "application/json" },
 				});
 
@@ -233,7 +260,7 @@ export class RegistryAPI {
 			`skill:${owner}/${marketplace}/${skillName}`,
 			async () => {
 				const url = `${REGISTRY_BASE}/api/skills/${owner}/${marketplace}/${skillName}`;
-				const response = await fetch(url, {
+				const response = await fetchWithRetry(url, {
 					headers: { Accept: "application/json" },
 				});
 

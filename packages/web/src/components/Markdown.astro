@@ -4,7 +4,19 @@ import matter from 'gray-matter';
 import { Marked } from 'marked';
 
 const { content: markdown, sourceUrl } = Astro.props;
-const { data: frontMatter, content } = matter(markdown);
+
+let frontMatter: Record<string, unknown> = {};
+let content = markdown;
+
+try {
+  const parsed = matter(markdown);
+  frontMatter = parsed.data;
+  content = parsed.content;
+} catch (error) {
+  // YAML parsing failed - treat entire content as markdown body
+  // This handles skills with invalid frontmatter (e.g., unquoted colons in descriptions)
+  console.error('Failed to parse frontmatter:', error);
+}
 
 // Create a new Marked instance for this render
 const markedInstance = new Marked();
