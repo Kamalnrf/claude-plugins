@@ -50,7 +50,7 @@ export function MetaSkillHighlight() {
 					</div>
 				</ItemHeader>
 				<ItemDescription className="mt-2 leading-relaxed text-sm text-foreground/90">
-					Browse the registry, read docs, and install skills — all from Claude Code, Cursor, Codex, and other agents. No context switching.
+					Browse the registry, compare, and install skills. All from Claude Code, Cursor, Codex, and other agents. No context switching.
 				</ItemDescription>
 			</Item>
 		</a>
