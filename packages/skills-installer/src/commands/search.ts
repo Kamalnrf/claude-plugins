@@ -4,10 +4,11 @@ import type { SearchOptions, SearchResultSkill } from "../types.js";
 import { searchSkills } from "../lib/api.js";
 import { getClientConfig, getAvailableClients, CLIENT_CONFIGS } from "../lib/client-config.js";
 import { install } from "./install.js";
+import { formatNumber } from "../util.js";
 
 const LOAD_MORE_VALUE = "__LOAD_MORE__";
 const CANCEL_VALUE = "__CANCEL__";
-const DEFAULT_LIMIT = 10;
+const DEFAULT_LIMIT = 5;
 
 /**
  * Format a skill for display in the select prompt
@@ -15,11 +16,12 @@ const DEFAULT_LIMIT = 10;
 const formatSkillOption = (skill: SearchResultSkill): string => {
 	const name = pc.bold(skill.name);
 	const author = pc.dim(`by ${skill.author}`);
-	const stats = pc.yellow(`★ ${skill.stars}`) + pc.dim(` · ${skill.installs} installs`);
+	const stats = pc.yellow(`★ ${formatNumber(skill.stars)} Stars`) + pc.greenBright(` · ${formatNumber(skill.installs)} installs`);
 	const desc = skill.description
-		? `\n    ${pc.dim(skill.description.slice(0, 70))}${skill.description.length > 70 ? "..." : ""}`
+		? `${pc.dim(skill.description.slice(0, 70))}${skill.description.length > 70 ? "..." : ""}`
 		: "";
-	return `${name} ${author} ${stats}${desc}`;
+	return `${name} ${author} ${stats}
+	${desc} \n`;
 };
 
 /**
@@ -32,7 +34,6 @@ const buildSelectOptions = (
 	const options = skills.map((skill) => ({
 		value: skill.namespace,
 		label: formatSkillOption(skill),
-		hint: skill.verified ? "verified" : undefined,
 	}));
 
 	if (hasMore) {
@@ -160,9 +161,8 @@ export async function search(options: SearchOptions = {}): Promise<void> {
 
 		note(
 			`${pc.bold(selectedSkill.name)}\n` +
-				`${selectedSkill.description || "No description"}\n\n` +
 				`Author: ${selectedSkill.author}\n` +
-				`Stars: ${selectedSkill.stars} · Installs: ${selectedSkill.installs}`,
+				`Stars: ${formatNumber(selectedSkill.stars)} · Installs: ${formatNumber(selectedSkill.installs)}`,
 			"Selected Skill",
 		);
 
