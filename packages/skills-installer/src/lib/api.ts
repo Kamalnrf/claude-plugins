@@ -1,4 +1,4 @@
-import type { SkillIdentifier, SkillMetadata } from "../types.js";
+import type { SkillIdentifier, SkillMetadata, SearchResponse } from "../types.js";
 
 const REGISTRY_API_URL = "https://api.claude-plugins.dev";
 
@@ -68,4 +68,29 @@ export const trackInstallation = async (
 	} catch {
 		// ignore tracking failures
 	}
+};
+
+/**
+ * Search for skills in the registry
+ * Returns search results with pagination info
+ */
+export const searchSkills = async (
+	query: string,
+	limit: number = 10,
+	offset: number = 0,
+): Promise<SearchResponse> => {
+	const url = new URL(`${REGISTRY_API_URL}/api/skills/search`);
+	url.searchParams.set("q", query);
+	url.searchParams.set("limit", String(limit));
+	url.searchParams.set("offset", String(offset));
+
+	const response = await fetch(url.toString(), {
+		headers: { "User-Agent": "skills-installer/0.1.0" },
+	});
+
+	if (!response.ok) {
+		throw new Error(`Search failed: ${response.statusText}`);
+	}
+
+	return response.json() as Promise<SearchResponse>;
 };

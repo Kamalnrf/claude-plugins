@@ -71,6 +71,7 @@ npm install -g skills-installer
 
 | Command | Description |
 |---------|-------------|
+| `search [query]` | Search for skills in the registry |
 | `install <skill>` | Install or update a skill |
 | `list` | List installed skills |
 

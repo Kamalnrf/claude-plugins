@@ -3,6 +3,7 @@ import { intro, outro, cancel } from "@clack/prompts";
 import pc from "picocolors";
 import { install } from "./commands/install.js";
 import { list } from "./commands/list.js";
+import { search } from "./commands/search.js";
 import { getAvailableClients } from "./lib/client-config.js";
 
 /**
@@ -41,22 +42,29 @@ ${pc.bold("skills-installer")} - Install agent skills that comply with the agent
 
 ${pc.bold("COMMANDS:")}
   install <skill>    Install or update an agent skill
-  list              List installed skills
-  help              Show this help message
+  search [query]     Search for skills in the registry
+  list               List installed skills
+  help               Show this help message
 
 ${pc.bold("OPTIONS:")}
   --client <name>   Target client (${getAvailableClients().join(", ")})
   --local, -l       Install locally to current directory
 
 ${pc.bold("EXAMPLES:")}
+  ${pc.dim("# Search for skills interactively")}
+  skills-installer search
+
+  ${pc.dim("# Search with a query")}
+  skills-installer search "frontend design"
+
+  ${pc.dim("# Search and install to specific client")}
+  skills-installer search "testing" --client cursor
+
   ${pc.dim("# Install skill globally for claude-code")}
   skills-installer install @anthropic/claude-cookbooks/analyzing-financial-statements --client claude-code
 
   ${pc.dim("# Install skill locally (defaults to claude-code)")}
   skills-installer install @owner/repo/skill --local
-
-  ${pc.dim("# Update an existing skill")}
-  skills-installer install @anthropic/skills/frontend-design
 
   ${pc.dim("# List all installed skills")}
   skills-installer list
@@ -103,6 +111,16 @@ const main = async () => {
 			case "list": {
 				await list({
 					client: flags.client as string,
+				});
+				break;
+			}
+
+			case "search": {
+				const query = positional[0];
+				await search({
+					query,
+					client: flags.client as string | undefined,
+					local: !!(flags.local || flags.l),
 				});
 				break;
 			}

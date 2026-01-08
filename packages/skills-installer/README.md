@@ -5,6 +5,7 @@ Browse and discover available skills at [claude-plugins.dev/skills](https://clau
 
 ## Features
 
+- 🔍 **Interactive Search** - Discover and install skills interactively
 - 🚀 **Simple CLI** - Clean, intuitive command-line interface
 - 📦 **Universal Registry** - Access skills all public agent skills
 - 🌍 **Global & Local** - Install skills globally or per-project
@@ -28,6 +29,25 @@ Agent Skills are specialized capabilities that extend AI coding assistants like 
 
 
 ## Usage
+
+### Search for skills
+
+Search the registry interactively:
+
+```bash
+skills-installer search
+```
+
+Search with a specific query:
+
+```bash
+skills-installer search "frontend design"
+```
+
+The search command provides an interactive interface where you can:
+- Browse skills ranked by installs
+- Select a skill to install directly
+- Choose installation scope and target client
 
 ### Install a skill globally
 
@@ -82,6 +102,7 @@ Currently supported clients:
 
 | Command | Description |
 |---------|-------------|
+| `search [query]` | Search for skills in the registry |
 | `install <skill>` | Install or update an agent skill |
 | `list` | List all installed skills |
 | `help` | Show help message |
@@ -113,6 +134,15 @@ Examples:
 ## Examples
 
 ```bash
+# Search for skills interactively
+skills-installer search
+
+# Search with a specific query
+skills-installer search "frontend design"
+
+# Search and install to specific client
+skills-installer search "testing" --client cursor
+
 # Install the frontend-design skill globally
 skills-installer install @anthropics/claude-code/frontend-design
 
