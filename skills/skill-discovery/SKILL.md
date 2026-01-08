@@ -161,7 +161,7 @@ Would you like me to install this, or help you directly without installing a ski
 User: "find skills for Python"
 
 ```bash
-curl "https://api.claude-plugins.dev/api/skills/search?q=python&limit=10"
+curl "https://claude-plugins.dev/api/skills?q=python&limit=10"
 ```
 
 Present results and ask which to install.
