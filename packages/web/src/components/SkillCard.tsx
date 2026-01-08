@@ -14,6 +14,7 @@ import { MetricBadge } from "./MetricBadge";
 import { DownloadIcon } from "./ui/download";
 import { PackageIcon } from "@/components/ui/package-icon";
 import { Button } from "./ui/button";
+import { ArrowRightIcon } from "./ui/arrow-right";
 
 export interface SkillCardProps {
 	skill: Skill;
@@ -76,9 +77,16 @@ export function SkillCard({ skill }: SkillCardProps) {
 					<ItemDescription className="mt-3 mb-2 leading-relaxed line-clamp-2 text-sm text-foreground/90">
 						{skill.description}
 					</ItemDescription>
-					<Button variant="outline" size="sm">
-						learn more
-					</Button>
+					<ItemActions>
+						<Button
+							variant="outline"
+							size="sm"
+							className="group-hover:border-primary/50 group-hover:text-primary transition-colors"
+						>
+							<span className="hidden sm:inline">Install</span>
+							<ArrowRightIcon size={14} />
+						</Button>
+					</ItemActions>
 				</ItemContent>
 			</Item>
 		</a>

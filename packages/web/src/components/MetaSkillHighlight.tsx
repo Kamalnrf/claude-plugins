@@ -37,21 +37,23 @@ export function MetaSkillHighlight() {
 								</ItemTitle>
 							</ItemContent>
 						</ItemHeader>
-						<ItemActions>
-							<Button
-								variant="outline"
-								size="sm"
-								className="group-hover:border-primary/50 group-hover:text-primary transition-colors"
-							>
-								<span className="hidden sm:inline">Install</span>
-								<ArrowRightIcon size={14} />
-							</Button>
-						</ItemActions>
 					</div>
 				</ItemHeader>
-				<ItemDescription className="mt-2 leading-relaxed text-sm text-foreground/90">
-					Browse the registry, compare, and install skills. All from Claude Code, Cursor, Codex, and other agents. No context switching.
-				</ItemDescription>
+				<ItemContent className="flex-row items-end w-full justify-between">
+				  <ItemDescription className="leading-relaxed text-sm text-foreground/90">
+  					This skill teaches your agent how to browse this registry, compare, and install skills. All within Claude Code, Cursor, Codex, and other agents. No context switching.
+  				</ItemDescription>
+					<ItemActions>
+						<Button
+							variant="outline"
+							size="sm"
+							className="group-hover:border-primary/50 group-hover:text-primary transition-colors"
+						>
+							<span className="hidden sm:inline">Install</span>
+							<ArrowRightIcon size={14} />
+						</Button>
+					</ItemActions>
+				</ItemContent>
 			</Item>
 		</a>
 	);
