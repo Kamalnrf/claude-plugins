@@ -1,79 +1,61 @@
 import type { APIRoute } from "astro";
 import { registryAPI } from "../lib/api";
+import { SITEMAP_CONFIG, escapeXml } from "../lib/sitemap-config";
 
-const siteUrl = "https://claude-plugins.dev";
+const { siteUrl, pageSize: PAGE_SIZE, staticUrlsCount: STATIC_URLS_COUNT } =
+	SITEMAP_CONFIG;
 
 export const GET: APIRoute = async () => {
 	try {
-		const skillsResponse = await registryAPI.searchSkills({
-			limit: 50000,
-		});
-		const skills = skillsResponse.skills || [];
+		// Fetch just the total count (minimal request)
+		const { total } = await registryAPI.searchSkills({ limit: 1, offset: 0 });
 
-		console.log('SKill =>', skills.length)
+		// Validate total to prevent NaN/empty sitemaps from malformed API responses
+		const safeTotal = Number.isFinite(total) ? total : 0;
+		const totalUrls = safeTotal + STATIC_URLS_COUNT;
+		const pageCount = Math.max(1, Math.ceil(totalUrls / PAGE_SIZE));
 
-		const urls = [
-			{
-				loc: siteUrl,
-				lastmod: new Date().toISOString(),
-				changefreq: "daily",
-				priority: 1.0,
-			},
-			{
-				loc: `${siteUrl}/skills`,
-				lastmod: new Date().toISOString(),
-				changefreq: "daily",
-				priority: 0.9,
-			},
-			...skills.map((skill) => {
-				const updatedDate = new Date(skill.updatedAt);
-				const daysSinceUpdate =
-					(Date.now() - updatedDate.getTime()) / (1000 * 60 * 60 * 24);
+		console.log(
+			`Sitemap index: ${safeTotal} skills, ${totalUrls} total URLs, ${pageCount} pages`,
+		);
 
-				return {
-					loc: `${siteUrl}/skills/${skill.namespace}`,
-					lastmod: updatedDate.toISOString(),
-					changefreq: daysSinceUpdate < 7 ? "daily" : "weekly",
-					priority: 0.8,
-				};
-			}),
-		];
+		const sitemaps = Array.from({ length: pageCount }, (_, i) => ({
+			loc: `${siteUrl}/sitemap-${i}.xml`,
+		}));
 
-		const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-${urls
+		const sitemapIndex = `<?xml version="1.0" encoding="UTF-8"?>
+<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+${sitemaps
 	.map(
-		(url) => `  <url>
-    <loc>${url.loc}</loc>
-    <lastmod>${url.lastmod}</lastmod>
-    <changefreq>${url.changefreq}</changefreq>
-    <priority>${url.priority}</priority>
-  </url>`,
+		(sitemap) => `  <sitemap>
+    <loc>${escapeXml(sitemap.loc)}</loc>
+  </sitemap>`,
 	)
 	.join("\n")}
-</urlset>`;
+</sitemapindex>`;
 
-		return new Response(sitemap, {
+		return new Response(sitemapIndex, {
 			status: 200,
 			headers: {
 				"Content-Type": "application/xml; charset=utf-8",
-				"Cache-Control": "public, max-age=3600",
+				"Cache-Control": "public, s-maxage=3600, stale-while-revalidate=86400",
 			},
 		});
 	} catch (error) {
-		console.error("Sitemap generation error:", error);
+		console.error("Sitemap index generation error:", error);
+		// Fallback: return a minimal sitemap index with just one sitemap
 		return new Response(
 			`<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url>
-    <loc>${siteUrl}</loc>
-    <lastmod>${new Date().toISOString()}</lastmod>
-  </url>
-</urlset>`,
+<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <sitemap>
+    <loc>${escapeXml(`${siteUrl}/sitemap-0.xml`)}</loc>
+  </sitemap>
+</sitemapindex>`,
 			{
 				status: 200,
 				headers: {
 					"Content-Type": "application/xml; charset=utf-8",
+					"Cache-Control": "public, s-maxage=3600, stale-while-revalidate=86400",
 				},
 			},
 		);
