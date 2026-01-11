@@ -9,11 +9,14 @@ export const GET: APIRoute = async () => {
 	try {
 		// Fetch just the total count (minimal request)
 		const { total } = await registryAPI.searchSkills({ limit: 1, offset: 0 });
-		const totalUrls = total + STATIC_URLS_COUNT;
-		const pageCount = Math.ceil(totalUrls / PAGE_SIZE);
+
+		// Validate total to prevent NaN/empty sitemaps from malformed API responses
+		const safeTotal = Number.isFinite(total) ? total : 0;
+		const totalUrls = safeTotal + STATIC_URLS_COUNT;
+		const pageCount = Math.max(1, Math.ceil(totalUrls / PAGE_SIZE));
 
 		console.log(
-			`Sitemap index: ${total} skills, ${totalUrls} total URLs, ${pageCount} pages`,
+			`Sitemap index: ${safeTotal} skills, ${totalUrls} total URLs, ${pageCount} pages`,
 		);
 
 		const sitemaps = Array.from({ length: pageCount }, (_, i) => ({
