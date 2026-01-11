@@ -23,7 +23,12 @@ interface Props {
 
 const { type, name, description, url, breadcrumbs } = Astro.props;
 
-const siteUrl = 'https://claude-plugins.dev';
+// Derive siteUrl from Astro.site if available, fallback to hardcoded string
+const siteUrl = Astro.site?.origin || 'https://claude-plugins.dev';
+
+// Compute fullUrl: use provided url prop, or derive from Astro.url
+// Only create pageSchema if we have a valid fullUrl
+const fullUrl = url || (Astro.url ? new URL(Astro.url.pathname, siteUrl).toString() : null);
 
 // Base schemas that appear on every page
 const baseSchemas = [
@@ -69,17 +74,17 @@ const baseSchemas = [
   }
 ];
 
-// Build page-specific schema if type is provided
-const pageSchema = type && name ? {
+// Build page-specific schema if type is provided and we have a valid fullUrl
+const pageSchema = type && name && fullUrl ? {
   "@type": type,
-  "@id": `${url}#${type.toLowerCase()}`,
+  "@id": `${fullUrl}#${type.toLowerCase()}`,
   "name": name,
   "description": description,
-  "url": url,
+  "url": fullUrl,
   "isPartOf": { "@id": `${siteUrl}/#website` },
   "potentialAction": [{
     "@type": "ReadAction",
-    "target": [url]
+    "target": [fullUrl]
   }]
 } : null;
 
@@ -106,6 +111,12 @@ const structuredData = {
   "@context": "https://schema.org",
   "@graph": graph
 };
+
+// Escape JSON-LD to prevent script-breakout attacks
+// Replace '<' with '\u003c' and '</script' with '<\/script'
+const safeJson = JSON.stringify(structuredData)
+  .replace(/</g, '\\u003c')
+  .replace(/>/g, '\\u003e');
 ---
 
-<script type="application/ld+json" set:html={JSON.stringify(structuredData)} />
+<script type="application/ld+json" set:html={safeJson} />
