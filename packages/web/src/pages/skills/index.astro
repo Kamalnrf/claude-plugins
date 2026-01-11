@@ -27,6 +27,43 @@ const { skills, total } = await registryAPI.searchSkills({
   description={`Discover and install Agent Skills from across GitHub. Works with Claude, Cursor, OpenCode, Codex, and more. Auto-indexed, open‑source, and community‑maintained. Search ${total}+ skills, track downloads, and quickly add capabilities to your AI coding assistant.`}
   ogImage="/api/og/skills-index.png"
 >
+  <Fragment slot="head">
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@id": "https://claude-plugins.dev/skills#webpage",
+          "@type": "WebPage",
+          "name": "Agent Skills Directory",
+          "description": "Browse and install Agent Skills for Claude, Cursor, OpenCode, Codex, and more AI coding assistants",
+          "url": "https://claude-plugins.dev/skills",
+          "isPartOf": { "@id": "https://claude-plugins.dev/#website" },
+          "potentialAction": [{
+            "@type": "ReadAction",
+            "target": ["https://claude-plugins.dev/skills"]
+          }]
+        },
+        {
+          "@type": "BreadcrumbList",
+          "itemListElement": [
+            {
+              "@type": "ListItem",
+              "position": 1,
+              "name": "Home",
+              "item": "https://claude-plugins.dev"
+            },
+            {
+              "@type": "ListItem",
+              "position": 2,
+              "name": "Skills"
+            }
+          ]
+        }
+      ]
+    }
+    </script>
+  </Fragment>
   <div class="px-4 py-4 md:px-6 md:py-6 flex flex-col gap-6">
     <PluginOrSkillsTabSwitcher transition:persist client:load selectedTab="skills" />
     <section class="flex flex-col gap-5" transition:animate="fade" transition:name="hero">

@@ -71,36 +71,44 @@ const fullOgImage = ogImage.startsWith('http') ? ogImage : `${siteUrl}${ogImage}
       "@context": "https://schema.org",
       "@graph": [
         {
+          "@id": "https://claude-plugins.dev/#website",
           "@type": "WebSite",
           "name": "Claude Code Plugins",
-          "alternateName": "Agent Skills Directory",
-          "url": "https://claude-plugins.dev",
           "description": "Community registry for Claude plugins and Agent Skills compatible with Claude, Cursor, VS Code, OpenCode, Codex, Amp Code, Letta, and Goose",
+          "url": "https://claude-plugins.dev",
+          "publisher": { "@id": "https://claude-plugins.dev/#organization" },
           "potentialAction": [
             {
               "@type": "SearchAction",
-              "name": "Search Claude Plugins",
-              "target": "https://claude-plugins.dev/?q={search_term_string}",
-              "query-input": "required name=search_term_string"
-            },
-            {
-              "@type": "SearchAction",
-              "name": "Search Agent Skills",
-              "target": "https://claude-plugins.dev/skills?q={search_term_string}",
-              "query-input": "required name=search_term_string"
+              "target": {
+                "@type": "EntryPoint",
+                "urlTemplate": "https://claude-plugins.dev/?q={search_term_string}"
+              },
+              "query-input": {
+                "@type": "PropertyValueSpecification",
+                "valueRequired": true,
+                "valueName": "search_term_string"
+              }
             }
           ]
         },
         {
+          "@id": "https://claude-plugins.dev/#organization",
           "@type": "Organization",
           "name": "Claude Code Plugins",
-          "alternateName": "Agent Skills Directory",
           "url": "https://claude-plugins.dev",
-          "description": "Community registry for Claude plugins and Agent Skills compatible with Claude, Cursor, VS Code, OpenCode, Codex, Amp Code, Letta, and Goose",
+          "logo": { "@id": "https://claude-plugins.dev/#logo" },
           "sameAs": [
             "https://github.com/Kamalnrf/claude-plugins",
             "https://discord.gg/Pt9uN4FXR4"
           ]
+        },
+        {
+          "@id": "https://claude-plugins.dev/#logo",
+          "@type": "ImageObject",
+          "caption": "Claude Code Plugins",
+          "contentUrl": "https://claude-plugins.dev/favicon.svg",
+          "url": "https://claude-plugins.dev/favicon.svg"
         }
       ]
     }

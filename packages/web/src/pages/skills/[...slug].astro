@@ -47,26 +47,42 @@ const ogImageAlt = `${skill.name} - Agent skill for AI coding assistants with ${
 		<meta property="article:modified_time" content={skill.updatedAt} />
 		<script type="application/ld+json" set:html={JSON.stringify({
 			"@context": "https://schema.org",
-			"@type": "SoftwareApplication",
-			"name": skill.name,
-			"description": `${skill.description || `Install and use ${skill.name} for AI coding assistants`} - ${skill.stars} GitHub stars`,
-			"author": {
-				"@type": "Person",
-				"name": skill.author
-			},
-			"applicationCategory": "DeveloperApplication",
-			"operatingSystem": "Cross-platform",
-			"offers": {
-				"@type": "Offer",
-				"price": "0",
-				"priceCurrency": "USD"
-			},
-			"interactionStatistic": {
-				"@type": "InteractionCounter",
-				"interactionType": "https://schema.org/DownloadAction",
-				"userInteractionCount": skill.installs
-			},
-			"downloadUrl": `https://claude-plugins.dev/skills/${slug}`
+			"@graph": [
+				{
+					"@id": `https://claude-plugins.dev/skills/${slug}#webpage`,
+					"@type": "WebPage",
+					"name": skill.name,
+					"description": skill.description || `${skill.name} - Agent skill for AI coding assistants`,
+					"url": `https://claude-plugins.dev/skills/${slug}`,
+					"isPartOf": { "@id": "https://claude-plugins.dev/#website" },
+					"potentialAction": [{
+						"@type": "ReadAction",
+						"target": [`https://claude-plugins.dev/skills/${slug}`]
+					}]
+				},
+				{
+					"@type": "BreadcrumbList",
+					"itemListElement": [
+						{
+							"@type": "ListItem",
+							"position": 1,
+							"name": "Home",
+							"item": "https://claude-plugins.dev"
+						},
+						{
+							"@type": "ListItem",
+							"position": 2,
+							"name": "Skills",
+							"item": "https://claude-plugins.dev/skills"
+						},
+						{
+							"@type": "ListItem",
+							"position": 3,
+							"name": skill.name
+						}
+					]
+				}
+			]
 		})} />
 	</Fragment>
 	<div class="flex flex-col p-6 gap-4">
