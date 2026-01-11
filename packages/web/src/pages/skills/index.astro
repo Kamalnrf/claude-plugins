@@ -1,5 +1,6 @@
 ---
 import Badge from "@/components/Badge.astro";
+import JsonLd from "@/components/JsonLd.astro";
 import { MetaSkillHighlight } from "@/components/MetaSkillHighlight";
 import { PluginOrSkillsTabSwitcher } from "@/components/PluginOrSkillsTabSwitcher";
 import SkillBrowser from "@/components/SkillBrowser";
@@ -27,6 +28,18 @@ const { skills, total } = await registryAPI.searchSkills({
   description={`Discover and install Agent Skills from across GitHub. Works with Claude, Cursor, OpenCode, Codex, and more. Auto-indexed, open‑source, and community‑maintained. Search ${total}+ skills, track downloads, and quickly add capabilities to your AI coding assistant.`}
   ogImage="/api/og/skills-index.png"
 >
+  <Fragment slot="head">
+    <JsonLd
+      type="CollectionPage"
+      name="Agent Skills Directory"
+      description="Browse and install Agent Skills for Claude, Cursor, OpenCode, Codex, and more AI coding assistants"
+      url="https://claude-plugins.dev/skills"
+      breadcrumbs={[
+        { name: "Home", url: "https://claude-plugins.dev" },
+        { name: "Skills" }
+      ]}
+    />
+  </Fragment>
   <div class="px-4 py-4 md:px-6 md:py-6 flex flex-col gap-6">
     <PluginOrSkillsTabSwitcher transition:persist client:load selectedTab="skills" />
     <section class="flex flex-col gap-5" transition:animate="fade" transition:name="hero">

@@ -1,5 +1,6 @@
 ---
 import MarketplaceLayout from "../../layouts/MarketplaceLayout.astro";
+import JsonLd from "../../components/JsonLd.astro";
 import { registryAPI } from "../../lib/api";
 import { InstallSkill } from "../../components/InstallSkill";
 import { SkillDetailHeader } from "@/components/SkillDetailHeader";
@@ -45,29 +46,17 @@ const ogImageAlt = `${skill.name} - Agent skill for AI coding assistants with ${
 		<meta property="article:author" content={skill.author} />
 		<meta property="article:published_time" content={skill.createdAt} />
 		<meta property="article:modified_time" content={skill.updatedAt} />
-		<script type="application/ld+json" set:html={JSON.stringify({
-			"@context": "https://schema.org",
-			"@type": "SoftwareApplication",
-			"name": skill.name,
-			"description": `${skill.description || `Install and use ${skill.name} for AI coding assistants`} - ${skill.stars} GitHub stars`,
-			"author": {
-				"@type": "Person",
-				"name": skill.author
-			},
-			"applicationCategory": "DeveloperApplication",
-			"operatingSystem": "Cross-platform",
-			"offers": {
-				"@type": "Offer",
-				"price": "0",
-				"priceCurrency": "USD"
-			},
-			"interactionStatistic": {
-				"@type": "InteractionCounter",
-				"interactionType": "https://schema.org/DownloadAction",
-				"userInteractionCount": skill.installs
-			},
-			"downloadUrl": `https://claude-plugins.dev/skills/${slug}`
-		})} />
+		<JsonLd
+			type="WebPage"
+			name={skill.name}
+			description={skill.description || `${skill.name} - Agent skill for AI coding assistants`}
+			url={`https://claude-plugins.dev/skills/${slug}`}
+			breadcrumbs={[
+				{ name: "Home", url: "https://claude-plugins.dev" },
+				{ name: "Skills", url: "https://claude-plugins.dev/skills" },
+				{ name: skill.name }
+			]}
+		/>
 	</Fragment>
 	<div class="flex flex-col p-6 gap-4">
 	  <SkillDetailHeader client:load skill={skill} />

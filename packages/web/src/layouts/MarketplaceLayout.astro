@@ -65,47 +65,6 @@ const fullOgImage = ogImage.startsWith('http') ? ogImage : `${siteUrl}${ogImage}
     <meta name="robots" content="index, follow" />
     <meta name="language" content="English" />
 
-    <!-- JSON-LD Structured Data -->
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@graph": [
-        {
-          "@type": "WebSite",
-          "name": "Claude Code Plugins",
-          "alternateName": "Agent Skills Directory",
-          "url": "https://claude-plugins.dev",
-          "description": "Community registry for Claude plugins and Agent Skills compatible with Claude, Cursor, VS Code, OpenCode, Codex, Amp Code, Letta, and Goose",
-          "potentialAction": [
-            {
-              "@type": "SearchAction",
-              "name": "Search Claude Plugins",
-              "target": "https://claude-plugins.dev/?q={search_term_string}",
-              "query-input": "required name=search_term_string"
-            },
-            {
-              "@type": "SearchAction",
-              "name": "Search Agent Skills",
-              "target": "https://claude-plugins.dev/skills?q={search_term_string}",
-              "query-input": "required name=search_term_string"
-            }
-          ]
-        },
-        {
-          "@type": "Organization",
-          "name": "Claude Code Plugins",
-          "alternateName": "Agent Skills Directory",
-          "url": "https://claude-plugins.dev",
-          "description": "Community registry for Claude plugins and Agent Skills compatible with Claude, Cursor, VS Code, OpenCode, Codex, Amp Code, Letta, and Goose",
-          "sameAs": [
-            "https://github.com/Kamalnrf/claude-plugins",
-            "https://discord.gg/Pt9uN4FXR4"
-          ]
-        }
-      ]
-    }
-    </script>
-    
     <!-- Custom head slot for additional meta tags -->
     <slot name="head" />
     
