@@ -1,0 +1,111 @@
+---
+/**
+ * JsonLd.astro - Centralized JSON-LD structured data component
+ * 
+ * Renders complete Schema.org structured data including:
+ * - Base schemas (WebSite, Organization, Logo) on every page
+ * - Page-specific schema (WebPage, CollectionPage)
+ * - BreadcrumbList with plain URLs
+ */
+
+interface BreadcrumbItem {
+  name: string;
+  url?: string; // Last item in breadcrumb trail has no URL
+}
+
+interface Props {
+  type?: 'WebPage' | 'CollectionPage';
+  name?: string;
+  description?: string;
+  url?: string;
+  breadcrumbs?: BreadcrumbItem[];
+}
+
+const { type, name, description, url, breadcrumbs } = Astro.props;
+
+const siteUrl = 'https://claude-plugins.dev';
+
+// Base schemas that appear on every page
+const baseSchemas = [
+  {
+    "@type": "WebSite",
+    "@id": `${siteUrl}/#website`,
+    "name": "Claude Code Plugins",
+    "description": "Community registry for Claude plugins and Agent Skills compatible with Claude, Cursor, VS Code, OpenCode, Codex, Amp Code, Letta, and Goose",
+    "url": siteUrl,
+    "publisher": { "@id": `${siteUrl}/#organization` },
+    "potentialAction": [
+      {
+        "@type": "SearchAction",
+        "target": {
+          "@type": "EntryPoint",
+          "urlTemplate": `${siteUrl}/?q={search_term_string}`
+        },
+        "query-input": {
+          "@type": "PropertyValueSpecification",
+          "valueRequired": true,
+          "valueName": "search_term_string"
+        }
+      }
+    ]
+  },
+  {
+    "@type": "Organization",
+    "@id": `${siteUrl}/#organization`,
+    "name": "Claude Code Plugins",
+    "url": siteUrl,
+    "logo": { "@id": `${siteUrl}/#logo` },
+    "sameAs": [
+      "https://github.com/Kamalnrf/claude-plugins",
+      "https://discord.gg/Pt9uN4FXR4"
+    ]
+  },
+  {
+    "@type": "ImageObject",
+    "@id": `${siteUrl}/#logo`,
+    "caption": "Claude Code Plugins",
+    "contentUrl": `${siteUrl}/favicon.svg`,
+    "url": `${siteUrl}/favicon.svg`
+  }
+];
+
+// Build page-specific schema if type is provided
+const pageSchema = type && name ? {
+  "@type": type,
+  "@id": `${url}#${type.toLowerCase()}`,
+  "name": name,
+  "description": description,
+  "url": url,
+  "isPartOf": { "@id": `${siteUrl}/#website` },
+  "potentialAction": [{
+    "@type": "ReadAction",
+    "target": [url]
+  }]
+} : null;
+
+// Build breadcrumb schema if breadcrumbs are provided
+const breadcrumbSchema = breadcrumbs && breadcrumbs.length > 0 ? {
+  "@type": "BreadcrumbList",
+  "itemListElement": breadcrumbs.map((item, index) => ({
+    "@type": "ListItem",
+    "position": index + 1,
+    "name": item.name,
+    // Only include item URL if provided (last item typically has no URL)
+    ...(item.url && { "item": item.url })
+  }))
+} : null;
+
+// Combine all schemas into @graph
+const graph = [
+  ...baseSchemas,
+  ...(pageSchema ? [pageSchema] : []),
+  ...(breadcrumbSchema ? [breadcrumbSchema] : [])
+];
+
+const structuredData = {
+  "@context": "https://schema.org",
+  "@graph": graph
+};
+---
+
+<script type="application/ld+json" set:html={JSON.stringify(structuredData)} />

@@ -65,55 +65,6 @@ const fullOgImage = ogImage.startsWith('http') ? ogImage : `${siteUrl}${ogImage}
     <meta name="robots" content="index, follow" />
     <meta name="language" content="English" />
 
-    <!-- JSON-LD Structured Data -->
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@graph": [
-        {
-          "@id": "https://claude-plugins.dev/#website",
-          "@type": "WebSite",
-          "name": "Claude Code Plugins",
-          "description": "Community registry for Claude plugins and Agent Skills compatible with Claude, Cursor, VS Code, OpenCode, Codex, Amp Code, Letta, and Goose",
-          "url": "https://claude-plugins.dev",
-          "publisher": { "@id": "https://claude-plugins.dev/#organization" },
-          "potentialAction": [
-            {
-              "@type": "SearchAction",
-              "target": {
-                "@type": "EntryPoint",
-                "urlTemplate": "https://claude-plugins.dev/?q={search_term_string}"
-              },
-              "query-input": {
-                "@type": "PropertyValueSpecification",
-                "valueRequired": true,
-                "valueName": "search_term_string"
-              }
-            }
-          ]
-        },
-        {
-          "@id": "https://claude-plugins.dev/#organization",
-          "@type": "Organization",
-          "name": "Claude Code Plugins",
-          "url": "https://claude-plugins.dev",
-          "logo": { "@id": "https://claude-plugins.dev/#logo" },
-          "sameAs": [
-            "https://github.com/Kamalnrf/claude-plugins",
-            "https://discord.gg/Pt9uN4FXR4"
-          ]
-        },
-        {
-          "@id": "https://claude-plugins.dev/#logo",
-          "@type": "ImageObject",
-          "caption": "Claude Code Plugins",
-          "contentUrl": "https://claude-plugins.dev/favicon.svg",
-          "url": "https://claude-plugins.dev/favicon.svg"
-        }
-      ]
-    }
-    </script>
-    
     <!-- Custom head slot for additional meta tags -->
     <slot name="head" />
     

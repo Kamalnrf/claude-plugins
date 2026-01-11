@@ -2,6 +2,7 @@
 import { PluginOrSkillsTabSwitcher } from "@/components/PluginOrSkillsTabSwitcher";
 import Badge from "../components/Badge.astro";
 import PluginBrowser from "../components/PluginBrowser";
+import JsonLd from "../components/JsonLd.astro";
 import MarketplaceLayout from "../layouts/MarketplaceLayout.astro";
 import { registryAPI } from "../lib/api";
 
@@ -28,25 +29,12 @@ const { plugins, total } = await registryAPI.searchPlugins({
   description="Install Claude Code plugins and Agent Skills for Claude, Cursor, Codex, OpenCode, Amp Code, VS Code, Goose, and Letta. Simple CLI tool that handles setup automatically. Browse and install from indexed public plugins and skills."
 >
   <Fragment slot="head">
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@graph": [{
-        "@id": "https://claude-plugins.dev/#webpage",
-        "@type": "WebPage",
-        "name": "Claude Code Plugins & Agent Skills Registry",
-        "description": "Community registry with a simple CLI to browse, install, and manage all public plugins for Claude Code and Agent Skills",
-        "url": "https://claude-plugins.dev",
-        "isPartOf": { "@id": "https://claude-plugins.dev/#website" },
-        "about": { "@id": "https://claude-plugins.dev/#organization" },
-        "primaryImageOfPage": { "@id": "https://claude-plugins.dev/#logo" },
-        "potentialAction": [{
-          "@type": "ReadAction",
-          "target": ["https://claude-plugins.dev"]
-        }]
-      }]
-    }
-    </script>
+    <JsonLd
+      type="WebPage"
+      name="Claude Code Plugins & Agent Skills Registry"
+      description="Community registry with a simple CLI to browse, install, and manage all public plugins for Claude Code and Agent Skills"
+      url="https://claude-plugins.dev"
+    />
   </Fragment>
   <div class="p-4 md:p-6 flex flex-col gap-6">
     <PluginOrSkillsTabSwitcher transition:persist client:load selectedTab="plugins" />

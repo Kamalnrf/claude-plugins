@@ -1,5 +1,6 @@
 ---
 import Badge from "@/components/Badge.astro";
+import JsonLd from "@/components/JsonLd.astro";
 import { MetaSkillHighlight } from "@/components/MetaSkillHighlight";
 import { PluginOrSkillsTabSwitcher } from "@/components/PluginOrSkillsTabSwitcher";
 import SkillBrowser from "@/components/SkillBrowser";
@@ -28,41 +29,16 @@ const { skills, total } = await registryAPI.searchSkills({
   ogImage="/api/og/skills-index.png"
 >
   <Fragment slot="head">
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@graph": [
-        {
-          "@id": "https://claude-plugins.dev/skills#collectionpage",
-          "@type": "CollectionPage",
-          "name": "Agent Skills Directory",
-          "description": "Browse and install Agent Skills for Claude, Cursor, OpenCode, Codex, and more AI coding assistants",
-          "url": "https://claude-plugins.dev/skills",
-          "isPartOf": { "@id": "https://claude-plugins.dev/#website" },
-          "potentialAction": [{
-            "@type": "ReadAction",
-            "target": ["https://claude-plugins.dev/skills"]
-          }]
-        },
-        {
-          "@type": "BreadcrumbList",
-          "itemListElement": [
-            {
-              "@type": "ListItem",
-              "position": 1,
-              "name": "Home",
-              "item": { "@id": "https://claude-plugins.dev/#webpage" }
-            },
-            {
-              "@type": "ListItem",
-              "position": 2,
-              "name": "Skills"
-            }
-          ]
-        }
-      ]
-    }
-    </script>
+    <JsonLd
+      type="CollectionPage"
+      name="Agent Skills Directory"
+      description="Browse and install Agent Skills for Claude, Cursor, OpenCode, Codex, and more AI coding assistants"
+      url="https://claude-plugins.dev/skills"
+      breadcrumbs={[
+        { name: "Home", url: "https://claude-plugins.dev" },
+        { name: "Skills" }
+      ]}
+    />
   </Fragment>
   <div class="px-4 py-4 md:px-6 md:py-6 flex flex-col gap-6">
     <PluginOrSkillsTabSwitcher transition:persist client:load selectedTab="skills" />
