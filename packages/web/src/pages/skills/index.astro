@@ -33,8 +33,8 @@ const { skills, total } = await registryAPI.searchSkills({
       "@context": "https://schema.org",
       "@graph": [
         {
-          "@id": "https://claude-plugins.dev/skills#webpage",
-          "@type": "WebPage",
+          "@id": "https://claude-plugins.dev/skills#collectionpage",
+          "@type": "CollectionPage",
           "name": "Agent Skills Directory",
           "description": "Browse and install Agent Skills for Claude, Cursor, OpenCode, Codex, and more AI coding assistants",
           "url": "https://claude-plugins.dev/skills",
@@ -51,7 +51,7 @@ const { skills, total } = await registryAPI.searchSkills({
               "@type": "ListItem",
               "position": 1,
               "name": "Home",
-              "item": "https://claude-plugins.dev"
+              "item": { "@id": "https://claude-plugins.dev/#webpage" }
             },
             {
               "@type": "ListItem",
