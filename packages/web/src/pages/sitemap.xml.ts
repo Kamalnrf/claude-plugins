@@ -16,11 +16,8 @@ export const GET: APIRoute = async () => {
 			`Sitemap index: ${total} skills, ${totalUrls} total URLs, ${pageCount} pages`,
 		);
 
-		const now = new Date().toISOString();
-
 		const sitemaps = Array.from({ length: pageCount }, (_, i) => ({
 			loc: `${siteUrl}/sitemap-${i}.xml`,
-			lastmod: now,
 		}));
 
 		const sitemapIndex = `<?xml version="1.0" encoding="UTF-8"?>
@@ -29,7 +26,6 @@ ${sitemaps
 	.map(
 		(sitemap) => `  <sitemap>
     <loc>${sitemap.loc}</loc>
-    <lastmod>${sitemap.lastmod}</lastmod>
   </sitemap>`,
 	)
 	.join("\n")}
@@ -50,7 +46,6 @@ ${sitemaps
 <sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <sitemap>
     <loc>${siteUrl}/sitemap-0.xml</loc>
-    <lastmod>${new Date().toISOString()}</lastmod>
   </sitemap>
 </sitemapindex>`,
 			{

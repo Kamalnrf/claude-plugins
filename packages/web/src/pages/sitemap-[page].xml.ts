@@ -5,6 +5,16 @@ const siteUrl = "https://claude-plugins.dev";
 const PAGE_SIZE = 50000;
 const STATIC_URLS_COUNT = 2; // Homepage and /skills
 
+/** Escape special XML characters to prevent malformed XML */
+function escapeXml(str: string): string {
+	return str
+		.replace(/&/g, "&amp;")
+		.replace(/</g, "&lt;")
+		.replace(/>/g, "&gt;")
+		.replace(/"/g, "&quot;")
+		.replace(/'/g, "&apos;");
+}
+
 export const GET: APIRoute = async ({ params }) => {
 	const page = parseInt(params.page || "0", 10);
 
@@ -63,7 +73,7 @@ export const GET: APIRoute = async ({ params }) => {
 					(Date.now() - updatedDate.getTime()) / (1000 * 60 * 60 * 24);
 
 				return {
-					loc: `${siteUrl}/skills/${skill.namespace}`,
+					loc: `${siteUrl}/skills/${escapeXml(skill.namespace)}`,
 					lastmod: updatedDate.toISOString(),
 					changefreq: daysSinceUpdate < 7 ? "daily" : "weekly",
 					priority: 0.8,
@@ -91,7 +101,7 @@ export const GET: APIRoute = async ({ params }) => {
 					(Date.now() - updatedDate.getTime()) / (1000 * 60 * 60 * 24);
 
 				return {
-					loc: `${siteUrl}/skills/${skill.namespace}`,
+					loc: `${siteUrl}/skills/${escapeXml(skill.namespace)}`,
 					lastmod: updatedDate.toISOString(),
 					changefreq: daysSinceUpdate < 7 ? "daily" : "weekly",
 					priority: 0.8,
