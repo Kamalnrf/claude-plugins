@@ -1,6 +1,6 @@
 import type { APIRoute } from "astro";
 import { registryAPI } from "../lib/api";
-import { SITEMAP_CONFIG } from "../lib/sitemap-config";
+import { SITEMAP_CONFIG, escapeXml } from "../lib/sitemap-config";
 
 const { siteUrl, pageSize: PAGE_SIZE, staticUrlsCount: STATIC_URLS_COUNT } =
 	SITEMAP_CONFIG;
@@ -28,7 +28,7 @@ export const GET: APIRoute = async () => {
 ${sitemaps
 	.map(
 		(sitemap) => `  <sitemap>
-    <loc>${sitemap.loc}</loc>
+    <loc>${escapeXml(sitemap.loc)}</loc>
   </sitemap>`,
 	)
 	.join("\n")}
@@ -48,7 +48,7 @@ ${sitemaps
 			`<?xml version="1.0" encoding="UTF-8"?>
 <sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <sitemap>
-    <loc>${siteUrl}/sitemap-0.xml</loc>
+    <loc>${escapeXml(`${siteUrl}/sitemap-0.xml`)}</loc>
   </sitemap>
 </sitemapindex>`,
 			{

@@ -41,7 +41,7 @@ export function skillToUrl(skill: SkillForSitemap): SitemapUrl {
 		: Infinity; // Treat invalid dates as very old
 
 	return {
-		loc: `${SITEMAP_CONFIG.siteUrl}/skills/${escapeXml(encodeURIComponent(skill.namespace))}`,
+		loc: escapeXml(`${SITEMAP_CONFIG.siteUrl}/skills/${encodeURIComponent(skill.namespace)}`),
 		lastmod: isValidDate ? updatedDate.toISOString() : new Date().toISOString(),
 		changefreq: daysSinceUpdate < 7 ? "daily" : "weekly",
 		priority: 0.8,
