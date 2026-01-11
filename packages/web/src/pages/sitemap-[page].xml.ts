@@ -32,22 +32,15 @@ export const GET: APIRoute = async ({ params }) => {
 		}
 
 		let urls: SitemapUrl[] = [];
-
-		const now = new Date().toISOString();
-
 		if (page === 0) {
 			// First page includes static URLs + skills
 			const staticUrls: SitemapUrl[] = [
 				{
 					loc: siteUrl,
-					lastmod: now,
-					changefreq: "daily",
 					priority: 1.0,
 				},
 				{
 					loc: `${siteUrl}/skills`,
-					lastmod: now,
-					changefreq: "daily",
 					priority: 0.9,
 				},
 			];
@@ -87,8 +80,8 @@ ${urls
 	.map(
 		(url) => `  <url>
     <loc>${url.loc}</loc>
-    <lastmod>${url.lastmod}</lastmod>
-    <changefreq>${url.changefreq}</changefreq>
+    ${url.lastmod ? `<lastmod>${url.lastmod}</lastmod>` : ''}
+    ${url.changefreq ? `<changefreq>${url.changefreq}</changefreq>` : ''}
     <priority>${url.priority}</priority>
   </url>`,
 	)

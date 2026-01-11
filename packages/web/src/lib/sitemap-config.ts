@@ -17,8 +17,8 @@ export function escapeXml(str: string): string {
 /** URL type for sitemap entries */
 export interface SitemapUrl {
 	loc: string;
-	lastmod: string;
-	changefreq: string;
+	lastmod?: string;
+	changefreq?: string;
 	priority: number;
 }
 
@@ -42,8 +42,7 @@ export function skillToUrl(skill: SkillForSitemap): SitemapUrl {
 
 	return {
 		loc: escapeXml(`${SITEMAP_CONFIG.siteUrl}/skills/${encodeURIComponent(skill.namespace)}`),
-		lastmod: isValidDate ? updatedDate.toISOString() : new Date().toISOString(),
-		changefreq: daysSinceUpdate < 7 ? "daily" : "weekly",
+		...(isValidDate ? { lastmod: updatedDate.toISOString().split('T')[0], changefreq: daysSinceUpdate < 7 ? "daily" : "weekly", } : {}),
 		priority: 0.8,
 	};
 }
