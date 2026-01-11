@@ -1,19 +1,13 @@
 import type { APIRoute } from "astro";
 import { registryAPI } from "../lib/api";
+import {
+	SITEMAP_CONFIG,
+	skillToUrl,
+	type SitemapUrl,
+} from "../lib/sitemap-config";
 
-const siteUrl = "https://claude-plugins.dev";
-const PAGE_SIZE = 50000;
-const STATIC_URLS_COUNT = 2; // Homepage and /skills
-
-/** Escape special XML characters to prevent malformed XML */
-function escapeXml(str: string): string {
-	return str
-		.replace(/&/g, "&amp;")
-		.replace(/</g, "&lt;")
-		.replace(/>/g, "&gt;")
-		.replace(/"/g, "&quot;")
-		.replace(/'/g, "&apos;");
-}
+const { siteUrl, pageSize: PAGE_SIZE, staticUrlsCount: STATIC_URLS_COUNT } =
+	SITEMAP_CONFIG;
 
 export const GET: APIRoute = async ({ params }) => {
 	const page = parseInt(params.page || "0", 10);
@@ -26,26 +20,24 @@ export const GET: APIRoute = async ({ params }) => {
 	try {
 		// First, get total count to validate page number
 		const { total } = await registryAPI.searchSkills({ limit: 1, offset: 0 });
-		const totalUrls = total + STATIC_URLS_COUNT;
-		const pageCount = Math.ceil(totalUrls / PAGE_SIZE);
+
+		// Validate total to prevent NaN from malformed API responses
+		const safeTotal = Number.isFinite(total) ? total : 0;
+		const totalUrls = safeTotal + STATIC_URLS_COUNT;
+		const pageCount = Math.max(1, Math.ceil(totalUrls / PAGE_SIZE));
 
 		// Return 404 if page is out of bounds
 		if (page >= pageCount) {
 			return new Response("Not found", { status: 404 });
 		}
 
-		let urls: Array<{
-			loc: string;
-			lastmod: string;
-			changefreq: string;
-			priority: number;
-		}> = [];
+		let urls: SitemapUrl[] = [];
 
 		const now = new Date().toISOString();
 
 		if (page === 0) {
 			// First page includes static URLs + skills
-			const staticUrls = [
+			const staticUrls: SitemapUrl[] = [
 				{
 					loc: siteUrl,
 					lastmod: now,
@@ -67,18 +59,7 @@ export const GET: APIRoute = async ({ params }) => {
 				offset: 0,
 			});
 
-			const skillUrls = skillsResponse.skills.map((skill) => {
-				const updatedDate = new Date(skill.updatedAt);
-				const daysSinceUpdate =
-					(Date.now() - updatedDate.getTime()) / (1000 * 60 * 60 * 24);
-
-				return {
-					loc: `${siteUrl}/skills/${escapeXml(skill.namespace)}`,
-					lastmod: updatedDate.toISOString(),
-					changefreq: daysSinceUpdate < 7 ? "daily" : "weekly",
-					priority: 0.8,
-				};
-			});
+			const skillUrls = skillsResponse.skills.map(skillToUrl);
 
 			urls = [...staticUrls, ...skillUrls];
 
@@ -95,18 +76,7 @@ export const GET: APIRoute = async ({ params }) => {
 				offset,
 			});
 
-			urls = skillsResponse.skills.map((skill) => {
-				const updatedDate = new Date(skill.updatedAt);
-				const daysSinceUpdate =
-					(Date.now() - updatedDate.getTime()) / (1000 * 60 * 60 * 24);
-
-				return {
-					loc: `${siteUrl}/skills/${escapeXml(skill.namespace)}`,
-					lastmod: updatedDate.toISOString(),
-					changefreq: daysSinceUpdate < 7 ? "daily" : "weekly",
-					priority: 0.8,
-				};
-			});
+			urls = skillsResponse.skills.map(skillToUrl);
 
 			console.log(`Sitemap page ${page}: ${urls.length} skill URLs`);
 		}

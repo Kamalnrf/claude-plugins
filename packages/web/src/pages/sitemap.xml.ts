@@ -1,9 +1,9 @@
 import type { APIRoute } from "astro";
 import { registryAPI } from "../lib/api";
+import { SITEMAP_CONFIG } from "../lib/sitemap-config";
 
-const siteUrl = "https://claude-plugins.dev";
-const PAGE_SIZE = 50000;
-const STATIC_URLS_COUNT = 2; // Homepage and /skills
+const { siteUrl, pageSize: PAGE_SIZE, staticUrlsCount: STATIC_URLS_COUNT } =
+	SITEMAP_CONFIG;
 
 export const GET: APIRoute = async () => {
 	try {
