@@ -21,6 +21,13 @@ const { skills, total } = await registryAPI.searchSkills({
 	...(orderBy && { orderBy }),
 	...(order && { order }),
 });
+
+// Cache only default page (no query params) for fast landing
+// Search/filter happens client-side via /api/skills (excluded from ISR)
+const hasQueryParams = searchQuery || orderBy || order;
+if (!hasQueryParams) {
+	Astro.response.headers.set('Cache-Control', 's-maxage=3600, stale-while-revalidate=7200');
+}
 ---
 
 <MarketplaceLayout
