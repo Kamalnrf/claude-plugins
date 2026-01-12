@@ -17,6 +17,16 @@ export default defineConfig({
       enabled: true,
     },
     maxDuration: 60,
+    isr: {
+      // Cache all pages for 1 hour
+      expiration: 3600,
+      // Bypass token for manual cache invalidation
+      bypassToken: process.env.ISR_BYPASS_TOKEN,
+      // Exclude API routes - keep them dynamic for real-time data
+      exclude: [
+        /^\/api\/.+/,
+      ],
+    },
   }),
   vite: {
     plugins: [tailwindcss()],

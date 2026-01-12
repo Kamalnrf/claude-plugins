@@ -21,6 +21,9 @@ const { skills, total } = await registryAPI.searchSkills({
 	...(orderBy && { orderBy }),
 	...(order && { order }),
 });
+
+// ISR: Cache for 1 hour with 2 hour stale-while-revalidate
+Astro.response.headers.set('Cache-Control', 's-maxage=3600, stale-while-revalidate=7200');
 ---
 
 <MarketplaceLayout
