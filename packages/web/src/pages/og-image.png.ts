@@ -102,5 +102,9 @@ export const GET: APIRoute = async () => {
   return new ImageResponse(html, {
     width: 1200,
     height: 630,
+    headers: {
+      // ISR: Cache for 1 hour with 2 hour stale-while-revalidate
+      'Cache-Control': 's-maxage=3600, stale-while-revalidate=7200',
+    },
   });
 };

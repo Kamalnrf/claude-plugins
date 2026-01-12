@@ -30,6 +30,9 @@ const ogImageUrl = `/api/og/skills/${slug}.png`;
 const canonicalUrl = `https://claude-plugins.dev/skills/${slug}`;
 const keywords = `Agent Skills, ${skill.name}, ${owner}, ${marketplace}, Claude, Claude Code, Cursor, VS Code, OpenCode, Amp Code, Codex, Letta, Goose, AI development tools, agentskills.io`;
 const ogImageAlt = `${skill.name} - Agent skill for AI coding assistants with ${skill.stars} stars and ${skill.installs} installs`;
+
+// ISR: Cache for 1 hour with 2 hour stale-while-revalidate
+Astro.response.headers.set('Cache-Control', 's-maxage=3600, stale-while-revalidate=7200');
 ---
 
 <MarketplaceLayout
