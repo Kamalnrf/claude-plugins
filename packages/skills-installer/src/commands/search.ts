@@ -1,14 +1,73 @@
-import { text, select, spinner, note, cancel, isCancel } from "@clack/prompts";
+import { text, select, spinner, note, isCancel, outro } from "@clack/prompts";
 import pc from "picocolors";
-import type { SearchOptions, SearchResultSkill } from "../types.js";
+import type { SearchOptions, SearchResultSkill, SortField } from "../types.js";
 import { searchSkills } from "../lib/api.js";
 import { getClientConfig, getAvailableClients, CLIENT_CONFIGS } from "../lib/client-config.js";
 import { install } from "./install.js";
 import { formatNumber } from "../util.js";
 
 const LOAD_MORE_VALUE = "__LOAD_MORE__";
-const CANCEL_VALUE = "__CANCEL__";
+const SORT_VALUE = "__SORT__";
+const EXIT_VALUE = "__EXIT__";
 const DEFAULT_LIMIT = 5;
+
+// Sort options available to users
+const SORT_OPTIONS: Array<{ value: SortField; label: string; hint: string }> = [
+	{ value: "relevance", label: "Relevance", hint: "best match for your search" },
+	{ value: "downloads", label: "Most Installs", hint: "popular with the community" },
+	{ value: "stars", label: "Most Stars", hint: "loved on GitHub" },
+];
+
+// Get display label for current sort
+const getSortLabel = (field: SortField): string => {
+	const option = SORT_OPTIONS.find((o) => o.value === field);
+	return option?.label ?? "Relevance";
+};
+
+/**
+ * Show a friendly exit message with ASCII art
+ */
+const showExitMessage = (): void => {
+	const moonArt = pc.yellow(
+		`    *  .  *
+       .    *    .
+   *   .        .       *
+     .    *  .     . *
+   .  *        *  .    .`,
+	);
+
+	const message =
+		`${moonArt}\n\n` +
+		`${pc.bold("Happy coding!")} ${pc.cyan("◝(ᵔᵕᵔ)◜")}\n\n` +
+		`To find plugins and browse skills on the web, see:\n` +
+		`${pc.blue(pc.underline("https://claude-plugins.dev"))}\n\n` +
+		`To share ideas and issues, come visit us on the Moon:\n` +
+		`${pc.magenta(pc.underline("https://discord.gg/Pt9uN4FXR4"))}\n\n` +
+		`${pc.dim("This project is open-source and we'd love to hear from you!")}`;
+
+	outro(message);
+};
+
+/**
+ * Convert sort field to API params
+ */
+const getSortParams = (field: SortField) => {
+	if (field === "relevance") return {};
+	if (field === "downloads") return { orderBy: "downloads" as const, order: "desc" as const };
+	return { orderBy: "stars" as const, order: "desc" as const };
+};
+
+/**
+ * Clear terminal lines to reset display before re-rendering select prompt
+ * This prevents visual artifacts when paginating results
+ */
+const clearPreviousSelect = (lineCount: number): void => {
+	// Move cursor up and clear each line
+	for (let i = 0; i < lineCount; i++) {
+		process.stdout.write("\x1B[1A"); // Move cursor up one line
+		process.stdout.write("\x1B[2K"); // Clear the entire line
+	}
+};
 
 /**
  * Format a skill for display in the select prompt
@@ -30,11 +89,19 @@ const formatSkillOption = (skill: SearchResultSkill): string => {
 const buildSelectOptions = (
 	skills: SearchResultSkill[],
 	hasMore: boolean,
+	currentSort: SortField,
 ): Array<{ value: string; label: string; hint?: string }> => {
-	const options = skills.map((skill) => ({
+	const options: Array<{ value: string; label: string; hint?: string }> = skills.map((skill) => ({
 		value: skill.namespace,
 		label: formatSkillOption(skill),
 	}));
+
+	// Sort option - always available
+	options.push({
+		value: SORT_VALUE,
+		label: pc.cyan(`↕ Sort results by...`),
+		hint: `currently: ${getSortLabel(currentSort)}`,
+	});
 
 	if (hasMore) {
 		options.push({
@@ -44,8 +111,8 @@ const buildSelectOptions = (
 	}
 
 	options.push({
-		value: CANCEL_VALUE,
-		label: pc.dim("Cancel"),
+		value: EXIT_VALUE,
+		label: pc.dim("Exit"),
 	});
 
 	return options;
@@ -71,6 +138,7 @@ export async function search(options: SearchOptions = {}): Promise<void> {
 	let offset = 0;
 	let allSkills: SearchResultSkill[] = [];
 	let total = 0;
+	let initialSelectionIndex = 0; // Track where to position cursor after loading more
 
 	// 1. Get search query (from options or prompt user)
 	let query = options.query;
@@ -85,20 +153,28 @@ export async function search(options: SearchOptions = {}): Promise<void> {
 		});
 
 		if (isCancel(queryInput)) {
-			cancel("Search cancelled");
+			showExitMessage();
 			return;
 		}
 
 		query = queryInput as string;
 	}
 
-	// 2. Search loop (supports pagination)
+	// Track current sort (can be changed via in-list option)
+	let currentSort: SortField = "relevance";
+
+	// 2. Search loop (supports pagination and re-sorting)
 	while (true) {
 		// Fetch results
 		s.start(offset === 0 ? "Searching..." : "Loading more results...");
 
 		try {
-			const response = await searchSkills(query, limit, offset);
+			const response = await searchSkills({
+				query,
+				limit,
+				offset,
+				...getSortParams(currentSort),
+			});
 			total = response.total;
 
 			if (offset === 0) {
@@ -107,7 +183,12 @@ export async function search(options: SearchOptions = {}): Promise<void> {
 				allSkills = [...allSkills, ...response.skills];
 			}
 
-			s.stop(`Found ${total} skill${total !== 1 ? "s" : ""} for "${query}"`);
+			// Only show "Found X skills" message on initial search
+			if (offset === 0) {
+				s.stop(`Found ${total} skill${total !== 1 ? "s" : ""} for "${query}"`);
+			} else {
+				s.stop(`Loaded ${allSkills.length} of ${total} skills`);
+			}
 		} catch (error) {
 			s.stop("Search failed");
 			throw error;
@@ -126,28 +207,70 @@ export async function search(options: SearchOptions = {}): Promise<void> {
 
 		// 3. Show results in select prompt
 		const hasMore = allSkills.length < total;
-		const selectOptions = buildSelectOptions(allSkills, hasMore);
+		const selectOptions = buildSelectOptions(allSkills, hasMore, currentSort);
+
+		// Set initial selection to the first newly loaded skill (or first skill on initial load)
+		const initialValue = allSkills[initialSelectionIndex]?.namespace;
 
 		const selection = await select({
 			message: `Select a skill to install (${allSkills.length} of ${total}):`,
 			options: selectOptions,
 			maxItems: 12,
+			initialValue,
 		});
 
 		if (isCancel(selection)) {
-			cancel("Search cancelled");
+			showExitMessage();
 			return;
+		}
+
+		// Handle sort change
+		if (selection === SORT_VALUE) {
+			// Clear previous select output
+			const visibleItems = Math.min(12, selectOptions.length);
+			const linesToClear = visibleItems + 3;
+			clearPreviousSelect(linesToClear);
+
+			const sortSelection = await select({
+				message: "Sort results by:",
+				options: SORT_OPTIONS,
+				initialValue: currentSort,
+			});
+
+			if (isCancel(sortSelection)) {
+				showExitMessage();
+				return;
+			}
+
+			const newSort = sortSelection as SortField;
+			if (newSort !== currentSort) {
+				currentSort = newSort;
+				// Reset pagination and results when sort changes
+				offset = 0;
+				allSkills = [];
+				initialSelectionIndex = 0;
+			}
+			continue;
 		}
 
 		// Handle pagination
 		if (selection === LOAD_MORE_VALUE) {
+			// Clear previous select output to prevent visual artifacts
+			// Estimate lines: 1 for message + min(maxItems, options.length) visible items + some buffer
+			const visibleItems = Math.min(12, selectOptions.length);
+			const linesToClear = visibleItems + 3; // +3 for message, status line, and buffer
+			clearPreviousSelect(linesToClear);
+
+			// Set cursor position to first newly loaded skill on next render
+			initialSelectionIndex = allSkills.length;
+
 			offset += limit;
 			continue;
 		}
 
-		// Handle cancel
-		if (selection === CANCEL_VALUE) {
-			cancel("Search cancelled");
+		// Handle exit
+		if (selection === EXIT_VALUE) {
+			showExitMessage();
 			return;
 		}
 
@@ -186,29 +309,23 @@ export async function search(options: SearchOptions = {}): Promise<void> {
 			});
 
 			if (isCancel(clientSelection)) {
-				cancel("Search cancelled");
+				showExitMessage();
 				return;
 			}
 
 			clientKey = clientSelection as string;
 		}
 
-		const clientConfig = getClientConfig(clientKey);
-		if (!clientConfig) {
-			throw new Error(`Unknown client: ${clientKey}`);
-		}
+		const clientConfig = getClientConfig(clientKey)!;
 
 		// 6. Determine scope (from flag, client capability, or prompt)
-		let isLocal = options.local ?? false;
+		let isLocal = options.local === true;
 
-		if (options.local) {
-			// --local flag provided, use local
-			isLocal = true;
-		} else if (!clientConfig.globalDir) {
+		if (!isLocal && !clientConfig.globalDir) {
 			// Client doesn't support global
 			note(`${clientConfig.name} only supports local installation.`, "Note");
 			isLocal = true;
-		} else {
+		} else if (!isLocal) {
 			// Prompt for scope
 			const scopeSelection = await select({
 				message: "Installation scope:",
@@ -220,7 +337,7 @@ export async function search(options: SearchOptions = {}): Promise<void> {
 			});
 
 			if (isCancel(scopeSelection)) {
-				cancel("Search cancelled");
+				showExitMessage();
 				return;
 			}
 

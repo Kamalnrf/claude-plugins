@@ -70,19 +70,31 @@ export const trackInstallation = async (
 	}
 };
 
+export interface SearchParams {
+	query: string;
+	limit?: number;
+	offset?: number;
+	orderBy?: "downloads" | "stars";
+	order?: "asc" | "desc";
+}
+
 /**
  * Search for skills in the registry
  * Returns search results with pagination info
  */
-export const searchSkills = async (
-	query: string,
-	limit: number = 10,
-	offset: number = 0,
-): Promise<SearchResponse> => {
+export const searchSkills = async (params: SearchParams): Promise<SearchResponse> => {
+	const { query, limit = 10, offset = 0, orderBy, order } = params;
+
 	const url = new URL(`${REGISTRY_API_URL}/api/skills/search`);
 	url.searchParams.set("q", query);
 	url.searchParams.set("limit", String(limit));
 	url.searchParams.set("offset", String(offset));
+
+	// Add sort parameters if specified (relevance = no params)
+	if (orderBy) {
+		url.searchParams.set("orderBy", orderBy);
+		url.searchParams.set("order", order ?? "desc");
+	}
 
 	const response = await fetch(url.toString(), {
 		headers: { "User-Agent": "skills-installer/0.1.0" },
