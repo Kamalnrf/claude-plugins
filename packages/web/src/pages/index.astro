@@ -23,8 +23,9 @@ const { plugins, total } = await registryAPI.searchPlugins({
 	...(order && { order }),
 });
 
-// ISR: Cache for 1 hour with 2 hour stale-while-revalidate
-Astro.response.headers.set('Cache-Control', 's-maxage=3600, stale-while-revalidate=7200');
+// NOTE: ISR caching disabled for this route due to query parameters
+// Vercel ISR caches by path only, ignoring query params, which would cause
+// users to receive incorrect search results across different queries
 ---
 
 <MarketplaceLayout

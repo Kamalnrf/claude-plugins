@@ -18,13 +18,16 @@ export default defineConfig({
     },
     maxDuration: 60,
     isr: {
-      // Cache all pages for 1 hour
+      // Cache individual pages for 1 hour (skill detail pages)
       expiration: 3600,
       // Bypass token for manual cache invalidation
       bypassToken: process.env.ISR_BYPASS_TOKEN,
-      // Exclude API routes - keep them dynamic for real-time data
+      // Exclude routes that don't work with ISR:
       exclude: [
-        /^\/api\/.+/,
+        /^\/api\/.+/,     // API routes - keep dynamic for real-time data
+        /^\/$/,           // Homepage - uses query params (q, hasSkills, orderBy, order)
+        /^\/skills$/,     // Skills index - uses query params (q, orderBy, order)
+        // Note: /skills/[owner]/[repo]/[skill] IS cached (path-based, no query params)
       ],
     },
   }),
