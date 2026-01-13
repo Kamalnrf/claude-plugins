@@ -1,7 +1,11 @@
-import { Search, SortDescIcon} from "lucide-react";
-import { useDeferredValue, useEffect, useState } from "react";
+import { Search, SortDescIcon, Loader2 } from "lucide-react";
+import { useState } from "react";
+import { useQuery, keepPreviousData } from "@tanstack/react-query";
+import { motion, AnimatePresence } from "motion/react";
 import { Input } from "@/components/ui/input";
 import type { Skill } from "@/lib/api";
+import { useDebouncedValue } from "@/hooks/useDebouncedValue";
+import { QueryProvider } from "./QueryProvider";
 import InfiniteSkillList from "./InfiniteSkillList";
 
 interface SkillBrowserProps {
@@ -19,7 +23,6 @@ type SortOption =
 	| "stars-desc"
 	| "stars-asc";
 
-// Format number helper
 function formatNumber(num: number): string {
 	if (num < 1000) return num.toString();
 	if (num < 10000) return num.toLocaleString("en-US");
@@ -27,95 +30,61 @@ function formatNumber(num: number): string {
 	return (num / 1000000).toFixed(1).replace(/\.0$/, "") + "M";
 }
 
-export default function SkillBrowser({
+async function fetchSkills(
+	query: string,
+	sortOption: SortOption,
+	signal?: AbortSignal,
+): Promise<{ skills: Skill[]; total: number }> {
+	const params = new URLSearchParams({
+		q: query,
+		limit: "20",
+		offset: "0",
+	});
+
+	if (sortOption !== "relevance") {
+		const [orderBy, order] = sortOption.split("-");
+		params.set("orderBy", orderBy);
+		params.set("order", order);
+	}
+
+	const response = await fetch(`/api/skills?${params}`, { signal });
+	const data = await response.json();
+	return { skills: data.skills || [], total: data.total || 0 };
+}
+
+function SkillBrowserInner({
 	initialSkills,
 	initialQuery,
 	total: initialTotal,
 	initialOrderBy = null,
 	initialOrder = null,
 }: SkillBrowserProps) {
-	const [{ skills, total }, setSkills] = useState({
-		skills: initialSkills,
-		total: initialTotal,
+	// Use initial props for first render to avoid hydration mismatch
+	const getInitialSort = (): SortOption => {
+		if (!initialOrderBy) return "relevance";
+		return `${initialOrderBy}-${initialOrder || "desc"}` as SortOption;
+	};
+
+	const [searchQuery, setSearchQuery] = useState(initialQuery);
+	const [sortOption, setSortOption] = useState<SortOption>(getInitialSort());
+	const debouncedSearchQuery = useDebouncedValue(searchQuery.trim(), 500);
+
+	const { data = { skills: initialSkills, total: initialTotal }, isLoading } = useQuery({
+		queryKey: ["skills", debouncedSearchQuery, sortOption],
+		queryFn: ({ signal }) => fetchSkills(debouncedSearchQuery, sortOption, signal),
+		placeholderData: keepPreviousData,
 	});
 
-	// Search query from URL
-	const getSearchQuery = () => {
-		if (typeof window === "undefined") return initialQuery;
-		const params = new URLSearchParams(window.location.search);
-		return params.get("q") || "";
-	};
-
-	// Sort option from URL
-	const getSortFromURL = (): SortOption => {
-		if (typeof window === "undefined") {
-			if (!initialOrderBy) return "relevance";
-			return `${initialOrderBy}-${initialOrder || "desc"}` as SortOption;
-		}
-
-		const params = new URLSearchParams(window.location.search);
-		const orderBy = params.get("orderBy");
-		const order = params.get("order") || "desc";
-
-		if (!orderBy) return "relevance";
-		return `${orderBy}-${order}` as SortOption;
-	};
-
-	// Convert sort option to URL params
-	const sortToParams = (
-		sort: SortOption,
-	): { orderBy?: string; order?: string } => {
-		if (sort === "relevance") return {};
-
-		const [orderBy, order] = sort.split("-");
-		return { orderBy, order };
-	};
-
-	const [searchQuery, setSearchQuery] = useState(getSearchQuery());
-	const [sortOption, setSortOption] = useState<SortOption>(getSortFromURL());
-	const deferredSearchQuery = useDeferredValue(searchQuery);
-
-	// Fetch results when deferred query or sort changes
-	useEffect(() => {
-		const fetchSkills = async () => {
-			try {
-				const params = new URLSearchParams({
-					q: deferredSearchQuery,
-					limit: "20",
-					offset: "0",
-				});
-
-				const { orderBy, order } = sortToParams(sortOption);
-				if (orderBy) params.set("orderBy", orderBy);
-				if (order) params.set("order", order);
-
-				const response = await fetch(`/api/skills?${params}`);
-				const data = await response.json();
-
-				setSkills({
-					skills: data.skills || [],
-					total: data.total || 0,
-				});
-			} catch (error) {
-				console.error("Failed to fetch skills:", error);
-			}
-		};
-
-		fetchSkills();
-	}, [deferredSearchQuery, sortOption]);
+	const { skills, total } = data;
 
 	const handleInputChange = (value: string) => {
-		// Update URL immediately
+		const url = new URL(window.location.href);
 		if (value === "") {
-			const url = new URL(window.location.href);
 			url.searchParams.delete("q");
-			window.history.pushState({}, "", url.toString());
 		} else {
-			const url = new URL(window.location.href);
 			url.searchParams.set("q", value);
-			window.history.pushState({}, "", url.toString());
 		}
-
+		window.history.pushState({}, "", url.toString());
 		setSearchQuery(value);
 	};
 
@@ -128,16 +97,14 @@ export default function SkillBrowser({
 		setSortOption(value);
 
 		const url = new URL(window.location.href);
-
 		if (value === "relevance") {
 			url.searchParams.delete("orderBy");
 			url.searchParams.delete("order");
 		} else {
-			const { orderBy, order } = sortToParams(value);
-			if (orderBy) url.searchParams.set("orderBy", orderBy);
-			if (order) url.searchParams.set("order", order);
+			const [orderBy, order] = value.split("-");
+			url.searchParams.set("orderBy", orderBy);
+			url.searchParams.set("order", order);
 		}
-
 		window.history.pushState({}, "", url.toString());
 	};
 
@@ -149,10 +116,31 @@ export default function SkillBrowser({
 						Skills
 					</h2>
 					<div className="flex-1 h-px bg-border/30"></div>
-					<div className="text-xs font-medium text-muted-foreground/70 tabular-nums px-2.5 py-1 bg-muted/30 rounded-full border border-border/30">
-						{formatNumber(total)} {total === 1 ? "skill" : "skills"}
+					<div className="text-xs font-medium text-muted-foreground/70 tabular-nums px-2.5 py-1 bg-muted/30 rounded-full border border-border/30 min-w-[70px] flex items-center justify-center">
+						<AnimatePresence mode="wait">
+							{isLoading ? (
+								<motion.div
+									key="loading"
+									initial={{ opacity: 0 }}
+									animate={{ opacity: 1 }}
+									exit={{ opacity: 0 }}
+									transition={{ duration: 0.15 }}
+								>
+									<Loader2 className="w-3 h-4 animate-spin" />
+								</motion.div>
+							) : (
+								<motion.span
+									key="count"
+									initial={{ opacity: 0 }}
+									animate={{ opacity: 1 }}
+									exit={{ opacity: 0 }}
+									transition={{ duration: 0.15 }}
+								>
+									{formatNumber(total)} {total === 1 ? "skill" : "skills"}
+								</motion.span>
+							)}
+						</AnimatePresence>
 					</div>
-					{/* Sort Dropdown - GitHub style */}
 					<div className="relative">
 						<select
 							id="sort-select-skills"
@@ -190,5 +178,13 @@ export default function SkillBrowser({
 				onSearchChange={handleBadgeClick}
 			/>
 		</>
+	);
+}
+
+export default function SkillBrowser(props: SkillBrowserProps) {
+	return (
+		<QueryProvider>
+			<SkillBrowserInner {...props} />
+		</QueryProvider>
 	);
 }
