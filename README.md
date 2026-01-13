@@ -33,10 +33,11 @@ Discovering, installing, and managing plugins and skills across AI coding agents
 - **One registry** for discovering 10,620 Claude Code plugins and 52,909 agent skills at [claude-plugins.dev](https://claude-plugins.dev)
 - **Two focused CLIs** — `claude-plugins` for Claude Code plugins, `skills-installer` for agent skills
 - **Multi-client support** — Install skills for Claude, Cursor, OpenCode, Codex, VS Code,  Amp Code, Goose, Letta.
+- **Autonomous discovery** — Install the [skills-discovery](#autonomous-skill-discovery) meta skill and let your agent find and install skills for you
 
 ## Discover
 
-Explore available Claude Code plugins and agent skills at **[claude-plugins.dev](https://claude-plugins.dev)**
+Explore available Claude Code plugins and agent skills at **[claude-plugins.dev](https://claude-plugins.dev)** or use `skills-installer search` from your terminal.
 
 Our [registry](https://www.val.town/x/kamalnrf/claude-plugins-registry) automatically discovers and indexes all public Claude Code plugins and agent skills on GitHub.
 
@@ -81,6 +82,14 @@ npm install -g skills-installer
 
 Skills are installed to `~/.claude/skills/` (global) or `./.claude/skills/` (local)
 
+#### Interactive Search
+
+The `search` command provides an interactive terminal experience for discovering skills — search, browse, sort by relevance/stars/installs, and install without leaving your terminal.
+
+```bash
+npx skills-installer search
+```
+
 ### Supported Clients
 
 | Client | Flag |
@@ -95,7 +104,7 @@ Skills are installed to `~/.claude/skills/` (global) or `./.claude/skills/` (loc
 | Letta | `--client letta` |
 | GitHub | `--client github` |
 
-## How It Works
+### How It Works
 
 Both tools resolve identifiers via our [registry](https://www.val.town/x/kamalnrf/claude-plugins-registry):
 
@@ -103,11 +112,38 @@ Both tools resolve identifiers via our [registry](https://www.val.town/x/kamalnr
 2. Registry returns the Git repository URL
 3. CLI clones and installs the plugin or skill
 
-## Star History
+## Autonomous Skill Discovery
 
-Found this project useful? A star helps others find it too!
+Want your agent to help you discover and install skills? Try the **skills-discovery** meta skill:
+
+```bash
+npx skills-installer install @Kamalnrf/claude-plugins/skills-discovery
+```
+
+Once installed, your agent will:
+- Proactively search for relevant skills before starting tasks
+- Help you compare and understand the differences between skills
+- Install skills on your behalf with your confirmation
+
+## Support the Project
+
+If you find this project useful, here are two ways to help:
+
+### Star the Repository
+
+A star helps others discover this project!
 
 [![Star History Chart](https://api.star-history.com/svg?repos=Kamalnrf/claude-plugins&type=Date)](https://star-history.com/#Kamalnrf/claude-plugins&Date)
+
+### Join our GitHub Token Pool
+
+As the registry grows, we're approaching GitHub API rate limits (5,000 requests/hour). You can help by sharing a token:
+
+1. Authorize our [OAuth Application](https://kamalnrf--2a4f92a4e90511f0934e42dde27851f2.web.val.run/)
+2. This grants **read-only access to public data only** — no access to private repos or actions on your behalf
+3. Your token joins a pool we rotate through to distribute API load
+
+You can revoke access anytime at [github.com/settings/applications](https://github.com/settings/applications).
 
 ## Development
 
