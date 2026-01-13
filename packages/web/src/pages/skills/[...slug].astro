@@ -32,7 +32,7 @@ const keywords = `Agent Skills, ${skill.name}, ${owner}, ${marketplace}, Claude,
 const ogImageAlt = `${skill.name} - Agent skill for AI coding assistants with ${skill.stars} stars and ${skill.installs} installs`;
 
 // ISR: Cache for 6 hours with 12 hour stale-while-revalidate
-Astro.response.headers.set('Cache-Control', 'public, s-maxage=21600, stale-while-revalidate=43200');
+Astro.response.headers.set('Cache-Control', 'public, max-age=0, must-revalidate, s-maxage=21600, stale-while-revalidate=43200');
 ---
 
 <MarketplaceLayout
