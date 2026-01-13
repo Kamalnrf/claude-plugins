@@ -4,11 +4,19 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import type { Plugin } from "@/lib/api";
 import { PluginCard } from "./PluginCard";
 
+type SortOption =
+	| "relevance"
+	| "downloads-desc"
+	| "downloads-asc"
+	| "stars-desc"
+	| "stars-asc";
+
 interface InfinitePluginListProps {
 	initialPlugins: Plugin[];
 	total: number;
 	searchQuery: string;
 	hasSkillsFilter?: boolean;
+	sortOption?: SortOption;
 	onSearchChange?: (query: string) => void;
 }
 
@@ -17,6 +25,7 @@ export default function InfinitePluginList({
 	total,
 	searchQuery,
 	hasSkillsFilter = false,
+	sortOption = "relevance",
 	onSearchChange,
 }: InfinitePluginListProps) {
 	const [plugins, setPlugins] = useState<Plugin[]>(initialPlugins);
@@ -49,12 +58,11 @@ export default function InfinitePluginList({
 				params.set("hasSkills", "true");
 			}
 
-			// Add sort params from URL
-			const url = new URL(window.location.href);
-			const orderBy = url.searchParams.get("orderBy");
-			const order = url.searchParams.get("order");
-			if (orderBy) params.set("orderBy", orderBy);
-			if (order) params.set("order", order);
+			if (sortOption !== "relevance") {
+				const [orderBy, order] = sortOption.split("-");
+				params.set("orderBy", orderBy);
+				params.set("order", order);
+			}
 
 			const response = await fetch(`/api/plugins?${params}`);
 			const data = await response.json();
@@ -71,7 +79,7 @@ export default function InfinitePluginList({
 		} finally {
 			setIsLoading(false);
 		}
-	}, [searchQuery, plugins, hasSkillsFilter]);
+	}, [searchQuery, plugins, hasSkillsFilter, sortOption]);
 
 	useEffect(() => {
 		const observer = new IntersectionObserver(

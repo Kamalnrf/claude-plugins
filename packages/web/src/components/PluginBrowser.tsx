@@ -1,7 +1,11 @@
-import { Search, Sparkles, SortDescIcon } from "lucide-react";
-import { useDeferredValue, useEffect, useState } from "react";
+import { Search, Sparkles, SortDescIcon, Loader2 } from "lucide-react";
+import { useState } from "react";
+import { useQuery, keepPreviousData } from "@tanstack/react-query";
+import { motion, AnimatePresence } from "motion/react";
 import { Input } from "@/components/ui/input";
 import type { Plugin } from "@/lib/api";
+import { useDebouncedValue } from "@/hooks/useDebouncedValue";
+import { QueryProvider } from "./QueryProvider";
 import InfinitePluginList from "./InfinitePluginList";
 
 interface PluginBrowserProps {
@@ -20,7 +24,6 @@ type SortOption =
 	| "stars-desc"
 	| "stars-asc";
 
-// Format number helper
 function formatNumber(num: number): string {
 	if (num < 1000) return num.toString();
 	if (num < 10000) return num.toLocaleString("en-US");
@@ -28,7 +31,48 @@ function formatNumber(num: number): string {
 	return (num / 1000000).toFixed(1).replace(/\.0$/, "") + "M";
 }
 
-export default function PluginBrowser({
+async function fetchPlugins(
+	query: string,
+	sortOption: SortOption,
+	hasSkills: boolean,
+	signal?: AbortSignal,
+): Promise<{ plugins: Plugin[]; total: number }> {
+	const params = new URLSearchParams({
+		q: query,
+		limit: "20",
+		offset: "0",
+	});
+
+	if (hasSkills) {
+		params.set("hasSkills", "true");
+	}
+
+	if (sortOption !== "relevance") {
+		const [orderBy, order] = sortOption.split("-");
+		params.set("orderBy", orderBy);
+		params.set("order", order);
+	}
+
+	const response = await fetch(`/api/plugins?${params}`, { signal });
+
+	if (!response.ok) {
+		let errorMessage = "";
+		try {
+			const errorData = await response.json();
+			errorMessage = errorData.error || errorData.message || "";
+		} catch {
+			errorMessage = await response.text().catch(() => "");
+		}
+		throw new Error(
+			`Failed to fetch plugins: ${response.status} ${response.statusText}${errorMessage ? ` - ${errorMessage}` : ""}`,
+		);
+	}
+
+	const data = await response.json();
+	return { plugins: data.plugins || [], total: data.total || 0 };
+}
+
+function PluginBrowserInner({
 	initialPlugins,
 	initialQuery,
 	total: initialTotal,
@@ -36,103 +80,39 @@ export default function PluginBrowser({
 	initialOrderBy = null,
 	initialOrder = null,
 }: PluginBrowserProps) {
-	const [{ plugins, total }, setPlugins] = useState({
-		plugins: initialPlugins,
-		total: initialTotal,
+	// Use initial props for first render to avoid hydration mismatch
+	const getInitialSort = (): SortOption => {
+		if (!initialOrderBy) return "relevance";
+		return `${initialOrderBy}-${initialOrder || "desc"}` as SortOption;
+	};
+
+	const [searchQuery, setSearchQuery] = useState(initialQuery);
+	const [hasSkillsFilter, setHasSkillsFilter] = useState(initialHasSkills);
+	const [sortOption, setSortOption] = useState<SortOption>(getInitialSort());
+	const debouncedSearchQuery = useDebouncedValue(searchQuery.trim(), 500);
+
+	const { data, isFetching, isLoading } = useQuery({
+		queryKey: ["plugins", debouncedSearchQuery, sortOption, hasSkillsFilter],
+		queryFn: ({ signal }) =>
+			fetchPlugins(debouncedSearchQuery, sortOption, hasSkillsFilter, signal),
+		initialData: {
+			plugins: initialPlugins,
+			total: initialTotal,
+		},
+		initialDataUpdatedAt: 0,
+		placeholderData: keepPreviousData,
 	});
 
-	// Search query from URL
-	const getSearchQuery = () => {
-		if (typeof window === "undefined") return initialQuery;
-		const params = new URLSearchParams(window.location.search);
-		return params.get("q") || "";
-	};
-
-	// Skills filter from URL
-	const getSkillsFilter = (): boolean => {
-		if (typeof window === "undefined") return initialHasSkills;
-		return (
-			new URLSearchParams(window.location.search).get("hasSkills") === "true"
-		);
-	};
-
-	// Sort option from URL
-	const getSortFromURL = (): SortOption => {
-		if (typeof window === "undefined") {
-			if (!initialOrderBy) return "relevance";
-			return `${initialOrderBy}-${initialOrder || "desc"}` as SortOption;
-		}
-
-		const params = new URLSearchParams(window.location.search);
-		const orderBy = params.get("orderBy");
-		const order = params.get("order") || "desc";
-
-		if (!orderBy) return "relevance";
-		return `${orderBy}-${order}` as SortOption;
-	};
-
-	// Convert sort option to URL params
-	const sortToParams = (
-		sort: SortOption,
-	): { orderBy?: string; order?: string } => {
-		if (sort === "relevance") return {};
-
-		const [orderBy, order] = sort.split("-");
-		return { orderBy, order };
-	};
-
-	const [searchQuery, setSearchQuery] = useState(getSearchQuery());
-	const [hasSkillsFilter, setHasSkillsFilter] = useState<boolean>(
-		getSkillsFilter(),
-	);
-	const [sortOption, setSortOption] = useState<SortOption>(getSortFromURL());
-	const deferredSearchQuery = useDeferredValue(searchQuery);
-
-	// Fetch results when deferred query, filter, or sort changes
-	useEffect(() => {
-		const fetchPlugins = async () => {
-			try {
-				const params = new URLSearchParams({
-					q: deferredSearchQuery,
-					limit: "20",
-					offset: "0",
-				});
-
-				if (hasSkillsFilter) {
-					params.set("hasSkills", "true");
-				}
-
-				const { orderBy, order } = sortToParams(sortOption);
-				if (orderBy) params.set("orderBy", orderBy);
-				if (order) params.set("order", order);
-
-				const response = await fetch(`/api/plugins?${params}`);
-				const data = await response.json();
-
-				setPlugins({
-					plugins: data.plugins || [],
-					total: data.total || 0,
-				});
-			} catch (error) {
-				console.error("Failed to fetch plugins:", error);
-			}
-		};
-
-		fetchPlugins();
-	}, [deferredSearchQuery, hasSkillsFilter, sortOption]);
+	const { plugins, total } = data;
 
 	const handleInputChange = (value: string) => {
-		// Update URL immediately
+		const url = new URL(window.location.href);
 		if (value === "") {
-			const url = new URL(window.location.href);
 			url.searchParams.delete("q");
-			window.history.pushState({}, "", url.toString());
 		} else {
-			const url = new URL(window.location.href);
 			url.searchParams.set("q", value);
-			window.history.pushState({}, "", url.toString());
 		}
-
+		window.history.pushState({}, "", url.toString());
 		setSearchQuery(value);
 	};
 
@@ -158,16 +138,14 @@ export default function PluginBrowser({
 		setSortOption(value);
 
 		const url = new URL(window.location.href);
-
 		if (value === "relevance") {
 			url.searchParams.delete("orderBy");
 			url.searchParams.delete("order");
 		} else {
-			const { orderBy, order } = sortToParams(value);
-			if (orderBy) url.searchParams.set("orderBy", orderBy);
-			if (order) url.searchParams.set("order", order);
+			const [orderBy, order] = value.split("-");
+			url.searchParams.set("orderBy", orderBy);
+			url.searchParams.set("order", order);
 		}
-
 		window.history.pushState({}, "", url.toString());
 	};
 
@@ -179,8 +157,30 @@ export default function PluginBrowser({
 						Plugins
 					</h2>
 					<div className="flex-1 h-px bg-border/30"></div>
-					<div className="text-xs font-medium text-muted-foreground/70 tabular-nums px-2.5 py-1 bg-muted/30 rounded-full border border-border/30">
-						{formatNumber(total)} {total === 1 ? "plugin" : "plugins"}
+					<div className="text-xs font-medium text-muted-foreground/70 tabular-nums px-2.5 py-1 bg-muted/30 rounded-full border border-border/30 min-w-[70px] flex items-center justify-center">
+						<AnimatePresence mode="wait">
+							{(isLoading || isFetching) ? (
+								<motion.div
+									key="loading"
+									initial={{ opacity: 0 }}
+									animate={{ opacity: 1 }}
+									exit={{ opacity: 0 }}
+									transition={{ duration: 0.15 }}
+								>
+									<Loader2 className="w-3 h-4 animate-spin" />
+								</motion.div>
+							) : (
+								<motion.span
+									key="count"
+									initial={{ opacity: 0 }}
+									animate={{ opacity: 1 }}
+									exit={{ opacity: 0 }}
+									transition={{ duration: 0.15 }}
+								>
+									{formatNumber(total)} {total === 1 ? "plugin" : "plugins"}
+								</motion.span>
+							)}
+						</AnimatePresence>
 					</div>
 					<div className="relative">
 						<select
@@ -212,7 +212,6 @@ export default function PluginBrowser({
 							/>
 						</div>
 
-						{/* Skills Filter Toggle */}
 						<button
 							type="button"
 							onClick={handleSkillsFilterToggle}
@@ -234,10 +233,19 @@ export default function PluginBrowser({
 			<InfinitePluginList
 				initialPlugins={plugins}
 				total={total}
-				searchQuery={searchQuery}
+				searchQuery={debouncedSearchQuery}
 				hasSkillsFilter={hasSkillsFilter}
+				sortOption={sortOption}
 				onSearchChange={handleBadgeClick}
 			/>
 		</>
+	);
+}
+
+export default function PluginBrowser(props: PluginBrowserProps) {
+	return (
+		<QueryProvider>
+			<PluginBrowserInner {...props} />
+		</QueryProvider>
 	);
 }
