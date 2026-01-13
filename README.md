@@ -116,6 +116,9 @@ Both tools resolve identifiers via our [registry](https://www.val.town/x/kamalnr
 3. CLI clones and installs the plugin or skill
 
 ## Autonomous Skill Discovery
+<p align="center">
+  <video src="https://github.com/user-attachments/assets/666a083f-5d5e-4cb3-b4f4-58033259e7be" width="60%" />
+</p>
 
 Want your agent to help you discover and install skills? Try the **skills-discovery** meta skill:
 
