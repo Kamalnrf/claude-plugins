@@ -1,5 +1,4 @@
 const REGISTRY_BASE = "https://api.claude-plugins.dev";
-const CACHE_TTL = 1000 * 60 * 5; // 5 minutes
 const MAX_RETRIES = 3;
 const INITIAL_DELAY_MS = 500; // Exponential backoff: 500ms, 1000ms, 2000ms
 
@@ -112,40 +111,21 @@ export interface SkillSearchResponse {
 }
 
 export class RegistryAPI {
-	private cache = new Map<string, { data: unknown; timestamp: number }>();
+	async searchPlugins(params: SearchParams): Promise<SearchResponse> {
+		const url = new URL("/api/search", REGISTRY_BASE);
+		Object.entries(params).forEach(([key, value]) => {
+			if (value !== undefined) url.searchParams.set(key, String(value));
+		});
 
-	private async fetchWithCache<T>(
-		key: string,
-		fetchFn: () => Promise<T>,
-	): Promise<T> {
-		const cached = this.cache.get(key);
+		const response = await fetchWithRetry(url, {
+			headers: { Accept: "application/json" },
+		});
 
-		if (cached && Date.now() - cached.timestamp < CACHE_TTL) {
-			return cached.data as T;
+		if (!response.ok) {
+			throw new Error(`Registry API error: ${response.status}`);
 		}
 
-		const data = await fetchFn();
-		this.cache.set(key, { data, timestamp: Date.now() });
-		return data;
-	}
-
-	async searchPlugins(params: SearchParams): Promise<SearchResponse> {
-		return this.fetchWithCache(`search:${JSON.stringify(params)}`, async () => {
-			const url = new URL("/api/search", REGISTRY_BASE);
-			Object.entries(params).forEach(([key, value]) => {
-				if (value !== undefined) url.searchParams.set(key, String(value));
-			});
-
-			const response = await fetchWithRetry(url, {
-				headers: { Accept: "application/json" },
-			});
-
-			if (!response.ok) {
-				throw new Error(`Registry API error: ${response.status}`);
-			}
-
-			return response.json();
-		});
+		return response.json();
 	}
 
 	async resolvePlugin(
@@ -153,21 +133,16 @@ export class RegistryAPI {
 		marketplace: string,
 		plugin: string,
 	): Promise<Plugin> {
-		return this.fetchWithCache(
-			`resolve:${owner}/${marketplace}/${plugin}`,
-			async () => {
-				const url = `${REGISTRY_BASE}/api/resolve/${owner}/${marketplace}/${plugin}`;
-				const response = await fetchWithRetry(url, {
-					headers: { Accept: "application/json" },
-				});
+		const url = `${REGISTRY_BASE}/api/resolve/${owner}/${marketplace}/${plugin}`;
+		const response = await fetchWithRetry(url, {
+			headers: { Accept: "application/json" },
+		});
 
-				if (!response.ok) {
-					throw new Error(`Plugin not found: ${response.status}`);
-				}
+		if (!response.ok) {
+			throw new Error(`Plugin not found: ${response.status}`);
+		}
 
-				return response.json();
-			},
-		);
+		return response.json();
 	}
 
 	async getPluginStats(
@@ -175,21 +150,16 @@ export class RegistryAPI {
 		marketplace: string,
 		plugin: string,
 	): Promise<PluginStats> {
-		return this.fetchWithCache(
-			`stats:${owner}/${marketplace}/${plugin}`,
-			async () => {
-				const url = `${REGISTRY_BASE}/api/plugins/${owner}/${marketplace}/${plugin}/stats`;
-				const response = await fetchWithRetry(url, {
-					headers: { Accept: "application/json" },
-				});
+		const url = `${REGISTRY_BASE}/api/plugins/${owner}/${marketplace}/${plugin}/stats`;
+		const response = await fetchWithRetry(url, {
+			headers: { Accept: "application/json" },
+		});
 
-				if (!response.ok) {
-					throw new Error(`Stats not found: ${response.status}`);
-				}
+		if (!response.ok) {
+			throw new Error(`Stats not found: ${response.status}`);
+		}
 
-				return response.json();
-			},
-		);
+		return response.json();
 	}
 
 	async getPluginReadme(gitUrl: string): Promise<string> {
@@ -230,25 +200,20 @@ export class RegistryAPI {
 	}
 
 	async searchSkills(params: SearchParams): Promise<SkillSearchResponse> {
-		return this.fetchWithCache(
-			`skills:search:${JSON.stringify(params)}`,
-			async () => {
-				const url = new URL("/api/skills/search", REGISTRY_BASE);
-				Object.entries(params).forEach(([key, value]) => {
-					if (value !== undefined) url.searchParams.set(key, String(value));
-				});
+		const url = new URL("/api/skills/search", REGISTRY_BASE);
+		Object.entries(params).forEach(([key, value]) => {
+			if (value !== undefined) url.searchParams.set(key, String(value));
+		});
 
-				const response = await fetchWithRetry(url, {
-					headers: { Accept: "application/json" },
-				});
+		const response = await fetchWithRetry(url, {
+			headers: { Accept: "application/json" },
+		});
 
-				if (!response.ok) {
-					throw new Error(`Skills API error: ${response.status}`);
-				}
+		if (!response.ok) {
+			throw new Error(`Skills API error: ${response.status}`);
+		}
 
-				return response.json();
-			},
-		);
+		return response.json();
 	}
 
 	async getSkill(
@@ -256,21 +221,16 @@ export class RegistryAPI {
 		marketplace: string,
 		skillName: string,
 	): Promise<Skill> {
-		return this.fetchWithCache(
-			`skill:${owner}/${marketplace}/${skillName}`,
-			async () => {
-				const url = `${REGISTRY_BASE}/api/skills/${owner}/${marketplace}/${skillName}`;
-				const response = await fetchWithRetry(url, {
-					headers: { Accept: "application/json" },
-				});
+		const url = `${REGISTRY_BASE}/api/skills/${owner}/${marketplace}/${skillName}`;
+		const response = await fetchWithRetry(url, {
+			headers: { Accept: "application/json" },
+		});
 
-				if (!response.ok) {
-					throw new Error(`Skill not found: ${response.status}`);
-				}
+		if (!response.ok) {
+			throw new Error(`Skill not found: ${response.status}`);
+		}
 
-				return response.json();
-			},
-		);
+		return response.json();
 	}
 }
 
