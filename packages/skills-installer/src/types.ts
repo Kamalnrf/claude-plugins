@@ -63,6 +63,9 @@ export interface SearchResponse {
 	offset: number;
 }
 
+// Sort options for search
+export type SortField = "relevance" | "downloads" | "stars";
+
 export interface SearchOptions {
 	query?: string;
 	client?: string;
