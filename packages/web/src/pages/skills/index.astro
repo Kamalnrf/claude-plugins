@@ -26,7 +26,7 @@ const { skills, total } = await registryAPI.searchSkills({
 // Search/filter happens client-side via /api/skills (excluded from ISR)
 const hasQueryParams = searchQuery || orderBy || order;
 if (!hasQueryParams) {
-	Astro.response.headers.set('Cache-Control', 'public, s-maxage=7200, stale-while-revalidate=14400');
+	Astro.response.headers.set('Cache-Control', 'public, max-age=0, must-revalidate, s-maxage=7200, stale-while-revalidate=14400');
 }
 ---
 
