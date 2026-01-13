@@ -91,8 +91,7 @@ function PluginBrowserInner({
 	const [sortOption, setSortOption] = useState<SortOption>(getInitialSort());
 	const debouncedSearchQuery = useDebouncedValue(searchQuery.trim(), 500);
 
-	const [initialDataUpdatedAt] = useState(() => Date.now());
-	const { data = { plugins: initialPlugins, total: initialTotal }, isFetching } = useQuery({
+	const { data, isFetching, isLoading } = useQuery({
 		queryKey: ["plugins", debouncedSearchQuery, sortOption, hasSkillsFilter],
 		queryFn: ({ signal }) =>
 			fetchPlugins(debouncedSearchQuery, sortOption, hasSkillsFilter, signal),
@@ -100,12 +99,11 @@ function PluginBrowserInner({
 			plugins: initialPlugins,
 			total: initialTotal,
 		},
-		initialDataUpdatedAt,
+		initialDataUpdatedAt: 0,
 		placeholderData: keepPreviousData,
 	});
 
 	const { plugins, total } = data;
-	const isLoading = searchQuery.trim() !== debouncedSearchQuery || isFetching;
 
 	const handleInputChange = (value: string) => {
 		const url = new URL(window.location.href);
@@ -161,7 +159,7 @@ function PluginBrowserInner({
 					<div className="flex-1 h-px bg-border/30"></div>
 					<div className="text-xs font-medium text-muted-foreground/70 tabular-nums px-2.5 py-1 bg-muted/30 rounded-full border border-border/30 min-w-[70px] flex items-center justify-center">
 						<AnimatePresence mode="wait">
-							{isLoading ? (
+							{(isLoading || isFetching) ? (
 								<motion.div
 									key="loading"
 									initial={{ opacity: 0 }}
@@ -237,6 +235,7 @@ function PluginBrowserInner({
 				total={total}
 				searchQuery={debouncedSearchQuery}
 				hasSkillsFilter={hasSkillsFilter}
+				sortOption={sortOption}
 				onSearchChange={handleBadgeClick}
 			/>
 		</>

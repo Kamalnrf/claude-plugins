@@ -83,19 +83,16 @@ function SkillBrowserInner({
 	const [sortOption, setSortOption] = useState<SortOption>(getInitialSort());
 	const debouncedSearchQuery = useDebouncedValue(searchQuery.trim(), 500);
 
-	const [initialDataUpdatedAt] = useState(() => Date.now());
-	const { data = { skills: initialSkills, total: initialTotal }, isFetching } = useQuery({
+	const { data, isLoading, isFetching} = useQuery({
 		queryKey: ["skills", debouncedSearchQuery, sortOption],
 		queryFn: ({ signal }) => fetchSkills(debouncedSearchQuery, sortOption, signal),
 		initialData: {
 			skills: initialSkills,
 			total: initialTotal,
 		},
-		initialDataUpdatedAt,
+		initialDataUpdatedAt: 0,
 		placeholderData: keepPreviousData,
 	});
-
-	const isLoading = searchQuery.trim() !== debouncedSearchQuery || isFetching;
 
 	const { skills, total } = data;
 
@@ -140,7 +137,7 @@ function SkillBrowserInner({
 					<div className="flex-1 h-px bg-border/30"></div>
 					<div className="text-xs font-medium text-muted-foreground/70 tabular-nums px-2.5 py-1 bg-muted/30 rounded-full border border-border/30 min-w-[70px] flex items-center justify-center">
 						<AnimatePresence mode="wait">
-							{isLoading ? (
+							{(isLoading || isFetching) ? (
 								<motion.div
 									key="loading"
 									initial={{ opacity: 0 }}
