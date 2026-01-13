@@ -91,6 +91,7 @@ function PluginBrowserInner({
 	const [sortOption, setSortOption] = useState<SortOption>(getInitialSort());
 	const debouncedSearchQuery = useDebouncedValue(searchQuery.trim(), 500);
 
+	const [initialDataUpdatedAt] = useState(() => Date.now());
 	const { data = { plugins: initialPlugins, total: initialTotal }, isFetching } = useQuery({
 		queryKey: ["plugins", debouncedSearchQuery, sortOption, hasSkillsFilter],
 		queryFn: ({ signal }) =>
@@ -99,7 +100,7 @@ function PluginBrowserInner({
 			plugins: initialPlugins,
 			total: initialTotal,
 		},
-		initialDataUpdatedAt: 0,
+		initialDataUpdatedAt,
 		placeholderData: keepPreviousData,
 	});
 

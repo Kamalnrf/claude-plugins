@@ -83,6 +83,7 @@ function SkillBrowserInner({
 	const [sortOption, setSortOption] = useState<SortOption>(getInitialSort());
 	const debouncedSearchQuery = useDebouncedValue(searchQuery.trim(), 500);
 
+	const [initialDataUpdatedAt] = useState(() => Date.now());
 	const { data = { skills: initialSkills, total: initialTotal }, isFetching } = useQuery({
 		queryKey: ["skills", debouncedSearchQuery, sortOption],
 		queryFn: ({ signal }) => fetchSkills(debouncedSearchQuery, sortOption, signal),
@@ -90,7 +91,7 @@ function SkillBrowserInner({
 			skills: initialSkills,
 			total: initialTotal,
 		},
-		initialDataUpdatedAt: 0,
+		initialDataUpdatedAt,
 		placeholderData: keepPreviousData,
 	});
 

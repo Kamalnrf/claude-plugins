@@ -23,8 +23,12 @@ export interface SkillCardProps {
 
 function formatNumber(num: number): string {
 	if (num < 1000) return num.toString();
-	if (num < 1000000) return (num / 1000).toFixed(1).replace(/\.0$/, "") + "k";
-	return (num / 1000000).toFixed(1).replace(/\.0$/, "") + "M";
+	if (num < 1000000) {
+		const value = Math.floor((num / 1000) * 10) / 10;
+		return value.toFixed(1).replace(/\.0$/, "") + "k";
+	}
+	const value = Math.floor((num / 1000000) * 10) / 10;
+	return value.toFixed(1).replace(/\.0$/, "") + "M";
 }
 
 export function SkillCard({ skill }: SkillCardProps) {
@@ -47,16 +51,17 @@ export function SkillCard({ skill }: SkillCardProps) {
 									{skill.name}
 								</ItemTitle>
 
-								<a
-									href={skill.sourceUrl}
-									target="_blank"
-									rel="noopener noreferrer"
-									onClick={(e) => e.stopPropagation()}
-									className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors w-fit"
+								<span
+									onClick={(e) => {
+										e.preventDefault();
+										e.stopPropagation();
+										window.open(skill.sourceUrl, '_blank', 'noopener,noreferrer');
+									}}
+									className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors w-fit cursor-pointer"
 								>
 									<GithubIcon size={12} className="shrink-0" />
 									<span className="font-medium">{skill.namespace.replace('_', '-').split('/').slice(0, 2).join('/')}</span>
-								</a>
+								</span>
 							</ItemContent>
 						</ItemHeader>
 						<ItemActions>

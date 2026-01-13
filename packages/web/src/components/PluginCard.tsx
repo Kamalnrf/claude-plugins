@@ -24,8 +24,12 @@ export interface PluginCardProps {
 
 function formatNumber(num: number): string {
   if (num < 1000) return num.toString();
-  if (num < 1000000) return (num / 1000).toFixed(1).replace(/\.0$/, '') + 'k';
-  return (num / 1000000).toFixed(1).replace(/\.0$/, '') + 'M';
+  if (num < 1000000) {
+    const value = Math.floor((num / 1000) * 10) / 10;
+    return value.toFixed(1).replace(/\.0$/, '') + 'k';
+  }
+  const value = Math.floor((num / 1000000) * 10) / 10;
+  return value.toFixed(1).replace(/\.0$/, '') + 'M';
 }
 
 export function PluginCard({ plugin, onBadgeClick }: PluginCardProps) {
