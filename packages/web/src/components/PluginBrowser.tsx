@@ -54,6 +54,20 @@ async function fetchPlugins(
 	}
 
 	const response = await fetch(`/api/plugins?${params}`, { signal });
+
+	if (!response.ok) {
+		let errorMessage = "";
+		try {
+			const errorData = await response.json();
+			errorMessage = errorData.error || errorData.message || "";
+		} catch {
+			errorMessage = await response.text().catch(() => "");
+		}
+		throw new Error(
+			`Failed to fetch plugins: ${response.status} ${response.statusText}${errorMessage ? ` - ${errorMessage}` : ""}`,
+		);
+	}
+
 	const data = await response.json();
 	return { plugins: data.plugins || [], total: data.total || 0 };
 }
@@ -81,6 +95,11 @@ function PluginBrowserInner({
 		queryKey: ["plugins", debouncedSearchQuery, sortOption, hasSkillsFilter],
 		queryFn: ({ signal }) =>
 			fetchPlugins(debouncedSearchQuery, sortOption, hasSkillsFilter, signal),
+		initialData: {
+			plugins: initialPlugins,
+			total: initialTotal,
+		},
+		initialDataUpdatedAt: 0,
 		placeholderData: keepPreviousData,
 	});
 

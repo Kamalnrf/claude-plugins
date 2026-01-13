@@ -48,6 +48,20 @@ async function fetchSkills(
 	}
 
 	const response = await fetch(`/api/skills?${params}`, { signal });
+
+	if (!response.ok) {
+		let errorMessage = "";
+		try {
+			const errorData = await response.json();
+			errorMessage = errorData.error || errorData.message || "";
+		} catch {
+			errorMessage = await response.text().catch(() => "");
+		}
+		throw new Error(
+			`Failed to fetch skills: ${response.status} ${response.statusText}${errorMessage ? ` - ${errorMessage}` : ""}`,
+		);
+	}
+
 	const data = await response.json();
 	return { skills: data.skills || [], total: data.total || 0 };
 }
@@ -69,11 +83,18 @@ function SkillBrowserInner({
 	const [sortOption, setSortOption] = useState<SortOption>(getInitialSort());
 	const debouncedSearchQuery = useDebouncedValue(searchQuery.trim(), 500);
 
-	const { data = { skills: initialSkills, total: initialTotal }, isLoading } = useQuery({
+	const { data = { skills: initialSkills, total: initialTotal }, isFetching } = useQuery({
 		queryKey: ["skills", debouncedSearchQuery, sortOption],
 		queryFn: ({ signal }) => fetchSkills(debouncedSearchQuery, sortOption, signal),
+		initialData: {
+			skills: initialSkills,
+			total: initialTotal,
+		},
+		initialDataUpdatedAt: 0,
 		placeholderData: keepPreviousData,
 	});
+
+	const isLoading = searchQuery.trim() !== debouncedSearchQuery || isFetching;
 
 	const { skills, total } = data;
 
