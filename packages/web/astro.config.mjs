@@ -18,7 +18,7 @@ export default defineConfig({
     },
     maxDuration: 60,
     isr: {
-      expiration: 3600,
+      expiration: 21600, // 6 hours
       bypassToken: process.env.ISR_BYPASS_TOKEN,
       exclude: [
         /^\/api\/.+/,

@@ -103,8 +103,8 @@ export const GET: APIRoute = async () => {
     width: 1200,
     height: 630,
     headers: {
-      // ISR: Cache for 1 hour with 2 hour stale-while-revalidate
-      'Cache-Control': 's-maxage=3600, stale-while-revalidate=7200',
+      // Cache for 24 hours with 48 hour stale-while-revalidate
+      'Cache-Control': 'public, s-maxage=86400, stale-while-revalidate=172800',
     },
   });
 };

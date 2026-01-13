@@ -27,7 +27,7 @@ const { plugins, total } = await registryAPI.searchPlugins({
 // Search/filter happens client-side via /api/plugins (excluded from ISR)
 const hasQueryParams = searchQuery || hasSkills || orderBy || order;
 if (!hasQueryParams) {
-	Astro.response.headers.set('Cache-Control', 's-maxage=3600, stale-while-revalidate=7200');
+	Astro.response.headers.set('Cache-Control', 'public, s-maxage=7200, stale-while-revalidate=14400');
 }
 ---
 
