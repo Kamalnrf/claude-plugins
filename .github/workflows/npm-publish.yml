@@ -35,7 +35,9 @@ jobs:
       - run: bun run build
         working-directory: ${{ steps.pkg.outputs.dir }}
       
+      - name: Setup npm authentication
+        run: |
+          echo "//registry.npmjs.org/:_authToken=${{ secrets.npm_token }}" > ~/.npmrc
+      
       - run: npm publish
         working-directory: ${{ steps.pkg.outputs.dir }}
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.npm_token }}
