@@ -247,7 +247,9 @@ export async function search(options: SearchOptions = {}): Promise<void> {
 		// Set initial selection to the first newly loaded skill (or meta skill on initial load)
 		const initialValue =
 			initialSelectionIndex === 0
-				? INSTALL_META_SKILL_VALUE
+				? metaSkill
+					? INSTALL_META_SKILL_VALUE
+					: allSkills[0]?.namespace ?? selectOptions[0]?.value
 				: allSkills[initialSelectionIndex]?.namespace;
 
 		const selection = await select({
