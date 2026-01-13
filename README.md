@@ -83,6 +83,7 @@ npm install -g skills-installer
 Skills are installed to `~/.claude/skills/` (global) or `./.claude/skills/` (local)
 
 #### Interactive Search
+![skills-installer-search-demo](https://github.com/user-attachments/assets/b20597ad-7bed-4845-9fd4-2dd7da0b26d6)
 
 The `search` command provides an interactive terminal experience for discovering skills — search, browse, sort by relevance/stars/installs, and install without leaving your terminal.
 
