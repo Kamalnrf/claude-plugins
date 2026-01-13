@@ -199,7 +199,7 @@ export class RegistryAPI {
 		};
 	}
 
-	async searchSkills(params: SearchParams): Promise<SkillSearchResponse> {
+	async searchSkills(params: SkillSearchParams): Promise<SkillSearchResponse> {
 		const url = new URL("/api/skills/search", REGISTRY_BASE);
 		Object.entries(params).forEach(([key, value]) => {
 			if (value !== undefined) url.searchParams.set(key, String(value));
