@@ -2,16 +2,29 @@ const REGISTRY_BASE = "https://api.claude-plugins.dev";
 const MAX_RETRIES = 3;
 const INITIAL_DELAY_MS = 500; // Exponential backoff: 500ms, 1000ms, 2000ms
 
+const DEFAULT_HEADERS = {
+	Accept: "application/json",
+	"User-Agent": "claude-plugins-web/1.0",
+};
+
 async function fetchWithRetry(
 	url: string | URL,
 	options?: RequestInit,
 	retries = MAX_RETRIES,
 ): Promise<Response> {
+	const mergedOptions: RequestInit = {
+		...options,
+		headers: {
+			...DEFAULT_HEADERS,
+			...options?.headers,
+		},
+	};
+
 	let lastError: Error | undefined;
 
 	for (let attempt = 0; attempt < retries; attempt++) {
 		try {
-			const response = await fetch(url, options);
+			const response = await fetch(url, mergedOptions);
 			return response;
 		} catch (error) {
 			lastError = error as Error;
