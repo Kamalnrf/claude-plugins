@@ -1,24 +1,41 @@
-# This workflow will run tests using node and then publish a package to GitHub Packages when a release is created
+# This workflow will run tests using node and then publish a package to npmjs when a release is created
 # For more information see: https://docs.github.com/en/actions/publishing-packages/publishing-nodejs-packages
 
 name: Publish Package to npmjs
 on:
   release:
     types: [created]
-defaults:
-  run: 
-    working-directory: ./packages/cli
+
 jobs:
   publish-npm:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
+      
+      - name: Determine package directory
+        id: pkg
+        run: |
+          TAG="${{ github.event.release.tag_name }}"
+          if [[ "$TAG" == skills-installer@* ]]; then
+            echo "dir=packages/skills-installer" >> $GITHUB_OUTPUT
+          elif [[ "$TAG" == claude-plugins@* ]]; then
+            echo "dir=packages/cli" >> $GITHUB_OUTPUT
+          else
+            echo "::error::Unknown package in release tag: $TAG"
+            exit 1
+          fi
+      
       - uses: oven-sh/setup-bun@v2
         with:
           bun-version: 1.2.0
-          registry-url: https://registry.npmjs.org/
+      
       - run: bun test
-      - run: bun build
-      - run: bun publish
+        working-directory: ${{ steps.pkg.outputs.dir }}
+      
+      - run: bun run build
+        working-directory: ${{ steps.pkg.outputs.dir }}
+      
+      - run: npm publish
+        working-directory: ${{ steps.pkg.outputs.dir }}
         env:
-          NODE_AUTH_TOKEN: ${{secrets.npm_token}}
+          NODE_AUTH_TOKEN: ${{ secrets.npm_token }}
