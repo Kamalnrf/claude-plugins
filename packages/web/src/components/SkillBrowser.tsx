@@ -195,7 +195,7 @@ function SkillBrowserInner({
 			<InfiniteSkillList
 				initialSkills={skills}
 				total={total}
-				searchQuery={searchQuery}
+				searchQuery={debouncedSearchQuery}
 				onSearchChange={handleBadgeClick}
 			/>
 		</>

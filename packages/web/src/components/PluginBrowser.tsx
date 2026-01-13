@@ -234,7 +234,7 @@ function PluginBrowserInner({
 			<InfinitePluginList
 				initialPlugins={plugins}
 				total={total}
-				searchQuery={searchQuery}
+				searchQuery={debouncedSearchQuery}
 				hasSkillsFilter={hasSkillsFilter}
 				onSearchChange={handleBadgeClick}
 			/>
