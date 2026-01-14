@@ -8,6 +8,7 @@ import { TweetEmbed } from "@/components/TweetEmbed";
 import Markdown from "@/components/Markdown.astro";
 import { Button } from "@/components/ui/button";
 import {LinkIcon} from '@/components/ui/link-icon'
+import TweetWithSkeleton from '@/components/TweetWithSkeleton.astro';
 
 const { slug } = Astro.params;
 const parts = slug?.split("/") || [];
@@ -70,7 +71,7 @@ Astro.response.headers.set('Cache-Control', 'public, max-age=0, must-revalidate,
 					<h2 class="text-base font-semibold text-foreground/90 tracking-tight">Autonomous Skill Discovery</h2>
 					<div class="flex-1 h-px bg-border/30"></div>
 				</div>
-				<TweetEmbed client:only="react" id="2011227015337455694" />
+				<TweetWithSkeleton id="https://x.com/noominoid/status/2011227015337455694" />
 			</section>
 		)}
 		<section>

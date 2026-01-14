@@ -9,6 +9,7 @@
     "astro": "astro"
   },
   "dependencies": {
+    "@astro-community/astro-embed-twitter": "^0.5.11",
     "@astrojs/react": "^4.4.0",
     "@astrojs/tailwind": "^6.0.2",
     "@astrojs/vercel": "^8.2.9",
