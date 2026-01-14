@@ -87,6 +87,7 @@ Determine which client the user is working in before installing. If unclear, ask
 - `github` — VSCode/ github
 - `vscode` — VS Code
 - `letta` — Letta CLI
+- `gemini` - Gemini CLI
 - **Client selection:**
 
 ```bash

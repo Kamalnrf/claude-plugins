@@ -101,6 +101,7 @@ Currently supported clients:
 - `amp`
 - `goose`
 - `opencode`
+- `gemini`
 
 ## Commands
 
