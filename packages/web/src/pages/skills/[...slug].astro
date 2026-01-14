@@ -4,11 +4,10 @@ import JsonLd from "../../components/JsonLd.astro";
 import { registryAPI } from "../../lib/api";
 import { InstallSkill } from "../../components/InstallSkill";
 import { SkillDetailHeader } from "@/components/SkillDetailHeader";
-import { TweetEmbed } from "@/components/TweetEmbed";
 import Markdown from "@/components/Markdown.astro";
 import { Button } from "@/components/ui/button";
 import {LinkIcon} from '@/components/ui/link-icon'
-import TweetWithSkeleton from '@/components/TweetWithSkeleton.astro';
+import Tweet from '@/components/Tweet.astro';
 
 const { slug } = Astro.params;
 const parts = slug?.split("/") || [];
@@ -65,15 +64,6 @@ Astro.response.headers.set('Cache-Control', 'public, max-age=0, must-revalidate,
 	</Fragment>
 	<div class="flex flex-col p-6 gap-4">
 	  <SkillDetailHeader client:load skill={skill} />
-		{slug === "@Kamalnrf/claude-plugins/skills-discovery" && (
-			<section>
-				<div class="flex items-center gap-2 py-2">
-					<h2 class="text-base font-semibold text-foreground/90 tracking-tight">Autonomous Skill Discovery</h2>
-					<div class="flex-1 h-px bg-border/30"></div>
-				</div>
-				<TweetWithSkeleton id="https://x.com/noominoid/status/2011227015337455694" />
-			</section>
-		)}
 		<section>
       <div class="flex items-center gap-2 py-2">
         <h2 class="text-base font-semibold text-foreground/90 tracking-tight">Install Skill</h2>
@@ -81,6 +71,15 @@ Astro.response.headers.set('Cache-Control', 'public, max-age=0, must-revalidate,
       </div>
 			<InstallSkill skill={skill} client:load />
 		</section>
+		{slug === "@Kamalnrf/claude-plugins/skills-discovery" && (
+			<section>
+				<div class="flex items-center gap-2 py-2">
+					<h2 class="text-base font-semibold text-foreground/90 tracking-tight">Skill Usage</h2>
+					<div class="flex-1 h-px bg-border/30"></div>
+				</div>
+				<Tweet id="2011227015337455694" />
+			</section>
+		)}
 		<section>
 		  <div class="flex items-center gap-2 py-2">
         <h2 class="text-base font-semibold text-foreground/90 tracking-tight">SKILL.md</h2>
