@@ -67,6 +67,9 @@ const fullOgImage = ogImage.startsWith('http') ? ogImage : `${siteUrl}${ogImage}
 
     <!-- Custom head slot for additional meta tags -->
     <slot name="head" />
+
+    <!-- Preload Twitter widgets for faster tweet embeds -->
+    <link rel="preload" href="https://platform.twitter.com/widgets.js" as="script" />
     
     <ClientRouter />
   </head>
