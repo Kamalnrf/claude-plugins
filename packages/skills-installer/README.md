@@ -32,6 +32,10 @@ Agent Skills are specialized capabilities that extend AI coding assistants like 
 
 ### Search for skills
 
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/b20597ad-7bed-4845-9fd4-2dd7da0b26d6" alt="Finding and exploring skills using the CLI" width="60%" />
+</p>
+
 Search the registry interactively:
 
 ```bash
@@ -45,7 +49,7 @@ skills-installer search "frontend design"
 ```
 
 The search command provides an interactive interface where you can:
-- Browse skills ranked by installs
+- Browse and sort skills ranked by relevance, installs, and GitHub stars
 - Select a skill to install directly
 - Choose installation scope and target client
 
