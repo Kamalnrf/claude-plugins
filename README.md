@@ -8,6 +8,10 @@ A plugin manager and skills installer for AI coding agents.
 [![skills-installer](https://img.shields.io/npm/v/skills-installer?label=skills-installer)](https://www.npmjs.com/package/skills-installer)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
+<div align="center">
+  <video src="https://github.com/user-attachments/assets/63582572-397d-4104-8efe-ab844a0f43f0" />
+</div>
+
 ## Quick Start
 
 **Install a Claude plugin:**
@@ -116,9 +120,6 @@ Both tools resolve identifiers via our [registry](https://www.val.town/x/kamalnr
 3. CLI clones and installs the plugin or skill
 
 ## Autonomous Skill Discovery
-<p align="center">
-  <video src="https://github.com/user-attachments/assets/666a083f-5d5e-4cb3-b4f4-58033259e7be" width="60%" />
-</p>
 
 Want your agent to help you discover and install skills? Try the **skills-discovery** meta skill:
 
@@ -139,7 +140,11 @@ If you find this project useful, here are two ways to help:
 
 A star helps others discover this project!
 
-[![Star History Chart](https://api.star-history.com/svg?repos=Kamalnrf/claude-plugins&type=Date)](https://star-history.com/#Kamalnrf/claude-plugins&Date)
+<p align="center">
+  <a href="https://star-history.com/#Kamalnrf/claude-plugins&Date">
+    <img src="https://api.star-history.com/svg?repos=Kamalnrf/claude-plugins&type=Date" alt="Star History Chart" width="60%" />
+  </a>
+</p>
 
 ### Join our GitHub Token Pool
 
