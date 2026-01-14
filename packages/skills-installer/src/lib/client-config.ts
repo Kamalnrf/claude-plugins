@@ -44,7 +44,12 @@ export const CLIENT_CONFIGS: Record<string, ClientConfig> = {
 		name: "OpenCode",
 		globalDir: join(homedir(), ".opencode", "skill"),
 		localDir: join(process.cwd(), ".opencode", "skill"),
-	}
+	},
+	"gemini": {
+		name: "Gemini CLI",
+		globalDir: join(homedir(), ".gemini", "skills"),
+		localDir: join(process.cwd(), ".gemini", "skills"),
+	},
 };
 
 export const getClientConfig = (name: string): ClientConfig | undefined =>

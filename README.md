@@ -36,7 +36,7 @@ Discovering, installing, and managing plugins and skills across AI coding agents
 
 - **One registry** for discovering 10,620 Claude Code plugins and 52,909 agent skills at [claude-plugins.dev](https://claude-plugins.dev)
 - **Two focused CLIs** — `claude-plugins` for Claude Code plugins, `skills-installer` for agent skills
-- **Multi-client support** — Install skills for Claude, Cursor, OpenCode, Codex, VS Code,  Amp Code, Goose, Letta.
+- **Multi-client support** — Install skills for Claude, Cursor, OpenCode, Codex, VS Code, Amp Code, Goose, Letta, Gemini CLI.
 - **Autonomous discovery** — Install the [skills-discovery](#autonomous-skill-discovery) meta skill and let your agent find and install skills for you
 
 ## Discover
@@ -110,6 +110,7 @@ npx skills-installer search
 | Goose | `--client goose` |
 | Letta | `--client letta` |
 | GitHub | `--client github` |
+| Gemini CLI | `--client gemini` |
 
 ### How It Works
 

@@ -12,6 +12,7 @@ import { VSCodeIcon } from "./ui/vs-code-icon";
 import { AMPIcon } from "./ui/amp-icon";
 import { GooseIcon } from "./ui/goose-icon";
 import { LettaIcon } from "./ui/letta-icon";
+import { GeminiIcon } from "./ui/gemini-icon";
 
 type Props = {
 	skill: Skill; // Skill to use in example instructions
@@ -34,6 +35,7 @@ const CLIENTS: Client[] = [
 	{ id: "vscode", name: "VS Code", icon: <VSCodeIcon />, supportsGlobal: false },
 	{ id: "letta", name: "Letta", icon: <LettaIcon />, supportsGlobal: false },
 	{ id: "goose", name: "Goose", icon: <GooseIcon />, supportsGlobal: false },
+	{ id: "gemini", name: "Gemini CLI", icon: <GeminiIcon />, supportsGlobal: true },
 ];
 
 export function InstallSkill({ skill }: Props) {
