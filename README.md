@@ -88,7 +88,7 @@ Skills are installed to `~/.claude/skills/` (global) or `./.claude/skills/` (loc
 
 #### Interactive Search
 <p align="center">
-  <img src="https://github.com/user-attachments/assets/b20597ad-7bed-4845-9fd4-2dd7da0b26d6" width="60%" />
+  <img src="https://github.com/user-attachments/assets/b20597ad-7bed-4845-9fd4-2dd7da0b26d6" alt="Finding and exploring skills using the CLI" width="60%" />
 </p>
 
 The `search` command provides an interactive terminal experience for discovering skills — search, browse, sort by relevance/stars/installs, and install without leaving your terminal.
