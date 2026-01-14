@@ -32,6 +32,8 @@ Agent Skills are specialized capabilities that extend AI coding assistants like 
 
 ### Search for skills
 
+![skills-installer-search-demo](https://github.com/user-attachments/assets/b20597ad-7bed-4845-9fd4-2dd7da0b26d6)
+
 Search the registry interactively:
 
 ```bash
