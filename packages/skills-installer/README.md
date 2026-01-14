@@ -33,7 +33,7 @@ Agent Skills are specialized capabilities that extend AI coding assistants like 
 ### Search for skills
 
 <p align="center">
-  <img src="https://github.com/user-attachments/assets/b20597ad-7bed-4845-9fd4-2dd7da0b26d6" width="60%" />
+  <img src="https://github.com/user-attachments/assets/b20597ad-7bed-4845-9fd4-2dd7da0b26d6" alt="Finding and exploring skills using the CLI" width="60%" />
 </p>
 
 Search the registry interactively:
