@@ -12,7 +12,7 @@ const hasVideo = tweet?.mediaDetails?.some(m => m.type === 'video' || m.type ===
 const tweetUrl = tweet ? `https://twitter.com/${tweet.user.screen_name}/status/${id}` : '';
 ---
 
-<div class="tweet-embed max-w-[500px]" data-theme="dark" data-has-video={hasVideo} data-tweet-url={tweetUrl}>
+<div class="tweet-embed max-w-[600px]" data-theme="dark" data-has-video={hasVideo} data-tweet-url={tweetUrl}>
   {tweet ? <EmbeddedTweet tweet={tweet} /> : <TweetNotFound />}
 </div>
 
@@ -23,10 +23,10 @@ const tweetUrl = tweet ? `https://twitter.com/${tweet.user.screen_name}/status/$
 
     // Target video container elements in react-tweet
     const mediaElements = embed.querySelectorAll('[data-testid="tweetPhoto"], video, .react-tweet-media-container, [class*="mediaWrapper"], [class*="video"]');
-    
+
     // Also target any element that looks like media
     const allMedia = embed.querySelectorAll('div[style*="aspect-ratio"], div[style*="padding-bottom"]');
-    
+
     const makeClickable = (el: Element) => {
       (el as HTMLElement).style.cursor = 'pointer';
       el.addEventListener('click', (e) => {
@@ -49,13 +49,13 @@ const tweetUrl = tweet ? `https://twitter.com/${tweet.user.screen_name}/status/$
 
 <style is:global>
   @import 'react-tweet/theme.css';
-  
+
   .tweet-embed[data-has-video="true"] [data-testid="tweetPhoto"],
   .tweet-embed[data-has-video="true"] video,
   .tweet-embed[data-has-video="true"] [class*="mediaWrapper"] {
     cursor: pointer;
   }
-  
+
   .tweet-embed[data-has-video="true"] [class*="mediaWrapper"]::after {
     content: '';
     position: absolute;
@@ -68,7 +68,7 @@ const tweetUrl = tweet ? `https://twitter.com/${tweet.user.screen_name}/status/$
     transition: opacity 0.2s;
     pointer-events: none;
   }
-  
+
   .tweet-embed[data-has-video="true"] [class*="mediaWrapper"]:hover::after {
     opacity: 1;
   }
