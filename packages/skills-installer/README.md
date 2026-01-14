@@ -49,7 +49,7 @@ skills-installer search "frontend design"
 ```
 
 The search command provides an interactive interface where you can:
-- Browse skills ranked by installs
+- Browse and sort skills ranked by relevance, installs, and GitHub stars
 - Select a skill to install directly
 - Choose installation scope and target client
 
