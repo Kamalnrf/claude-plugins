@@ -7,7 +7,13 @@ interface Props {
 }
 
 const { id } = Astro.props;
-const tweet = await getTweet(id);
+let tweet;
+try {
+  tweet = await getTweet(id);
+} catch (error) {
+  console.error(`Failed to fetch tweet ${id}:`, error);
+  tweet = undefined;
+}
 const hasVideo = tweet?.mediaDetails?.some(m => m.type === 'video' || m.type === 'animated_gif');
 const tweetUrl = tweet ? `https://twitter.com/${tweet.user.screen_name}/status/${id}` : '';
 ---
