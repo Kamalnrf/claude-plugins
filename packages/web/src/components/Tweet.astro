@@ -18,7 +18,7 @@ const hasVideo = tweet?.mediaDetails?.some(m => m.type === 'video' || m.type ===
 const tweetUrl = tweet ? `https://twitter.com/${tweet.user.screen_name}/status/${id}` : '';
 ---
 
-<div class="tweet-embed max-w-[600px]" data-theme="dark" data-has-video={hasVideo} data-tweet-url={tweetUrl}>
+<div class="tweet-embed max-w-[600px] mx-auto" data-theme="dark" data-has-video={hasVideo} data-tweet-url={tweetUrl}>
   {tweet ? <EmbeddedTweet tweet={tweet} /> : <TweetNotFound />}
 </div>
 
