@@ -1,0 +1,81 @@
+---
+import { getTweet } from 'react-tweet/api';
+import { EmbeddedTweet, TweetNotFound } from 'react-tweet';
+
+interface Props {
+  id: string;
+}
+
+const { id } = Astro.props;
+let tweet;
+try {
+  tweet = await getTweet(id);
+} catch (error) {
+  console.error(`Failed to fetch tweet ${id}:`, error);
+  tweet = undefined;
+}
+const hasVideo = tweet?.mediaDetails?.some(m => m.type === 'video' || m.type === 'animated_gif');
+const tweetUrl = tweet ? `https://twitter.com/${tweet.user.screen_name}/status/${id}` : '';
+---
+
+<div class="tweet-embed max-w-[600px] mx-auto" data-theme="dark" data-has-video={hasVideo} data-tweet-url={tweetUrl}>
+  {tweet ? <EmbeddedTweet tweet={tweet} /> : <TweetNotFound />}
+</div>
+
+<script>
+  document.querySelectorAll('.tweet-embed[data-has-video="true"]').forEach(embed => {
+    const tweetUrl = embed.getAttribute('data-tweet-url');
+    if (!tweetUrl) return;
+
+    // Target video container elements in react-tweet
+    const mediaElements = embed.querySelectorAll('[data-testid="tweetPhoto"], video, .react-tweet-media-container, [class*="mediaWrapper"], [class*="video"]');
+
+    // Also target any element that looks like media
+    const allMedia = embed.querySelectorAll('div[style*="aspect-ratio"], div[style*="padding-bottom"]');
+
+    const makeClickable = (el: Element) => {
+      (el as HTMLElement).style.cursor = 'pointer';
+      el.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        window.open(tweetUrl, '_blank', 'noopener,noreferrer');
+      });
+    };
+
+    mediaElements.forEach(makeClickable);
+    allMedia.forEach(makeClickable);
+
+    // Fallback: make the entire media section clickable
+    const mediaContainer = embed.querySelector('[class*="body"] > div:last-child');
+    if (mediaContainer && !mediaElements.length) {
+      makeClickable(mediaContainer);
+    }
+  });
+</script>
+
+<style is:global>
+  @import 'react-tweet/theme.css';
+
+  .tweet-embed[data-has-video="true"] [data-testid="tweetPhoto"],
+  .tweet-embed[data-has-video="true"] video,
+  .tweet-embed[data-has-video="true"] [class*="mediaWrapper"] {
+    cursor: pointer;
+  }
+
+  .tweet-embed[data-has-video="true"] [class*="mediaWrapper"]::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0,0,0,0.3);
+    opacity: 0;
+    transition: opacity 0.2s;
+    pointer-events: none;
+  }
+
+  .tweet-embed[data-has-video="true"] [class*="mediaWrapper"]:hover::after {
+    opacity: 1;
+  }
+</style>
