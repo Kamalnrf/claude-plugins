@@ -79,8 +79,6 @@ ${urls
 		(url) => `  <url>
     <loc>${escapeXml(url.loc)}</loc>
     ${url.lastmod ? `<lastmod>${url.lastmod}</lastmod>` : ''}
-    ${url.changefreq ? `<changefreq>${url.changefreq}</changefreq>` : ''}
-    <priority>${url.priority}</priority>
   </url>`,
 	)
 	.join("\n")}
