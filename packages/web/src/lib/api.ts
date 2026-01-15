@@ -116,6 +116,24 @@ export interface SkillSearchParams {
 	order?: "asc" | "desc"; // Sort direction
 }
 
+type SitemapParams = {
+  offset?: number;
+  limit?: number;
+}
+
+type SitemapItem = {
+  loc: string,
+  lastmod: string,
+  priority: number,
+}
+
+type SitemapResponse = {
+  urls: SitemapItem[],
+  total: number,
+  limit: number,
+  offset: number
+}
+
 export interface SkillSearchResponse {
 	skills: Skill[];
 	total: number;
@@ -227,7 +245,23 @@ export class RegistryAPI {
 		}
 
 		return response.json();
-	}
+  }
+
+  async skillsSitemap(params: SitemapParams): Promise<SitemapResponse> {
+    const url = new URL("/api/sitemap/skills", REGISTRY_BASE)
+    if (params.offset !== undefined) url.searchParams.set("offset", String(params.offset));
+    if (params.limit !== undefined) url.searchParams.set("limit", String(params.limit));
+
+    const response = await fetchWithRetry(url, {
+			headers: { Accept: "application/json" },
+    });
+
+    if (!response.ok) {
+      throw new Error(`Skills API error: ${response.status}`)
+    }
+
+    return response.json();
+  }
 
 	async getSkill(
 		owner: string,
