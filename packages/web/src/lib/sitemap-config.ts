@@ -38,7 +38,7 @@ export function skillToUrl(skill: SkillForSitemap): SitemapUrl {
 
 	const daysSinceUpdate = isValidDate
 		? (Date.now() - updatedDate.getTime()) / (1000 * 60 * 60 * 24)
-		: Infinity; // Treat invalid dates as very old
+		: Infinity;
 
 	return {
 		loc: escapeXml(`${SITEMAP_CONFIG.siteUrl}/skills/${encodeURIComponent(skill.namespace)}`),

@@ -1,8 +1,8 @@
 import type { APIRoute } from "astro";
 import { registryAPI } from "../lib/api";
 import {
-	SITEMAP_CONFIG,
-	skillToUrl,
+  SITEMAP_CONFIG,
+  escapeXml,
 	type SitemapUrl,
 } from "../lib/sitemap-config";
 
@@ -19,7 +19,7 @@ export const GET: APIRoute = async ({ params }) => {
 
 	try {
 		// First, get total count to validate page number
-		const { total } = await registryAPI.searchSkills({ limit: 1, offset: 0 });
+		const { total } = await registryAPI.skillsSitemap({ limit: 1, offset: 0 });
 
 		// Validate total to prevent NaN from malformed API responses
 		const safeTotal = Number.isFinite(total) ? total : 0;
@@ -47,29 +47,27 @@ export const GET: APIRoute = async ({ params }) => {
 
 			// Fetch skills for the first page (PAGE_SIZE - STATIC_URLS_COUNT)
 			const skillsLimit = PAGE_SIZE - STATIC_URLS_COUNT;
-			const skillsResponse = await registryAPI.searchSkills({
+			const skillsResponse = await registryAPI.skillsSitemap({
 				limit: skillsLimit,
 				offset: 0,
 			});
 
-			const skillUrls = skillsResponse.skills.map(skillToUrl);
-
-			urls = [...staticUrls, ...skillUrls];
+			urls = [...staticUrls, ...skillsResponse.urls];
 
 			console.log(
-				`Sitemap page ${page}: ${staticUrls.length} static + ${skillUrls.length} skills = ${urls.length} URLs`,
+				`Sitemap page ${page}: ${staticUrls.length} static + ${skillsResponse.urls.length} skills = ${urls.length} URLs`,
 			);
 		} else {
 			// Subsequent pages: only skills
 			// Calculate offset: account for static URLs in first page
 			const offset = page * PAGE_SIZE - STATIC_URLS_COUNT;
 
-			const skillsResponse = await registryAPI.searchSkills({
+			const skillsResponse = await registryAPI.skillsSitemap({
 				limit: PAGE_SIZE,
 				offset,
 			});
 
-			urls = skillsResponse.skills.map(skillToUrl);
+			urls = skillsResponse.urls
 
 			console.log(`Sitemap page ${page}: ${urls.length} skill URLs`);
 		}
@@ -79,7 +77,7 @@ export const GET: APIRoute = async ({ params }) => {
 ${urls
 	.map(
 		(url) => `  <url>
-    <loc>${url.loc}</loc>
+    <loc>${escapeXml(url.loc)}</loc>
     ${url.lastmod ? `<lastmod>${url.lastmod}</lastmod>` : ''}
     ${url.changefreq ? `<changefreq>${url.changefreq}</changefreq>` : ''}
     <priority>${url.priority}</priority>
