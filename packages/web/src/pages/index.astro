@@ -8,10 +8,15 @@ import { registryAPI } from "../lib/api";
 
 // Get search params from URL
 const url = new URL(Astro.request.url);
-const searchQuery = url.searchParams.get("q") || "";
+const searchQuery = url.searchParams.get("q")?.trim() || "";
 const hasSkills = url.searchParams.get("hasSkills") === "true";
 const orderBy = url.searchParams.get("orderBy") as "downloads" | "stars" | null;
 const order = url.searchParams.get("order") as "asc" | "desc" | null;
+
+// Normalize URL: redirect empty query params to clean landing page for better cache consolidation
+if (url.searchParams.has("q") && !searchQuery) {
+	return Astro.redirect("/", 302);
+}
 
 // Fetch initial plugins with SSR
 const { plugins, total } = await registryAPI.searchPlugins({

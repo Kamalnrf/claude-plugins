@@ -9,9 +9,14 @@ import { registryAPI } from "@/lib/api";
 
 // Get search params from URL
 const url = new URL(Astro.request.url);
-const searchQuery = url.searchParams.get("q") || "";
+const searchQuery = url.searchParams.get("q")?.trim() || "";
 const orderBy = url.searchParams.get("orderBy") as "downloads" | "stars" | null;
 const order = url.searchParams.get("order") as "asc" | "desc" | null;
+
+// Normalize URL: redirect empty query params to clean landing page for better cache consolidation
+if (url.searchParams.has("q") && !searchQuery) {
+	return Astro.redirect("/skills", 302);
+}
 
 // Fetch initial skills with SSR
 const { skills, total } = await registryAPI.searchSkills({
