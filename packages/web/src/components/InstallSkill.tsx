@@ -13,6 +13,7 @@ import { AMPIcon } from "./ui/amp-icon";
 import { GooseIcon } from "./ui/goose-icon";
 import { LettaIcon } from "./ui/letta-icon";
 import { GeminiIcon } from "./ui/gemini-icon";
+import { WindsurfIcon } from "./ui/windsurf-icon";
 
 type Props = {
 	skill: Skill; // Skill to use in example instructions
@@ -36,6 +37,7 @@ const CLIENTS: Client[] = [
 	{ id: "letta", name: "Letta", icon: <LettaIcon />, supportsGlobal: false },
 	{ id: "goose", name: "Goose", icon: <GooseIcon />, supportsGlobal: false },
 	{ id: "gemini", name: "Gemini CLI", icon: <GeminiIcon />, supportsGlobal: true },
+	{ id: "windsurf", name: "Windsurf", icon: <WindsurfIcon />, supportsGlobal: true },
 ];
 
 export function InstallSkill({ skill }: Props) {

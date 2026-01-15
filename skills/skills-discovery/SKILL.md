@@ -88,6 +88,7 @@ Determine which client the user is working in before installing. If unclear, ask
 - `vscode` — VS Code
 - `letta` — Letta CLI
 - `gemini` - Gemini CLI
+- `windsurf` - Windsurf editor
 - **Client selection:**
 
 ```bash

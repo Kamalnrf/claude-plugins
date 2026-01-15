@@ -95,6 +95,7 @@ Currently supported clients:
 - `claude-code` (default)
 - `codex`
 - `cursor`
+- `windsurf`
 - `github`
 - `letta`
 - `vscode`
