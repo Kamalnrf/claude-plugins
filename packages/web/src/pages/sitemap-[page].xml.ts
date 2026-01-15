@@ -67,7 +67,7 @@ export const GET: APIRoute = async ({ params }) => {
 				offset,
 			});
 
-			urls = skillsResponse.urls
+			urls = skillsResponse.urls;
 
 			console.log(`Sitemap page ${page}: ${urls.length} skill URLs`);
 		}

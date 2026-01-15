@@ -123,7 +123,7 @@ type SitemapParams = {
 
 type SitemapItem = {
   loc: string,
-  lastmode: string,
+  lastmod: string,
   priority: number,
 }
 
@@ -249,6 +249,8 @@ export class RegistryAPI {
 
   async skillsSitemap(params: SitemapParams): Promise<SitemapResponse> {
     const url = new URL("/api/sitemap/skills", REGISTRY_BASE)
+    if (params.offset !== undefined) url.searchParams.set("offset", String(params.offset));
+    if (params.limit !== undefined) url.searchParams.set("limit", String(params.limit));
 
     const response = await fetchWithRetry(url, {
 			headers: { Accept: "application/json" },
