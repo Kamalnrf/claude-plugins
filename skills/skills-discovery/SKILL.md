@@ -89,6 +89,7 @@ Determine which client the user is working in before installing. If unclear, ask
 - `letta` — Letta CLI
 - `gemini` - Gemini CLI
 - `windsurf` - Windsurf editor
+- `antigravity` - Antigravity
 - **Client selection:**
 
 ```bash
