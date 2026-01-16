@@ -103,6 +103,7 @@ Currently supported clients:
 - `goose`
 - `opencode`
 - `gemini`
+- `antigravity`
 
 ## Commands
 
