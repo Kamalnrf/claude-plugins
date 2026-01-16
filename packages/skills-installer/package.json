@@ -1,6 +1,6 @@
 {
   "name": "skills-installer",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "Install agent skills across multiple clients that support agentskills.io",
   "type": "module",
   "bin": {
