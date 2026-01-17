@@ -7,6 +7,7 @@ A plugin manager and skills installer for AI coding agents.
 [![claude-plugins](https://img.shields.io/npm/v/claude-plugins?label=claude-plugins)](https://www.npmjs.com/package/claude-plugins)
 [![skills-installer](https://img.shields.io/npm/v/skills-installer?label=skills-installer)](https://www.npmjs.com/package/skills-installer)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Discord](https://img.shields.io/discord/1320743242672635965?label=Discord&logo=discord&logoColor=white&color=5865F2)](https://discord.gg/Pt9uN4FXR4)
 
 <div align="center">
   <video src="https://github.com/user-attachments/assets/63582572-397d-4104-8efe-ab844a0f43f0" />
