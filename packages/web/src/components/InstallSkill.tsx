@@ -15,7 +15,9 @@ import { LettaIcon } from "./ui/letta-icon";
 import { GeminiIcon } from "./ui/gemini-icon";
 import { WindsurfIcon } from "./ui/windsurf-icon";
 import { AntigravityIcon } from "./ui/antigravity-icon";
-
+import { TraeIcon } from "./ui/trae-icon";
+import { CodeBuddyIcon } from "./ui/codebuddy-icon";
+import { QoderIcon } from "./ui/qoder-icon";
 type Props = {
 	skill: Skill; // Skill to use in example instructions
 };
@@ -40,6 +42,9 @@ const CLIENTS: Client[] = [
 	{ id: "gemini", name: "Gemini CLI", icon: <GeminiIcon />, supportsGlobal: true },
 	{ id: "antigravity", name: "Antigravity", icon: <AntigravityIcon />, supportsGlobal: true },
 	{ id: "windsurf", name: "Windsurf", icon: <WindsurfIcon />, supportsGlobal: true },
+	{ id: "trae", name: "Trae", icon: <TraeIcon />, supportsGlobal: false },
+	{ id: "codebuddy", name: "CodeBuddy", icon: <CodeBuddyIcon />, supportsGlobal: true },
+	{ id: "qoder", name: "Qoder", icon: <QoderIcon />, supportsGlobal: true },
 ];
 
 export function InstallSkill({ skill }: Props) {

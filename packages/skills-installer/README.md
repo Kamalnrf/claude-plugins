@@ -104,6 +104,9 @@ Currently supported clients:
 - `opencode`
 - `gemini`
 - `antigravity`
+- `trae`
+- `qoder`
+- `codebuddy`
 
 ## Commands
 

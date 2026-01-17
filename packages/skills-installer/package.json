@@ -1,6 +1,6 @@
 {
   "name": "skills-installer",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "description": "Install agent skills across multiple clients that support agentskills.io",
   "type": "module",
   "bin": {
@@ -24,24 +24,27 @@
   "devDependencies": {
     "bun-types": "latest"
   },
-  "keywords": [
-    "skills",
-    "claude-code",
-    "codex",
-    "amp",
-    "cursor",
-    "gemini",
-    "goose",
-    "letta",
-    "opencode",
-    "vscode",
-    "windsurf",
-    "antigravity",
-    "copilot",
-    "agent",
-    "cli",
-    "installer"
-  ],
+	"keywords": [
+		"skills",
+		"claude-code",
+		"codex",
+		"amp",
+		"cursor",
+		"gemini",
+		"goose",
+		"letta",
+		"opencode",
+		"vscode",
+		"windsurf",
+		"antigravity",
+		"trae",
+		"qoder",
+		"codebuddy",
+		"copilot",
+		"agent",
+		"cli",
+		"installer"
+	],
   "author": "Kamal <https://github.com/Kamalnrf>",
   "license": "MIT"
 }
