@@ -90,6 +90,9 @@ Determine which client the user is working in before installing. If unclear, ask
 - `gemini` - Gemini CLI
 - `windsurf` - Windsurf editor
 - `antigravity` - Antigravity
+- `trae` - Trae
+- `qoder` - Qoder
+- `codebuddy` - CodeBuddy
 - **Client selection:**
 
 ```bash

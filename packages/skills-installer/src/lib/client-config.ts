@@ -60,6 +60,18 @@ export const CLIENT_CONFIGS: Record<string, ClientConfig> = {
 		globalDir: join(homedir(), ".gemini", "antigravity", "skills"),
 		localDir: join(process.cwd(), ".agent", "skills"),
 	},
+	"trae": {
+		name: "Trae",
+		localDir: join(process.cwd(), ".trae", "skills"),
+	},
+	"qoder": {
+		name: "Qoder",
+		localDir: join(process.cwd(), ".qoder", "skills"),
+	},
+	"codebuddy": {
+		name: "CodeBuddy",
+		localDir: join(process.cwd(), ".codebuddy", "skills"),
+	},
 };
 
 export const getClientConfig = (name: string): ClientConfig | undefined =>
