@@ -66,10 +66,12 @@ export const CLIENT_CONFIGS: Record<string, ClientConfig> = {
 	},
 	"qoder": {
 		name: "Qoder",
+		globalDir: join(homedir(), ".qoder", "skills"),
 		localDir: join(process.cwd(), ".qoder", "skills"),
 	},
 	"codebuddy": {
 		name: "CodeBuddy",
+		globalDir: join(homedir(), ".codebuddy", "skills"),
 		localDir: join(process.cwd(), ".codebuddy", "skills"),
 	},
 };

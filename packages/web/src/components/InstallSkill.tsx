@@ -43,8 +43,8 @@ const CLIENTS: Client[] = [
 	{ id: "antigravity", name: "Antigravity", icon: <AntigravityIcon />, supportsGlobal: true },
 	{ id: "windsurf", name: "Windsurf", icon: <WindsurfIcon />, supportsGlobal: true },
 	{ id: "trae", name: "Trae", icon: <TraeIcon />, supportsGlobal: false },
-	{ id: "codebuddy", name: "CodeBuddy", icon: <CodeBuddyIcon />, supportsGlobal: false },
-	{ id: "qoder", name: "Qoder", icon: <QoderIcon />, supportsGlobal: false },
+	{ id: "codebuddy", name: "CodeBuddy", icon: <CodeBuddyIcon />, supportsGlobal: true },
+	{ id: "qoder", name: "Qoder", icon: <QoderIcon />, supportsGlobal: true },
 ];
 
 export function InstallSkill({ skill }: Props) {

@@ -24,24 +24,27 @@
   "devDependencies": {
     "bun-types": "latest"
   },
-  "keywords": [
-    "skills",
-    "claude-code",
-    "codex",
-    "amp",
-    "cursor",
-    "gemini",
-    "goose",
-    "letta",
-    "opencode",
-    "vscode",
-    "windsurf",
-    "antigravity",
-    "copilot",
-    "agent",
-    "cli",
-    "installer"
-  ],
+	"keywords": [
+		"skills",
+		"claude-code",
+		"codex",
+		"amp",
+		"cursor",
+		"gemini",
+		"goose",
+		"letta",
+		"opencode",
+		"vscode",
+		"windsurf",
+		"antigravity",
+		"trae",
+		"qoder",
+		"codebuddy",
+		"copilot",
+		"agent",
+		"cli",
+		"installer"
+	],
   "author": "Kamal <https://github.com/Kamalnrf>",
   "license": "MIT"
 }

@@ -6,7 +6,7 @@ export const CodeBuddyIcon = () => (
 		viewBox="0 0 32 32"
 		fill="none"
 	>
-		<g clip-path="url(#clip0_830_6638)">
+		<g clipPath="url(#clip0_830_6638)">
 			<rect
 				width="32"
 				height="32"
@@ -19,7 +19,7 @@ export const CodeBuddyIcon = () => (
 					cy="27.9835"
 					r="11.2648"
 					fill="#28B894"
-					fill-opacity="0.4"
+					fillOpacity="0.4"
 				></circle>
 			</g>
 			<g filter="url(#filter1_f_830_6638)">
@@ -56,9 +56,9 @@ export const CodeBuddyIcon = () => (
 				width="44.0372"
 				height="44.0372"
 				filterUnits="userSpaceOnUse"
-				color-interpolation-filters="sRGB"
+				colorInterpolationFilters="sRGB"
 			>
-				<feFlood flood-opacity="0" result="BackgroundImageFix"></feFlood>
+				<feFlood floodOpacity="0" result="BackgroundImageFix"></feFlood>
 				<feBlend
 					mode="normal"
 					in="SourceGraphic"
@@ -77,9 +77,9 @@ export const CodeBuddyIcon = () => (
 				width="38.1934"
 				height="38.1934"
 				filterUnits="userSpaceOnUse"
-				color-interpolation-filters="sRGB"
+				colorInterpolationFilters="sRGB"
 			>
-				<feFlood flood-opacity="0" result="BackgroundImageFix"></feFlood>
+				<feFlood floodOpacity="0" result="BackgroundImageFix"></feFlood>
 				<feBlend
 					mode="normal"
 					in="SourceGraphic"
@@ -99,8 +99,8 @@ export const CodeBuddyIcon = () => (
 				y2="32"
 				gradientUnits="userSpaceOnUse"
 			>
-				<stop stop-color="#6C4DFF"></stop>
-				<stop offset="1" stop-color="#583ED3"></stop>
+				<stop stopColor="#6C4DFF"></stop>
+				<stop offset="1" stopColor="#583ED3"></stop>
 			</linearGradient>
 			<linearGradient
 				id="paint1_linear_830_6638"
@@ -110,8 +110,8 @@ export const CodeBuddyIcon = () => (
 				y2="34.7904"
 				gradientUnits="userSpaceOnUse"
 			>
-				<stop stop-color="white" stop-opacity="0.8"></stop>
-				<stop offset="0.437689" stop-color="white"></stop>
+				<stop stopColor="white" stopOpacity="0.8"></stop>
+				<stop offset="0.437689" stopColor="white"></stop>
 			</linearGradient>
 			<clipPath id="clip0_830_6638">
 				<rect width="32" height="32" rx="6.90526" fill="white"></rect>
