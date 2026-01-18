@@ -50,6 +50,19 @@ ${pc.bold("OPTIONS:")}
   --client <name>   Target client (${getAvailableClients().join(", ")})
   --local, -l       Install locally to current directory
 
+${pc.bold("INSTALL FORMATS:")}
+  ${pc.dim("# From registry")}
+  @owner/repo/skill-name
+
+  ${pc.dim("# From GitHub (clone + pick skills)")}
+  owner/repo
+  github.com/owner/repo
+  https://github.com/owner/repo
+  git@github.com:owner/repo.git
+
+  ${pc.dim("# Direct path to skill in repo")}
+  https://github.com/owner/repo/tree/main/skills/skill-name
+
 ${pc.bold("EXAMPLES:")}
   ${pc.dim("# Search for skills interactively")}
   skills-installer search
@@ -57,14 +70,17 @@ ${pc.bold("EXAMPLES:")}
   ${pc.dim("# Search with a query")}
   skills-installer search "frontend design"
 
-  ${pc.dim("# Search and install to specific client")}
-  skills-installer search "testing" --client cursor
+  ${pc.dim("# Install from registry")}
+  skills-installer install @anthropic/claude-cookbooks/analyzing-financial-statements
 
-  ${pc.dim("# Install skill globally for claude-code")}
-  skills-installer install @anthropic/claude-cookbooks/analyzing-financial-statements --client claude-code
+  ${pc.dim("# Install all skills from a GitHub repo")}
+  skills-installer install vercel-labs/agent-skills
 
-  ${pc.dim("# Install skill locally (defaults to claude-code)")}
-  skills-installer install @owner/repo/skill --local
+  ${pc.dim("# Install specific skill from a repo URL")}
+  skills-installer install https://github.com/vercel-labs/agent-skills/tree/main/skills/frontend-design
+
+  ${pc.dim("# Install locally (defaults to claude-code)")}
+  skills-installer install owner/repo --local
 
   ${pc.dim("# List all installed skills")}
   skills-installer list
