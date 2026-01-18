@@ -42,7 +42,7 @@ export const CLIENT_CONFIGS: Record<string, ClientConfig> = {
 	},
 	"opencode": {
 		name: "OpenCode",
-		globalDir: join(homedir(), ".opencode", "skill"),
+		globalDir: join(homedir(), ".config/", "opencode", "skill"),
 		localDir: join(process.cwd(), ".opencode", "skill"),
 	},
 	"gemini": {
