@@ -73,7 +73,10 @@ async function installSkillToClient(
 	clientId: string,
 	local: boolean,
 ): Promise<{ updated: boolean }> {
-	const config = getClientConfig(clientId)!;
+	const config = getClientConfig(clientId);
+	if (!config) {
+		throw new Error(`Unknown client: "${clientId}". Use a valid client ID.`);
+	}
 	const scope = local ? "local" : "global";
 
 	const installPath = getSkillPath(config, scope, skill.name);
@@ -105,7 +108,13 @@ async function installSingleSkill(
 	local: boolean,
 ): Promise<{ name: string; installed: string[]; updated: string[]; failed: string[] }> {
 	const s = spinner();
-	const clientNames = clientIds.map((id) => getClientConfig(id)!.name);
+	const clientNames = clientIds.map((id) => {
+		const config = getClientConfig(id);
+		if (!config) {
+			throw new Error(`Unknown client: "${id}". Use a valid client ID.`);
+		}
+		return config.name;
+	});
 
 	s.start(`Installing ${skill.name} to ${clientNames.join(", ")}...`);
 
@@ -131,10 +140,9 @@ async function installSingleSkill(
 		s.stop(`Failed: ${skill.name}`);
 	} else {
 		s.stop(`Installed ${skill.name}`);
+		// Track installation only on success (fire-and-forget)
+		trackInstallation(skill.namespace);
 	}
-
-	// Track installation (fire-and-forget)
-	trackInstallation(skill.namespace);
 
 	return { name: skill.name, installed, updated, failed };
 }
@@ -237,7 +245,13 @@ export async function install(
 	// Success message
 	const successful = results.filter((r) => r.installed.length > 0 || r.updated.length > 0);
 	if (successful.length > 0) {
-		const clientNames = clientIds.map((id) => getClientConfig(id)!.name);
+		const clientNames = clientIds.map((id) => {
+			const config = getClientConfig(id);
+			if (!config) {
+				throw new Error(`Unknown client: "${id}". Use a valid client ID.`);
+			}
+			return config.name;
+		});
 		const skillNames = successful.map((r) => r.name);
 
 		const scopeMsg = local

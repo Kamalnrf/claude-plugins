@@ -110,12 +110,13 @@ export function validateClientAndScope(
 		throw new Error(`Unknown client: ${clientId}\nAvailable: ${available}`);
 	}
 
-	const scope: Scope = local ? "local" : "global";
+	let scope: Scope = local ? "local" : "global";
 
 	if (scope === "global" && !config.globalDir) {
 		note(
 			`Client "${config.name}" does not support global installation.\nInstalling to project directory instead.`,
 		);
+		scope = "local";
 	}
 
 	return { config, scope };
@@ -156,7 +157,8 @@ export async function selectScopeAndClients(options: {
 	// 2. Determine which clients to install for
 	let clientIds: string[];
 	if (options.client) {
-		validateClientAndScope(options.client, scope === "local");
+		const { scope: validatedScope } = validateClientAndScope(options.client, scope === "local");
+		scope = validatedScope;
 		clientIds = [options.client];
 	} else {
 		const selectedClients = await selectClients(scope, { allowGoBack: options.allowGoBack });
