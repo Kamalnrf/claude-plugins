@@ -1,6 +1,6 @@
 import { existsSync } from "node:fs";
 import { rm } from "node:fs/promises";
-import { note, spinner, multiselect, select, isCancel } from "@clack/prompts";
+import { note, spinner, multiselect, select, isCancel, outro } from "@clack/prompts";
 import pc from "picocolors";
 import type { InstallOptions, ClientConfig } from "../types.js";
 import { getClientConfig, getAvailableClients, CLIENT_CONFIGS } from "../lib/client-config.js";
@@ -16,6 +16,51 @@ import {
 } from "../lib/api.js";
 import { downloadSkill } from "../lib/download.js";
 import { validateSkillMd } from "../lib/validate.js";
+
+/**
+ * Fun success messages for install completion
+ */
+const SUCCESS_MESSAGES = [
+	{ emoji: "🚀", text: "Skills locked and loaded!" },
+	{ emoji: "✨", text: "Your agent just leveled up!" },
+	{ emoji: "🎯", text: "New abilities unlocked!" },
+	{ emoji: "⚡", text: "Supercharged and ready to go!" },
+	{ emoji: "🌟", text: "Skills successfully acquired!" },
+	{ emoji: "🔮", text: "Magic powers installed!" },
+	{ emoji: "🎪", text: "New tricks in the bag!" },
+	{ emoji: "🏆", text: "Achievement unlocked: Skill Master!" },
+];
+
+const getRandomSuccessMessage = () => {
+	const idx = Math.floor(Math.random() * SUCCESS_MESSAGES.length);
+	return SUCCESS_MESSAGES[idx]!;
+};
+
+/**
+ * Show a friendly exit message with ASCII art
+ */
+const showExitMessage = (): void => {
+	const moonArt = pc.yellow(
+		`    *  .  *
+       .    *    .
+   *   .        .       *
+     .    *  .     . *
+   .  *        *  .    .`,
+	);
+
+	const { emoji, text } = getRandomSuccessMessage();
+
+	const message =
+		`${moonArt}\n\n` +
+		`${emoji} ${pc.bold(text)}\n\n` +
+		`To find plugins and browse skills on the web, see:\n` +
+		`${pc.blue(pc.underline("https://claude-plugins.dev"))}\n\n` +
+		`To share ideas and issues, come visit us on the Moon:\n` +
+		`${pc.magenta(pc.underline("https://discord.gg/Pt9uN4FXR4"))}\n\n` +
+		`${pc.dim("This project is open-source and we'd love to hear from you!")}`;
+
+	outro(message);
+};
 
 /**
  * Prompt user to select scope (local/global)
@@ -269,14 +314,15 @@ export async function install(
 		const skillNames = successful.map((r) => r.name);
 
 		const scopeMsg = local
-			? "Available for this project only."
-			: "Available globally.";
+			? pc.dim("Available for this project only.")
+			: pc.dim("Available globally.");
 
-		note(
-			`${pc.green("✓")} Skills: ${skillNames.join(", ")}\n` +
-				`${pc.green("✓")} Clients: ${clientNames.join(", ")}\n\n` +
-				scopeMsg,
-			"Complete",
-		);
+		const summary =
+			`${pc.green("✓")} ${pc.bold("Skills:")} ${skillNames.join(", ")}\n` +
+			`${pc.green("✓")} ${pc.bold("Clients:")} ${clientNames.join(", ")}\n\n` +
+			scopeMsg;
+
+		note(summary, "Complete");
+		showExitMessage();
 	}
 }
