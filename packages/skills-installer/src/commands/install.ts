@@ -14,7 +14,7 @@ import {
 	trackInstallation,
 	indexRepoAndListSkills,
 	type IndexedSkill,
-} from "../lib/api.js";
+} from "../lib/api.ts";
 import { downloadSkill } from "../lib/download.js";
 import { validateSkillMd } from "../lib/validate.js";
 import { parseInstallTarget } from "../lib/parse-target.js";

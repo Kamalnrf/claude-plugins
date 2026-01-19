@@ -79,6 +79,66 @@ export interface SearchParams {
 }
 
 /**
+ * Skill info returned from the index endpoint
+ */
+export interface IndexedSkill {
+	namespace: string;
+	skillName: string;
+	name: string;
+	description: string;
+	relDir: string;
+	sourceUrl: string;
+	status: "indexed" | "unchanged" | "invalid" | "skipped" | "failed";
+}
+
+/**
+ * Response from the index endpoint
+ */
+export interface IndexRepoResponse {
+	ok: boolean;
+	repo: string;
+	defaultBranch: string;
+	pathsFound: number;
+	result: {
+		found: number;
+		indexed: number;
+		skills: IndexedSkill[];
+	};
+	error?: string;
+}
+
+/**
+ * Index a repository and return discovered skills
+ * Used for git URL installs to discover available skills
+ */
+export const indexRepoAndListSkills = async (
+	repo: string,
+): Promise<IndexRepoResponse> => {
+	const url = `${REGISTRY_API_URL}/api/skills/index`;
+	const response = await fetch(url, {
+		method: "POST",
+		headers: {
+			"Content-Type": "application/json",
+			"User-Agent": "skills-installer/0.1.0",
+		},
+		body: JSON.stringify({ repo, dryRun: false }),
+	});
+
+	if (!response.ok) {
+		const data = await response.json().catch(() => ({}));
+		throw new Error(data.error || `Failed to index repository: ${response.statusText}`);
+	}
+
+	const data = await response.json() as IndexRepoResponse;
+
+	if (!data.ok) {
+		throw new Error(data.error || "Failed to index repository");
+	}
+
+	return data;
+};
+
+/**
  * Search for skills in the registry
  * Returns search results with pagination info
  */
