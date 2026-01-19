@@ -38,7 +38,7 @@ export interface ResolveResponse {
 }
 
 const DEFAULT_HEADERS = {
-	Accept: "application/json",
+	"Content-Type": "application/json",
 	"User-Agent": USER_AGENT,
 };
 
