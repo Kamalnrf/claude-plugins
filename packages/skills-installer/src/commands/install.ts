@@ -2,7 +2,7 @@ import { existsSync } from "node:fs";
 import { rm } from "node:fs/promises";
 import { note, spinner, multiselect, isCancel } from "@clack/prompts";
 import pc from "picocolors";
-import type { InstallOptions, SkillIdentifier } from "../types.js";
+import type { InstallOptions } from "../types.js";
 import { getClientConfig, getAvailableClients } from "../lib/client-config.js";
 import {
 	getSkillPath,
@@ -10,79 +10,12 @@ import {
 	ensureDirectoryExists,
 } from "../lib/paths.js";
 import {
-	resolveSkill,
+	resolveTarget,
 	trackInstallation,
-	indexRepoAndListSkills,
-	type IndexedSkill,
-} from "../lib/api.ts";
+	type ResolvedSkill,
+} from "../lib/api.js";
 import { downloadSkill } from "../lib/download.js";
 import { validateSkillMd } from "../lib/validate.js";
-import { parseInstallTarget } from "../lib/parse-target.js";
-
-/**
- * Core installation logic for a single skill
- * Used by both registry and git flows after resolution
- */
-async function installSingleSkill(
-	identifier: SkillIdentifier,
-	options: InstallOptions,
-): Promise<{ name: string; installed: boolean; updated: boolean }> {
-	const s = spinner();
-
-	const config = getClientConfig(options.client)!;
-	const scope = options.local ? "local" : "global";
-
-	// Resolve skill from registry
-	s.start(`Resolving ${identifier.skillName}...`);
-	const metadata = await resolveSkill(identifier);
-
-	if (!metadata) {
-		s.stop(`Failed to resolve ${identifier.skillName}`);
-		throw new Error(`Skill not found: ${identifier.owner}/${identifier.repo}/${identifier.skillName}`);
-	}
-
-	// Handle SKILL.md in name edge case
-	let skillName = identifier.skillName;
-	if (skillName.includes(".md") && metadata.name) {
-		skillName = metadata.name.split(" ").join("-");
-	}
-
-	const installPath = getSkillPath(config, scope, skillName);
-	const isUpdate = existsSync(installPath);
-
-	if (isUpdate) {
-		s.stop(`Found existing: ${skillName}`);
-		note(
-			`Existing installation found at ${pc.dim(installPath)}\n${pc.yellow("⚠")} This will be overwritten.`,
-			"Updating",
-		);
-	} else {
-		s.stop(`Resolved: ${skillName}`);
-	}
-
-	// Ensure directory exists
-	const baseDir = getInstallDir(config, scope);
-	await ensureDirectoryExists(baseDir);
-
-	// Download skill
-	s.start(`Installing ${skillName}...`);
-	await downloadSkill(metadata.sourceUrl, installPath);
-
-	// Validate
-	const isValid = await validateSkillMd(installPath);
-	if (!isValid) {
-		await rm(installPath, { recursive: true, force: true });
-		s.stop(`Failed: ${skillName}`);
-		throw new Error(`Invalid skill: ${skillName} - missing or empty SKILL.md`);
-	}
-
-	s.stop(`${isUpdate ? "Updated" : "Installed"} ${skillName}`);
-
-	// Track installation
-	trackInstallation(identifier);
-
-	return { name: skillName, installed: !isUpdate, updated: isUpdate };
-}
 
 /**
  * Validate client config and show scope warnings
@@ -107,87 +40,100 @@ function validateClientAndScope(options: InstallOptions) {
 }
 
 /**
- * Install skills from a Git repository
- * Indexes via registry, then uses same install flow as registry installs
+ * Install a single skill given its resolved metadata
  */
-async function installFromGitRepo(
-	skillId: string,
+async function installSingleSkill(
+	skill: ResolvedSkill,
 	options: InstallOptions,
-	subdir?: string,
-): Promise<void> {
+): Promise<{ name: string; installed: boolean; updated: boolean }> {
 	const s = spinner();
-	const target = parseInstallTarget(skillId);
+	const config = getClientConfig(options.client)!;
+	const scope = options.local ? "local" : "global";
 
-	if (target.kind === "registry-skill") {
-		throw new Error("Expected git target");
+	const installPath = getSkillPath(config, scope, skill.name);
+	const isUpdate = existsSync(installPath);
+
+	if (isUpdate) {
+		note(
+			`Existing installation found at ${pc.dim(installPath)}\n${pc.yellow("⚠")} This will be overwritten.`,
+			"Updating",
+		);
 	}
 
-	const { repo } = target;
-	const repoSlug = `${repo.owner}/${repo.repo}`;
+	// Ensure directory exists
+	const baseDir = getInstallDir(config, scope);
+	await ensureDirectoryExists(baseDir);
+
+	// Download skill
+	s.start(`Installing ${skill.name}...`);
+	await downloadSkill(skill.sourceUrl, installPath);
+
+	// Validate
+	const isValid = await validateSkillMd(installPath);
+	if (!isValid) {
+		await rm(installPath, { recursive: true, force: true });
+		s.stop(`Failed: ${skill.name}`);
+		throw new Error(`Invalid skill: ${skill.name} - missing or empty SKILL.md`);
+	}
+
+	s.stop(`${isUpdate ? "Updated" : "Installed"} ${skill.name}`);
+
+	// Track installation (fire-and-forget)
+	trackInstallation(skill.namespace);
+
+	return { name: skill.name, installed: !isUpdate, updated: isUpdate };
+}
+
+/**
+ * Install an agent skill
+ * Supports: @owner/repo/skill, owner/repo, owner/repo/skill, GitHub URLs
+ */
+export async function install(
+	skillId: string,
+	options: InstallOptions,
+): Promise<void> {
+	const s = spinner();
 
 	// Validate client config upfront
 	const { config } = validateClientAndScope(options);
 
-	// Index repo via registry and get available skills
-	s.start(`Indexing ${pc.cyan(repoSlug)}...`);
+	// Resolve skills using unified API
+	s.start(`Resolving ${pc.cyan(skillId)}...`);
 
-	let indexResult;
+	let response;
 	try {
-		indexResult = await indexRepoAndListSkills(repoSlug);
+		response = await resolveTarget(skillId);
 	} catch (error) {
-		s.stop("Failed to index repository");
+		s.stop("Failed to resolve");
 		throw error;
 	}
 
-	// Filter to only valid skills
-	const validSkills = (indexResult.result?.skills ?? []).filter(
-		(sk) => sk.status === "indexed" || sk.status === "unchanged",
-	);
+	const skills = response.skills;
 
-	s.stop(`Found ${validSkills.length} skill${validSkills.length !== 1 ? "s" : ""}`);
-
-	if (validSkills.length === 0) {
+	if (skills.length === 0) {
+		s.stop("No skills found");
 		note(
-			`No valid skills found in ${pc.cyan(repoSlug)}.\n\n` +
+			`No skills found for ${pc.cyan(skillId)}.\n\n` +
 				`A skill requires a valid ${pc.bold("SKILL.md")} file.`,
-			"No Skills Found",
+			"Not Found",
 		);
 		return;
 	}
 
+	s.stop(`Found ${skills.length} skill${skills.length !== 1 ? "s" : ""}`);
+
 	// Determine which skills to install
-	let toInstall: IndexedSkill[];
+	let toInstall: ResolvedSkill[];
 
-	if (subdir) {
-		// Direct path: find matching skill
-		const normalizedSubdir = subdir.replace(/^\.\//, "").replace(/\/$/, "");
-		const skill = validSkills.find((sk) => {
-			const normalizedRelDir = sk.relDir.replace(/^\.\//, "").replace(/\/$/, "");
-			return (
-				normalizedRelDir === normalizedSubdir ||
-				normalizedRelDir.endsWith(`/${normalizedSubdir}`) ||
-				normalizedSubdir.endsWith(normalizedRelDir)
-			);
-		});
-
-		if (!skill) {
-			note(
-				`Skill not found at path: ${pc.cyan(subdir)}\n\n` +
-					`Available skills:\n` +
-					validSkills.map((sk) => `  • ${sk.name} (${sk.relDir})`).join("\n"),
-				"Not Found",
-			);
-			throw new Error(`Skill not found at path: ${subdir}`);
-		}
-		toInstall = [skill];
-	} else if (validSkills.length === 1) {
-		toInstall = validSkills;
-		note(`Found: ${pc.bold(validSkills[0]!.name)}`);
+	if (skills.length === 1) {
+		toInstall = skills;
+		note(`Found: ${pc.bold(skills[0]!.name)}`);
 	} else {
+		// Multiple skills - show multiselect
 		const selected = await multiselect({
-			message: `Select skills to install:`,
-			options: validSkills.map((skill) => ({
-				value: skill.skillName,
+			message: "Select skills to install:",
+			options: skills.map((skill) => ({
+				value: skill.namespace,
 				label: skill.name,
 				hint: skill.relDir === "." ? "root" : skill.relDir,
 			})),
@@ -199,24 +145,18 @@ async function installFromGitRepo(
 			return;
 		}
 
-		toInstall = validSkills.filter((sk) =>
-			(selected as string[]).includes(sk.skillName),
+		toInstall = skills.filter((sk) =>
+			(selected as string[]).includes(sk.namespace),
 		);
 	}
 
-	// Install each selected skill using the shared flow
+	// Install each selected skill
 	const installed: string[] = [];
 	const updated: string[] = [];
 
 	for (const skill of toInstall) {
-		const identifier: SkillIdentifier = {
-			owner: `@${repo.owner}`,
-			repo: repo.repo,
-			skillName: skill.skillName,
-		};
-
 		try {
-			const result = await installSingleSkill(identifier, options);
+			const result = await installSingleSkill(skill, options);
 			if (result.updated) {
 				updated.push(result.name);
 			} else {
@@ -245,59 +185,5 @@ async function installFromGitRepo(
 			: "Available for this project only.";
 
 		note(parts.join("\n") + `\n\n${scopeMsg}`, "Complete");
-	}
-}
-
-/**
- * Install a skill from the registry by identifier
- */
-async function installFromRegistry(
-	skillId: string,
-	options: InstallOptions,
-): Promise<void> {
-	const target = parseInstallTarget(skillId);
-
-	if (target.kind !== "registry-skill") {
-		throw new Error("Expected registry target");
-	}
-
-	// Validate client config
-	const { config } = validateClientAndScope(options);
-
-	// Install using shared flow
-	const result = await installSingleSkill(target.identifier, options);
-
-	const scopeMsg = !options.local
-		? `Available for all ${config.name} projects.`
-		: "Available for this project only.";
-
-	note(
-		`${pc.green("✓")} Skill "${result.name}" ${result.updated ? "updated" : "installed"}!\n\n${scopeMsg}`,
-		result.updated ? "Update Complete" : "Installation Complete",
-	);
-}
-
-/**
- * Install an agent skill
- * Supports both registry identifiers and Git URLs
- */
-export async function install(
-	skillId: string,
-	options: InstallOptions,
-): Promise<void> {
-	const target = parseInstallTarget(skillId);
-
-	switch (target.kind) {
-		case "registry-skill":
-			await installFromRegistry(skillId, options);
-			break;
-
-		case "git-repo":
-			await installFromGitRepo(skillId, options);
-			break;
-
-		case "git-skill-path":
-			await installFromGitRepo(skillId, options, target.subdir);
-			break;
 	}
 }

@@ -1,69 +1,86 @@
-import type { SkillIdentifier, SkillMetadata, SearchResponse } from "../types.js";
+import type { SearchResponse } from "../types.js";
 
-const REGISTRY_API_URL = "https://api.claude-plugins.dev";
+const REGISTRY_API_URL = process.env.SKILLS_REGISTRY_URL || "https://api.claude-plugins.dev";
 
 /**
- * Parse skill identifier from format: @owner/repo/skill-name
- * Pure function - no side effects
+ * Resolved skill from the unified resolve API
  */
-export const parseSkillIdentifier = (input: string): SkillIdentifier => {
-	const parts = input.split("/");
+export interface ResolvedSkill {
+	namespace: string;
+	name: string;
+	relDir: string;
+	sourceUrl: string;
+}
 
-	if (parts.length !== 3) {
-		throw new Error(
-			`Invalid format: ${input}\n` +
-				`Expected: @owner/repo/skill-name\n` +
-				`Example: @anthropic/claude-cookbooks/analyzing-financial-statements`,
-		);
-	}
-
-	const [owner, repo, skillName] = parts;
-
-	return {
-		owner: owner ?? "",
-		repo: repo ?? "",
-		skillName: skillName ?? "",
+/**
+ * Response from the unified resolve API
+ */
+export interface ResolveResponse {
+	status: "success" | "error";
+	query: {
+		target: string;
+		kind: "owner" | "repo" | "skill";
+		normalized: string;
 	};
-};
+	skills: ResolvedSkill[];
+	page: {
+		limit: number;
+		offset: number;
+		hasMore: boolean;
+		total: number;
+	};
+	error?: string;
+}
 
 /**
- * Resolve skill from registry API
- * Returns skill metadata if found, null otherwise
+ * Resolve skills from registry API using unified endpoint
+ * Handles: owner, owner/repo, owner/repo/skill, and GitHub URLs
  */
-export const resolveSkill = async (
-	identifier: SkillIdentifier,
-): Promise<SkillMetadata | null> => {
-	try {
-		const url = `${REGISTRY_API_URL}/api/skills/${identifier.owner}/${identifier.repo}/${identifier.skillName}`;
+export const resolveTarget = async (
+	target: string,
+	options?: { limit?: number; offset?: number },
+): Promise<ResolveResponse> => {
+	const url = `${REGISTRY_API_URL}/api/v2/skills/resolve`;
 
-		const response = await fetch(url, {
-			headers: { "User-Agent": "skills-installer/0.1.0" },
-		});
+	const response = await fetch(url, {
+		method: "POST",
+		headers: {
+			"Content-Type": "application/json",
+			"User-Agent": "skills-installer/0.1.0",
+		},
+		body: JSON.stringify({
+			target,
+			limit: options?.limit ?? 100,
+			offset: options?.offset ?? 0,
+		}),
+	});
 
-		if (!response.ok) {
-			return null;
-		}
-
-		const data = (await response.json()) as SkillMetadata;
-
-		if (!data.sourceUrl) {
-			throw new Error("Invalid response: missing sourceUrl");
-		}
-
-		return data;
-	} catch (error) {
-		return null;
+	if (!response.ok) {
+		const data = await response.json().catch(() => ({})) as { error?: string };
+		throw new Error(data.error || `Failed to resolve: ${response.statusText}`);
 	}
+
+	const data = (await response.json()) as ResolveResponse;
+
+	if (data.status === "error") {
+		throw new Error(data.error || "Failed to resolve target");
+	}
+
+	return data;
 };
 
 /**
  * Track installation analytics (fire-and-forget)
+ * Uses namespace format: @owner/repo/skill
  */
-export const trackInstallation = async (
-	identifier: SkillIdentifier,
-): Promise<void> => {
+export const trackInstallation = async (namespace: string): Promise<void> => {
 	try {
-		const url = `${REGISTRY_API_URL}/api/skills/${identifier.owner}/${identifier.repo}/${identifier.skillName}/install`;
+		// Parse namespace: @owner/repo/skill -> owner/repo/skill
+		const parts = namespace.replace(/^@/, "").split("/");
+		if (parts.length !== 3) return;
+
+		const [owner, repo, skillName] = parts;
+		const url = `${REGISTRY_API_URL}/api/skills/${owner}/${repo}/${skillName}/install`;
 		await fetch(url, { method: "POST" });
 	} catch {
 		// ignore tracking failures
@@ -77,66 +94,6 @@ export interface SearchParams {
 	orderBy?: "downloads" | "stars";
 	order?: "asc" | "desc";
 }
-
-/**
- * Skill info returned from the index endpoint
- */
-export interface IndexedSkill {
-	namespace: string;
-	skillName: string;
-	name: string;
-	description: string;
-	relDir: string;
-	sourceUrl: string;
-	status: "indexed" | "unchanged" | "invalid" | "skipped" | "failed";
-}
-
-/**
- * Response from the index endpoint
- */
-export interface IndexRepoResponse {
-	ok: boolean;
-	repo: string;
-	defaultBranch: string;
-	pathsFound: number;
-	result: {
-		found: number;
-		indexed: number;
-		skills: IndexedSkill[];
-	};
-	error?: string;
-}
-
-/**
- * Index a repository and return discovered skills
- * Used for git URL installs to discover available skills
- */
-export const indexRepoAndListSkills = async (
-	repo: string,
-): Promise<IndexRepoResponse> => {
-	const url = `${REGISTRY_API_URL}/api/skills/index`;
-	const response = await fetch(url, {
-		method: "POST",
-		headers: {
-			"Content-Type": "application/json",
-			"User-Agent": "skills-installer/0.1.0",
-		},
-		body: JSON.stringify({ repo, dryRun: false }),
-	});
-
-	if (!response.ok) {
-		const data = await response.json().catch(() => ({}));
-		throw new Error(data.error || `Failed to index repository: ${response.statusText}`);
-	}
-
-	const data = await response.json() as IndexRepoResponse;
-
-	if (!data.ok) {
-		throw new Error(data.error || "Failed to index repository");
-	}
-
-	return data;
-};
 
 /**
  * Search for skills in the registry
