@@ -118,7 +118,7 @@ const main = async () => {
 				}
 
 				await install(skillId, {
-					client: (flags.client as string) || "claude-code",
+					client: flags.client as string,
 					local: !!(flags.local || flags.l),
 				});
 				break;

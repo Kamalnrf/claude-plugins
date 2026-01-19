@@ -7,7 +7,7 @@ export interface ClientConfig {
 export type InstallScope = "global" | "local";
 
 export interface InstallOptions {
-	client: string;
+	client?: string;
 	local: boolean;
 }
 

@@ -1,9 +1,9 @@
 import { existsSync } from "node:fs";
 import { rm } from "node:fs/promises";
-import { note, spinner, multiselect, isCancel } from "@clack/prompts";
+import { note, spinner, multiselect, select, isCancel } from "@clack/prompts";
 import pc from "picocolors";
-import type { InstallOptions } from "../types.js";
-import { getClientConfig, getAvailableClients } from "../lib/client-config.js";
+import type { InstallOptions, ClientConfig } from "../types.js";
+import { getClientConfig, getAvailableClients, CLIENT_CONFIGS } from "../lib/client-config.js";
 import {
 	getSkillPath,
 	getInstallDir,
@@ -18,17 +18,64 @@ import { downloadSkill } from "../lib/download.js";
 import { validateSkillMd } from "../lib/validate.js";
 
 /**
+ * Prompt user to select scope (local/global)
+ */
+async function selectScope(): Promise<"local" | "global" | null> {
+	const selected = await select({
+		message: "Select installation scope:",
+		options: [
+			{ value: "global", label: "Global", hint: "Available for all projects" },
+			{ value: "local", label: "Project", hint: "Available for this project only" },
+		],
+	});
+
+	if (isCancel(selected)) {
+		return null;
+	}
+
+	return selected as "local" | "global";
+}
+
+/**
+ * Prompt user to select clients when none specified
+ */
+async function selectClients(scope: "local" | "global"): Promise<string[] | null> {
+	const clients = getAvailableClients();
+
+	const selected = await multiselect({
+		message: "Select client(s) to install for:",
+		options: clients.map((clientId) => {
+			const config = CLIENT_CONFIGS[clientId]!;
+			const supportsGlobal = !!config.globalDir;
+			const hint = scope === "global" && !supportsGlobal ? "local only" : undefined;
+			return {
+				value: clientId,
+				label: config.name,
+				hint,
+			};
+		}),
+		required: true,
+	});
+
+	if (isCancel(selected)) {
+		return null;
+	}
+
+	return selected as string[];
+}
+
+/**
  * Validate client config and show scope warnings
  * Returns validated config and scope
  */
-function validateClientAndScope(options: InstallOptions) {
-	const config = getClientConfig(options.client);
+function validateClientAndScope(clientId: string, local: boolean): { config: ClientConfig; scope: "local" | "global" } {
+	const config = getClientConfig(clientId);
 	if (!config) {
 		const available = getAvailableClients().join(", ");
-		throw new Error(`Unknown client: ${options.client}\nAvailable: ${available}`);
+		throw new Error(`Unknown client: ${clientId}\nAvailable: ${available}`);
 	}
 
-	const scope = options.local ? "local" : "global";
+	const scope = local ? "local" : "global";
 
 	if (scope === "global" && !config.globalDir) {
 		note(
@@ -40,48 +87,77 @@ function validateClientAndScope(options: InstallOptions) {
 }
 
 /**
- * Install a single skill given its resolved metadata
+ * Install a single skill to a single client (no logging)
  */
-async function installSingleSkill(
+async function installSkillToClient(
 	skill: ResolvedSkill,
-	options: InstallOptions,
-): Promise<{ name: string; installed: boolean; updated: boolean }> {
-	const s = spinner();
-	const config = getClientConfig(options.client)!;
-	const scope = options.local ? "local" : "global";
+	clientId: string,
+	local: boolean,
+): Promise<{ updated: boolean }> {
+	const config = getClientConfig(clientId)!;
+	const scope = local ? "local" : "global";
 
 	const installPath = getSkillPath(config, scope, skill.name);
 	const isUpdate = existsSync(installPath);
-
-	if (isUpdate) {
-		note(
-			`Existing installation found at ${pc.dim(installPath)}\n${pc.yellow("⚠")} This will be overwritten.`,
-			"Updating",
-		);
-	}
 
 	// Ensure directory exists
 	const baseDir = getInstallDir(config, scope);
 	await ensureDirectoryExists(baseDir);
 
 	// Download skill
-	s.start(`Installing ${skill.name}...`);
 	await downloadSkill(skill.sourceUrl, installPath);
 
 	// Validate
 	const isValid = await validateSkillMd(installPath);
 	if (!isValid) {
 		await rm(installPath, { recursive: true, force: true });
-		s.stop(`Failed: ${skill.name}`);
 		throw new Error(`Invalid skill: ${skill.name} - missing or empty SKILL.md`);
 	}
 
-	s.stop(`${isUpdate ? "Updated" : "Installed"} ${skill.name}`);
+	return { updated: isUpdate };
+}
+
+/**
+ * Install a single skill to all selected clients
+ */
+async function installSingleSkill(
+	skill: ResolvedSkill,
+	clientIds: string[],
+	local: boolean,
+): Promise<{ name: string; installed: string[]; updated: string[]; failed: string[] }> {
+	const s = spinner();
+	const clientNames = clientIds.map((id) => getClientConfig(id)!.name);
+
+	s.start(`Installing ${skill.name} to ${clientNames.join(", ")}...`);
+
+	const installed: string[] = [];
+	const updated: string[] = [];
+	const failed: string[] = [];
+
+	for (const clientId of clientIds) {
+		try {
+			const result = await installSkillToClient(skill, clientId, local);
+			const config = getClientConfig(clientId)!;
+			if (result.updated) {
+				updated.push(config.name);
+			} else {
+				installed.push(config.name);
+			}
+		} catch {
+			failed.push(getClientConfig(clientId)!.name);
+		}
+	}
+
+	if (failed.length === clientIds.length) {
+		s.stop(`Failed: ${skill.name}`);
+	} else {
+		s.stop(`Installed ${skill.name}`);
+	}
 
 	// Track installation (fire-and-forget)
 	trackInstallation(skill.namespace);
 
-	return { name: skill.name, installed: !isUpdate, updated: isUpdate };
+	return { name: skill.name, installed, updated, failed };
 }
 
 /**
@@ -94,10 +170,7 @@ export async function install(
 ): Promise<void> {
 	const s = spinner();
 
-	// Validate client config upfront
-	const { config } = validateClientAndScope(options);
-
-	// Resolve skills using unified API
+	// 1. Resolve skills first
 	s.start(`Resolving ${pc.cyan(skillId)}...`);
 
 	let response;
@@ -122,7 +195,7 @@ export async function install(
 
 	s.stop(`Found ${skills.length} skill${skills.length !== 1 ? "s" : ""}`);
 
-	// Determine which skills to install
+	// 2. Determine which skills to install
 	let toInstall: ResolvedSkill[];
 
 	if (skills.length === 1) {
@@ -150,40 +223,60 @@ export async function install(
 		);
 	}
 
-	// Install each selected skill
-	const installed: string[] = [];
-	const updated: string[] = [];
+	// 3. Determine scope (from flag or prompt)
+	let local: boolean;
+	if (options.local !== undefined && options.local) {
+		local = true;
+	} else if (options.client) {
+		// If client was specified via flag, default to global
+		local = false;
+	} else {
+		const selectedScope = await selectScope();
+		if (!selectedScope) {
+			note("Installation cancelled.");
+			return;
+		}
+		local = selectedScope === "local";
+	}
+
+	// 4. Determine which clients to install for
+	let clientIds: string[];
+	if (options.client) {
+		validateClientAndScope(options.client, local);
+		clientIds = [options.client];
+	} else {
+		const scope = local ? "local" : "global";
+		const selectedClients = await selectClients(scope);
+		if (!selectedClients) {
+			note("Installation cancelled.");
+			return;
+		}
+		clientIds = selectedClients;
+	}
+
+	// 5. Install each skill to all selected clients
+	const results: Array<{ name: string; installed: string[]; updated: string[]; failed: string[] }> = [];
 
 	for (const skill of toInstall) {
-		try {
-			const result = await installSingleSkill(skill, options);
-			if (result.updated) {
-				updated.push(result.name);
-			} else {
-				installed.push(result.name);
-			}
-		} catch (error) {
-			note(
-				`Failed to install ${skill.name}: ${error instanceof Error ? error.message : String(error)}`,
-				"Error",
-			);
-		}
+		const result = await installSingleSkill(skill, clientIds, local);
+		results.push(result);
 	}
 
 	// Success message
-	if (installed.length > 0 || updated.length > 0) {
-		const parts: string[] = [];
-		if (installed.length > 0) {
-			parts.push(`${pc.green("✓")} Installed: ${installed.join(", ")}`);
-		}
-		if (updated.length > 0) {
-			parts.push(`${pc.green("✓")} Updated: ${updated.join(", ")}`);
-		}
+	const successful = results.filter((r) => r.installed.length > 0 || r.updated.length > 0);
+	if (successful.length > 0) {
+		const clientNames = clientIds.map((id) => getClientConfig(id)!.name);
+		const skillNames = successful.map((r) => r.name);
 
-		const scopeMsg = !options.local
-			? `Available for all ${config.name} projects.`
-			: "Available for this project only.";
+		const scopeMsg = local
+			? "Available for this project only."
+			: "Available globally.";
 
-		note(parts.join("\n") + `\n\n${scopeMsg}`, "Complete");
+		note(
+			`${pc.green("✓")} Skills: ${skillNames.join(", ")}\n` +
+				`${pc.green("✓")} Clients: ${clientNames.join(", ")}\n\n` +
+				scopeMsg,
+			"Complete",
+		);
 	}
 }
