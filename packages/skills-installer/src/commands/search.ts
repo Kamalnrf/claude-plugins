@@ -2,9 +2,9 @@ import { text, select, spinner, note, isCancel, outro } from "@clack/prompts";
 import pc from "picocolors";
 import type { SearchOptions, SearchResultSkill, SortField } from "../types.js";
 import { searchSkills } from "../lib/api.js";
-import { getClientConfig, getAvailableClients, CLIENT_CONFIGS } from "../lib/client-config.js";
 import { install } from "./install.js";
 import { formatNumber } from "../util.js";
+import { selectScopeAndClients } from "../lib/select-scope-and-clients.js";
 
 const LOAD_MORE_VALUE = "__LOAD_MORE__";
 const SORT_VALUE = "__SORT__";
@@ -145,16 +145,7 @@ const buildSelectOptions = (
 	return options;
 };
 
-/**
- * Build client select options
- */
-const buildClientOptions = (): Array<{ value: string; label: string; hint?: string }> => {
-	return Object.entries(CLIENT_CONFIGS).map(([key, config]) => ({
-		value: key,
-		label: config.name,
-		hint: config.globalDir ? "supports global" : "local only",
-	}));
-};
+
 
 /**
  * Interactive search command
@@ -343,66 +334,28 @@ export async function search(options: SearchOptions = {}): Promise<void> {
 			"Selected Skill",
 		);
 
-		// 5. Determine client (from flag or prompt)
-		let clientKey = options.client;
+		// 5. Determine scope and clients
+		const scopeAndClients = await selectScopeAndClients({
+			client: options.client,
+			local: options.local,
+			allowGoBack: true,
+		});
 
-		if (clientKey) {
-			// Validate provided client
-			const config = getClientConfig(clientKey);
-			if (!config) {
-				const available = getAvailableClients().join(", ");
-				throw new Error(`Unknown client: ${clientKey}\nAvailable: ${available}`);
-			}
-		} else {
-			// Prompt for client selection
-			const clientOptions = [
-				...buildClientOptions(),
-				{ value: GO_BACK_VALUE, label: pc.dim("← Go back") },
-			];
-			const clientSelection = await select({
-				message: "Select target client:",
-				options: clientOptions,
-				initialValue: "claude-code",
-			});
-
-			if (isCancel(clientSelection) || clientSelection === GO_BACK_VALUE) {
-				continue;
-			}
-
-			clientKey = clientSelection as string;
+		if (!scopeAndClients) {
+			showExitMessage();
+			return;
 		}
 
-		const clientConfig = getClientConfig(clientKey)!;
-
-		// 6. Determine scope (from flag, client capability, or prompt)
-		let isLocal = options.local === true;
-
-		if (!isLocal && !clientConfig.globalDir) {
-			// Client doesn't support global
-			note(`${clientConfig.name} only supports local installation.`, "Note");
-			isLocal = true;
-		} else if (!isLocal) {
-			// Prompt for scope
-			const scopeSelection = await select({
-				message: "Installation scope:",
-				options: [
-					{ value: "global", label: "Global", hint: "available for all projects" },
-					{ value: "local", label: "Local", hint: "current project only" },
-					{ value: GO_BACK_VALUE, label: pc.dim("← Go back") },
-				],
-				initialValue: "global",
-			});
-
-			if (isCancel(scopeSelection) || scopeSelection === GO_BACK_VALUE) {
-				continue;
-			}
-
-			isLocal = scopeSelection === "local";
+		if (scopeAndClients === "back") {
+			continue;
 		}
 
-		// 7. Install the skill using existing install function
+		const { scope, clientIds } = scopeAndClients;
+		const isLocal = scope === "local";
+
+		// 6. Install the skill using existing install function
 		await install(selectedSkill.namespace, {
-			client: clientKey,
+			clients: clientIds,
 			local: isLocal,
 		});
 

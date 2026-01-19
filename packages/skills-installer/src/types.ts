@@ -8,7 +8,8 @@ export type InstallScope = "global" | "local";
 
 export interface InstallOptions {
 	client?: string;
-	local: boolean;
+	clients?: string[];
+	local?: boolean;
 }
 
 export interface ListOptions {

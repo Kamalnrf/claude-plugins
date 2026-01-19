@@ -1,9 +1,9 @@
 import { existsSync } from "node:fs";
 import { rm } from "node:fs/promises";
-import { note, spinner, multiselect, select, isCancel, outro } from "@clack/prompts";
+import { note, spinner, multiselect, isCancel, outro } from "@clack/prompts";
 import pc from "picocolors";
-import type { InstallOptions, ClientConfig } from "../types.js";
-import { getClientConfig, getAvailableClients, CLIENT_CONFIGS } from "../lib/client-config.js";
+import type { InstallOptions } from "../types.js";
+import { getClientConfig } from "../lib/client-config.js";
 import {
 	getSkillPath,
 	getInstallDir,
@@ -16,6 +16,7 @@ import {
 } from "../lib/api.js";
 import { downloadSkill } from "../lib/download.js";
 import { validateSkillMd } from "../lib/validate.js";
+import { selectScopeAndClients } from "../lib/select-scope-and-clients.js";
 
 /**
  * Fun success messages for install completion
@@ -62,74 +63,7 @@ const showExitMessage = (): void => {
 	outro(message);
 };
 
-/**
- * Prompt user to select scope (local/global)
- */
-async function selectScope(): Promise<"local" | "global" | null> {
-	const selected = await select({
-		message: "Select installation scope:",
-		options: [
-			{ value: "global", label: "Global", hint: "Available for all projects" },
-			{ value: "local", label: "Project", hint: "Available for this project only" },
-		],
-	});
 
-	if (isCancel(selected)) {
-		return null;
-	}
-
-	return selected as "local" | "global";
-}
-
-/**
- * Prompt user to select clients when none specified
- */
-async function selectClients(scope: "local" | "global"): Promise<string[] | null> {
-	const clients = getAvailableClients();
-
-	const selected = await multiselect({
-		message: "Select client(s) to install for:",
-		options: clients.map((clientId) => {
-			const config = CLIENT_CONFIGS[clientId]!;
-			const supportsGlobal = !!config.globalDir;
-			const hint = scope === "global" && !supportsGlobal ? "local only" : undefined;
-			return {
-				value: clientId,
-				label: config.name,
-				hint,
-			};
-		}),
-		required: true,
-	});
-
-	if (isCancel(selected)) {
-		return null;
-	}
-
-	return selected as string[];
-}
-
-/**
- * Validate client config and show scope warnings
- * Returns validated config and scope
- */
-function validateClientAndScope(clientId: string, local: boolean): { config: ClientConfig; scope: "local" | "global" } {
-	const config = getClientConfig(clientId);
-	if (!config) {
-		const available = getAvailableClients().join(", ");
-		throw new Error(`Unknown client: ${clientId}\nAvailable: ${available}`);
-	}
-
-	const scope = local ? "local" : "global";
-
-	if (scope === "global" && !config.globalDir) {
-		note(
-			`Client "${config.name}" does not support global installation.\nInstalling to project directory instead.`,
-		);
-	}
-
-	return { config, scope };
-}
 
 /**
  * Install a single skill to a single client (no logging)
@@ -268,35 +202,28 @@ export async function install(
 		);
 	}
 
-	// 3. Determine scope (from flag or prompt)
-	let local: boolean;
-	if (options.local !== undefined && options.local) {
-		local = true;
-	} else if (options.client) {
-		// If client was specified via flag, default to global
-		local = false;
-	} else {
-		const selectedScope = await selectScope();
-		if (!selectedScope) {
-			note("Installation cancelled.");
-			return;
-		}
-		local = selectedScope === "local";
-	}
-
-	// 4. Determine which clients to install for
+	// 3. Determine scope and clients
 	let clientIds: string[];
-	if (options.client) {
-		validateClientAndScope(options.client, local);
-		clientIds = [options.client];
+	let local: boolean;
+
+	// If clients array is provided directly (e.g., from search), use it
+	if (options.clients && options.clients.length > 0) {
+		clientIds = options.clients;
+		local = options.local ?? false;
 	} else {
-		const scope = local ? "local" : "global";
-		const selectedClients = await selectClients(scope);
-		if (!selectedClients) {
+		// Otherwise, prompt for scope and clients
+		const scopeAndClients = await selectScopeAndClients({
+			client: options.client,
+			local: options.local,
+		});
+
+		if (!scopeAndClients || scopeAndClients === "back") {
 			note("Installation cancelled.");
 			return;
 		}
-		clientIds = selectedClients;
+
+		clientIds = scopeAndClients.clientIds;
+		local = scopeAndClients.scope === "local";
 	}
 
 	// 5. Install each skill to all selected clients
