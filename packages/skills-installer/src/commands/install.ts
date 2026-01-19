@@ -1,6 +1,6 @@
 import { existsSync } from "node:fs";
 import { rm } from "node:fs/promises";
-import { note, spinner, multiselect, isCancel, outro } from "@clack/prompts";
+import { note, spinner, multiselect, isCancel } from "@clack/prompts";
 import pc from "picocolors";
 import type { InstallOptions } from "../types.js";
 import { getClientConfig } from "../lib/client-config.js";
@@ -17,51 +17,7 @@ import {
 import { downloadSkill } from "../lib/download.js";
 import { validateSkillMd } from "../lib/validate.js";
 import { selectScopeAndClients } from "../lib/select-scope-and-clients.js";
-
-/**
- * Fun success messages for install completion
- */
-const SUCCESS_MESSAGES = [
-	{ emoji: "🚀", text: "Skills locked and loaded!" },
-	{ emoji: "✨", text: "Your agent just leveled up!" },
-	{ emoji: "🎯", text: "New abilities unlocked!" },
-	{ emoji: "⚡", text: "Supercharged and ready to go!" },
-	{ emoji: "🌟", text: "Skills successfully acquired!" },
-	{ emoji: "🔮", text: "Magic powers installed!" },
-	{ emoji: "🎪", text: "New tricks in the bag!" },
-	{ emoji: "🏆", text: "Achievement unlocked: Skill Master!" },
-];
-
-const getRandomSuccessMessage = () => {
-	const idx = Math.floor(Math.random() * SUCCESS_MESSAGES.length);
-	return SUCCESS_MESSAGES[idx]!;
-};
-
-/**
- * Show a friendly exit message with ASCII art
- */
-const showExitMessage = (): void => {
-	const moonArt = pc.yellow(
-		`    *  .  *
-       .    *    .
-   *   .        .       *
-     .    *  .     . *
-   .  *        *  .    .`,
-	);
-
-	const { emoji, text } = getRandomSuccessMessage();
-
-	const message =
-		`${moonArt}\n\n` +
-		`${emoji} ${pc.bold(text)}\n\n` +
-		`To find plugins and browse skills on the web, see:\n` +
-		`${pc.blue(pc.underline("https://claude-plugins.dev"))}\n\n` +
-		`To share ideas and issues, come visit us on the Moon:\n` +
-		`${pc.magenta(pc.underline("https://discord.gg/Pt9uN4FXR4"))}\n\n` +
-		`${pc.dim("This project is open-source and we'd love to hear from you!")}`;
-
-	outro(message);
-};
+import { showExitMessage } from "../util.js";
 
 
 

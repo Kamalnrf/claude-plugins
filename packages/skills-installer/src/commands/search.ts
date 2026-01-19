@@ -1,16 +1,15 @@
-import { text, select, spinner, note, isCancel, outro } from "@clack/prompts";
+import { text, select, spinner, note, isCancel } from "@clack/prompts";
 import pc from "picocolors";
 import type { SearchOptions, SearchResultSkill, SortField } from "../types.js";
 import { searchSkills } from "../lib/api.js";
 import { install } from "./install.js";
-import { formatNumber } from "../util.js";
+import { formatNumber, showExitMessage } from "../util.js";
 import { selectScopeAndClients } from "../lib/select-scope-and-clients.js";
 
 const LOAD_MORE_VALUE = "__LOAD_MORE__";
 const SORT_VALUE = "__SORT__";
 const NEW_SEARCH_VALUE = "__NEW_SEARCH__";
 const EXIT_VALUE = "__EXIT__";
-const GO_BACK_VALUE = "__GO_BACK__";
 const INSTALL_META_SKILL_VALUE = "__INSTALL_META_SKILL__";
 const DEFAULT_LIMIT = 5;
 const MAX_VISIBLE_ITEMS = 12;
@@ -34,30 +33,6 @@ const validateSearchQuery = (value: string): string | undefined => {
 const getSortLabel = (field: SortField): string => {
 	const option = SORT_OPTIONS.find((o) => o.value === field);
 	return option?.label ?? "Relevance";
-};
-
-/**
- * Show a friendly exit message with ASCII art
- */
-const showExitMessage = (): void => {
-	const moonArt = pc.yellow(
-		`    *  .  *
-       .    *    .
-   *   .        .       *
-     .    *  .     . *
-   .  *        *  .    .`,
-	);
-
-	const message =
-		`${moonArt}\n\n` +
-		`${pc.bold("Happy coding!")} ${pc.cyan("◝(ᵔᵕᵔ)◜")}\n\n` +
-		`To find plugins and browse skills on the web, see:\n` +
-		`${pc.blue(pc.underline("https://claude-plugins.dev"))}\n\n` +
-		`To share ideas and issues, come visit us on the Moon:\n` +
-		`${pc.magenta(pc.underline("https://discord.gg/Pt9uN4FXR4"))}\n\n` +
-		`${pc.dim("This project is open-source and we'd love to hear from you!")}`;
-
-	outro(message);
 };
 
 /**
