@@ -1,6 +1,11 @@
-import type { SearchResponse } from "../types.js";
+import type { SearchResponse, SearchResultSkill } from "../types.js";
+import pkg from "../../package.json";
 
 const REGISTRY_API_URL = process.env.SKILLS_REGISTRY_URL || "https://api.claude-plugins.dev";
+const META_SKILL_NAMESPACE = "@Kamalnrf/claude-plugins/skills-discovery";
+const USER_AGENT = `${pkg.name}/${pkg.version}`;
+const MAX_RETRIES = 3;
+const INITIAL_DELAY_MS = 500; // Exponential backoff: 500ms, 1000ms, 2000ms
 
 /**
  * Resolved skill from the unified resolve API
@@ -32,6 +37,44 @@ export interface ResolveResponse {
 	error?: string;
 }
 
+const DEFAULT_HEADERS = {
+	Accept: "application/json",
+	"User-Agent": USER_AGENT,
+};
+
+async function fetchWithRetry(
+	url: string | URL,
+	options?: RequestInit,
+	retries = MAX_RETRIES,
+): Promise<Response> {
+	const mergedOptions: RequestInit = {
+		...options,
+		headers: {
+			...DEFAULT_HEADERS,
+			...options?.headers,
+		},
+	};
+
+	let lastError: Error | undefined;
+
+	for (let attempt = 0; attempt < retries; attempt++) {
+		try {
+			const response = await fetch(url, mergedOptions);
+			return response;
+		} catch (error) {
+			lastError = error as Error;
+
+			// Don't retry on the last attempt
+			if (attempt < retries - 1) {
+				const delay = INITIAL_DELAY_MS * Math.pow(2, attempt);
+				await new Promise((resolve) => setTimeout(resolve, delay));
+			}
+		}
+	}
+
+	throw lastError;
+}
+
 /**
  * Resolve skills from registry API using unified endpoint
  * Handles: owner, owner/repo, owner/repo/skill, and GitHub URLs
@@ -42,12 +85,8 @@ export const resolveTarget = async (
 ): Promise<ResolveResponse> => {
 	const url = `${REGISTRY_API_URL}/api/v2/skills/resolve`;
 
-	const response = await fetch(url, {
+	const response = await fetchWithRetry(url, {
 		method: "POST",
-		headers: {
-			"Content-Type": "application/json",
-			"User-Agent": "skills-installer/0.1.0",
-		},
 		body: JSON.stringify({
 			target,
 			limit: options?.limit ?? 100,
@@ -81,7 +120,7 @@ export const trackInstallation = async (namespace: string): Promise<void> => {
 
 		const [owner, repo, skillName] = parts;
 		const url = `${REGISTRY_API_URL}/api/skills/${owner}/${repo}/${skillName}/install`;
-		await fetch(url, { method: "POST" });
+		await fetchWithRetry(url, { method: "POST" });
 	} catch {
 		// ignore tracking failures
 	}
@@ -113,13 +152,25 @@ export const searchSkills = async (params: SearchParams): Promise<SearchResponse
 		url.searchParams.set("order", order ?? "desc");
 	}
 
-	const response = await fetch(url.toString(), {
-		headers: { "User-Agent": "skills-installer/0.1.0" },
-	});
+
+	const response = await fetchWithRetry(url.toString());
 
 	if (!response.ok) {
 		throw new Error(`Search failed: ${response.statusText}`);
 	}
 
 	return response.json() as Promise<SearchResponse>;
+};
+
+export const fetchMetaSkill = async (): Promise<SearchResultSkill | null> => {
+	try {
+		const res = await fetchWithRetry(`${REGISTRY_API_URL}/api/skills/${META_SKILL_NAMESPACE}`);
+		if (res.ok) {
+			return await res.json() as SearchResultSkill;
+		}
+	} catch {
+		// ignore fetch failures
+	}
+
+	return null;
 };

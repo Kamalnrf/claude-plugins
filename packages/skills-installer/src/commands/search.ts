@@ -1,8 +1,8 @@
 import { text, select, spinner, note, isCancel } from "@clack/prompts";
 import pc from "picocolors";
 import type { SearchOptions, SearchResultSkill, SortField } from "../types.js";
-import { searchSkills } from "../lib/api.js";
-import { install } from "./install.js";
+import { searchSkills, fetchMetaSkill} from "../lib/api.js";
+import { installSingleSkill } from "./install.js";
 import { formatNumber, showExitMessage } from "../util.js";
 import { selectScopeAndClients } from "../lib/select-scope-and-clients.js";
 
@@ -13,9 +13,6 @@ const EXIT_VALUE = "__EXIT__";
 const INSTALL_META_SKILL_VALUE = "__INSTALL_META_SKILL__";
 const DEFAULT_LIMIT = 5;
 const MAX_VISIBLE_ITEMS = 12;
-
-// Meta skill namespace (promoted skill shown at top of results)
-const META_SKILL_NAMESPACE = "@Kamalnrf/claude-plugins/skills-discovery";
 
 // Sort options available to users
 const SORT_OPTIONS: Array<{ value: SortField; label: string; hint: string }> = [
@@ -134,15 +131,7 @@ export async function search(options: SearchOptions = {}): Promise<void> {
 	let initialSelectionIndex = 0; // Track where to position cursor after loading more
 
 	// Fetch meta skill from API (same data format as search results)
-	let metaSkill: SearchResultSkill | null = null;
-	try {
-		const res = await fetch(`https://api.claude-plugins.dev/api/skills/${META_SKILL_NAMESPACE}`);
-		if (res.ok) {
-			metaSkill = await res.json() as SearchResultSkill;
-		}
-	} catch {
-		// Meta skill won't be shown if fetch fails
-	}
+  let metaSkill: SearchResultSkill | null = await fetchMetaSkill();
 
 	// 1. Get search query (from options or prompt user)
 	let query = options.query;
@@ -169,7 +158,7 @@ export async function search(options: SearchOptions = {}): Promise<void> {
 		// Fetch results
 		s.start(offset === 0 ? "Searching..." : "Loading more results...");
 
-		try {
+    try {
 			const response = await searchSkills({
 				query,
 				limit: fetchLimit,
@@ -329,10 +318,15 @@ export async function search(options: SearchOptions = {}): Promise<void> {
 		const isLocal = scope === "local";
 
 		// 6. Install the skill using existing install function
-		await install(selectedSkill.namespace, {
-			clients: clientIds,
-			local: isLocal,
-		});
+    await installSingleSkill({
+      namespace: selectedSkill.namespace,
+      name: selectedSkill.name,
+      sourceUrl: selectedSkill.sourceUrl,
+      relDir: selectedSkill.metadata.directoryPath
+		},
+			clientIds,
+			isLocal,
+		);
 
 		// Ask user what to do next
 		const nextAction = await select({

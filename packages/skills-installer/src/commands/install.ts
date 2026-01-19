@@ -2,27 +2,27 @@ import { existsSync } from "node:fs";
 import { rm } from "node:fs/promises";
 import { note, spinner, multiselect, isCancel } from "@clack/prompts";
 import pc from "picocolors";
-import type { InstallOptions } from "../types.js";
-import { getClientConfig } from "../lib/client-config.js";
+import type { InstallOptions } from "../types";
+import { getClientConfig } from "../lib/client-config";
 import {
 	getSkillPath,
 	getInstallDir,
 	ensureDirectoryExists,
-} from "../lib/paths.js";
+} from "../lib/paths";
 import {
 	resolveTarget,
 	trackInstallation,
 	type ResolvedSkill,
-} from "../lib/api.js";
-import { downloadSkill } from "../lib/download.js";
-import { validateSkillMd } from "../lib/validate.js";
-import { selectScopeAndClients } from "../lib/select-scope-and-clients.js";
-import { showExitMessage } from "../util.js";
+} from "../lib/api";
+import { downloadSkill } from "../lib/download";
+import { validateSkillMd } from "../lib/validate";
+import { selectScopeAndClients } from "../lib/select-scope-and-clients";
+import { showExitMessage } from "../util";
 
 
 
 /**
- * Install a single skill to a single client (no logging)
+ * Install skill to client
  */
 async function installSkillToClient(
 	skill: ResolvedSkill,
@@ -56,9 +56,9 @@ async function installSkillToClient(
 }
 
 /**
- * Install a single skill to all selected clients
+ * Install skill to all selected clients
  */
-async function installSingleSkill(
+export async function installSingleSkill(
 	skill: ResolvedSkill,
 	clientIds: string[],
 	local: boolean,
@@ -170,7 +170,7 @@ export async function install(
 	let clientIds: string[];
 	let local: boolean;
 
-	// If clients array is provided directly (e.g., from search), use it
+	// If clients array is provided directly use it
 	if (options.clients && options.clients.length > 0) {
 		clientIds = options.clients;
 		local = options.local ?? false;

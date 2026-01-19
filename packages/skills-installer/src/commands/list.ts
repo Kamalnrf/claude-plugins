@@ -1,11 +1,11 @@
 import { readdir } from "node:fs/promises";
 import { existsSync } from "node:fs";
 import pc from "picocolors";
-import type { ListOptions, ClientConfig } from "../types.js";
+import type { ListOptions, ClientConfig } from "../types";
 import {
 	getClientConfig,
 	CLIENT_CONFIGS,
-} from "../lib/client-config.js";
+} from "../lib/client-config";
 
 interface InstalledSkill {
 	skill: string;
