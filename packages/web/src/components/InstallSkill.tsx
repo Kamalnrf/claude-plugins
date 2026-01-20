@@ -117,7 +117,7 @@ export function InstallSkill({ skill }: Props) {
 	};
 
 	const renderCliInstructions = (clientId: string, supportsGlobal: boolean) => {
-		const projectSkill = `skills-installer install ${skill.namespace} --local --client ${clientId}`;
+		const projectSkill = `skills-installer install ${skill.namespace} -p --client ${clientId}`;
 		const personalSkill = `skills-installer install ${skill.namespace} --client ${clientId}`;
 
 		return (
