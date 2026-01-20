@@ -41,7 +41,7 @@ const showHelp = () => {
 ${pc.bold(pc.cyan("skills-installer"))} ${pc.dim("—")} Install agent skills
 
 ${pc.bold(pc.yellow("COMMANDS:"))}
-  ${pc.green("search")} [query]             ${pc.dim("Search across all public skills on Github")}
+  ${pc.green("search")} [query]             ${pc.dim("Search across all public skills on GitHub")}
   ${pc.green("install")} owner              ${pc.dim("Browse all skills from owner's repos")}
   ${pc.green("install")} owner/repo         ${pc.dim("Browse skills in a specific repo")}
   ${pc.green("install")} owner/repo/skill   ${pc.dim("Install a specific skill")}
