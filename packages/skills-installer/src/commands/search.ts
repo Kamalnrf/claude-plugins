@@ -1,22 +1,18 @@
-import { text, select, spinner, note, isCancel, outro } from "@clack/prompts";
+import { text, select, spinner, note, isCancel } from "@clack/prompts";
 import pc from "picocolors";
 import type { SearchOptions, SearchResultSkill, SortField } from "../types.js";
-import { searchSkills } from "../lib/api.js";
-import { getClientConfig, getAvailableClients, CLIENT_CONFIGS } from "../lib/client-config.js";
-import { install } from "./install.js";
-import { formatNumber } from "../util.js";
+import { searchSkills, fetchMetaSkill} from "../lib/api.js";
+import { installSingleSkill } from "./install.js";
+import { formatNumber, showExitMessage } from "../util.js";
+import { selectScopeAndClients } from "../lib/select-scope-and-clients.js";
 
 const LOAD_MORE_VALUE = "__LOAD_MORE__";
 const SORT_VALUE = "__SORT__";
 const NEW_SEARCH_VALUE = "__NEW_SEARCH__";
 const EXIT_VALUE = "__EXIT__";
-const GO_BACK_VALUE = "__GO_BACK__";
 const INSTALL_META_SKILL_VALUE = "__INSTALL_META_SKILL__";
 const DEFAULT_LIMIT = 5;
 const MAX_VISIBLE_ITEMS = 12;
-
-// Meta skill namespace (promoted skill shown at top of results)
-const META_SKILL_NAMESPACE = "@Kamalnrf/claude-plugins/skills-discovery";
 
 // Sort options available to users
 const SORT_OPTIONS: Array<{ value: SortField; label: string; hint: string }> = [
@@ -34,30 +30,6 @@ const validateSearchQuery = (value: string): string | undefined => {
 const getSortLabel = (field: SortField): string => {
 	const option = SORT_OPTIONS.find((o) => o.value === field);
 	return option?.label ?? "Relevance";
-};
-
-/**
- * Show a friendly exit message with ASCII art
- */
-const showExitMessage = (): void => {
-	const moonArt = pc.yellow(
-		`    *  .  *
-       .    *    .
-   *   .        .       *
-     .    *  .     . *
-   .  *        *  .    .`,
-	);
-
-	const message =
-		`${moonArt}\n\n` +
-		`${pc.bold("Happy coding!")} ${pc.cyan("◝(ᵔᵕᵔ)◜")}\n\n` +
-		`To find plugins and browse skills on the web, see:\n` +
-		`${pc.blue(pc.underline("https://claude-plugins.dev"))}\n\n` +
-		`To share ideas and issues, come visit us on the Moon:\n` +
-		`${pc.magenta(pc.underline("https://discord.gg/Pt9uN4FXR4"))}\n\n` +
-		`${pc.dim("This project is open-source and we'd love to hear from you!")}`;
-
-	outro(message);
 };
 
 /**
@@ -145,16 +117,7 @@ const buildSelectOptions = (
 	return options;
 };
 
-/**
- * Build client select options
- */
-const buildClientOptions = (): Array<{ value: string; label: string; hint?: string }> => {
-	return Object.entries(CLIENT_CONFIGS).map(([key, config]) => ({
-		value: key,
-		label: config.name,
-		hint: config.globalDir ? "supports global" : "local only",
-	}));
-};
+
 
 /**
  * Interactive search command
@@ -168,15 +131,7 @@ export async function search(options: SearchOptions = {}): Promise<void> {
 	let initialSelectionIndex = 0; // Track where to position cursor after loading more
 
 	// Fetch meta skill from API (same data format as search results)
-	let metaSkill: SearchResultSkill | null = null;
-	try {
-		const res = await fetch(`https://api.claude-plugins.dev/api/skills/${META_SKILL_NAMESPACE}`);
-		if (res.ok) {
-			metaSkill = await res.json() as SearchResultSkill;
-		}
-	} catch {
-		// Meta skill won't be shown if fetch fails
-	}
+  let metaSkill: SearchResultSkill | null = await fetchMetaSkill();
 
 	// 1. Get search query (from options or prompt user)
 	let query = options.query;
@@ -203,7 +158,7 @@ export async function search(options: SearchOptions = {}): Promise<void> {
 		// Fetch results
 		s.start(offset === 0 ? "Searching..." : "Loading more results...");
 
-		try {
+    try {
 			const response = await searchSkills({
 				query,
 				limit: fetchLimit,
@@ -343,68 +298,35 @@ export async function search(options: SearchOptions = {}): Promise<void> {
 			"Selected Skill",
 		);
 
-		// 5. Determine client (from flag or prompt)
-		let clientKey = options.client;
-
-		if (clientKey) {
-			// Validate provided client
-			const config = getClientConfig(clientKey);
-			if (!config) {
-				const available = getAvailableClients().join(", ");
-				throw new Error(`Unknown client: ${clientKey}\nAvailable: ${available}`);
-			}
-		} else {
-			// Prompt for client selection
-			const clientOptions = [
-				...buildClientOptions(),
-				{ value: GO_BACK_VALUE, label: pc.dim("← Go back") },
-			];
-			const clientSelection = await select({
-				message: "Select target client:",
-				options: clientOptions,
-				initialValue: "claude-code",
-			});
-
-			if (isCancel(clientSelection) || clientSelection === GO_BACK_VALUE) {
-				continue;
-			}
-
-			clientKey = clientSelection as string;
-		}
-
-		const clientConfig = getClientConfig(clientKey)!;
-
-		// 6. Determine scope (from flag, client capability, or prompt)
-		let isLocal = options.local === true;
-
-		if (!isLocal && !clientConfig.globalDir) {
-			// Client doesn't support global
-			note(`${clientConfig.name} only supports local installation.`, "Note");
-			isLocal = true;
-		} else if (!isLocal) {
-			// Prompt for scope
-			const scopeSelection = await select({
-				message: "Installation scope:",
-				options: [
-					{ value: "global", label: "Global", hint: "available for all projects" },
-					{ value: "local", label: "Local", hint: "current project only" },
-					{ value: GO_BACK_VALUE, label: pc.dim("← Go back") },
-				],
-				initialValue: "global",
-			});
-
-			if (isCancel(scopeSelection) || scopeSelection === GO_BACK_VALUE) {
-				continue;
-			}
-
-			isLocal = scopeSelection === "local";
-		}
-
-		// 7. Install the skill using existing install function
-		await install(selectedSkill.namespace, {
-			client: clientKey,
-			local: isLocal,
+		// 5. Determine scope and clients
+		const scopeAndClients = await selectScopeAndClients({
+			client: options.client,
+			local: options.local,
+			allowGoBack: true,
 		});
+
+		if (!scopeAndClients) {
+			showExitMessage();
+			return;
+		}
+
+		if (scopeAndClients === "back") {
+			continue;
+		}
+
+		const { scope, clientIds } = scopeAndClients;
+		const isLocal = scope === "local";
+
+		// 6. Install the skill using existing install function
+    await installSingleSkill({
+      namespace: selectedSkill.namespace,
+      name: selectedSkill.name,
+      sourceUrl: selectedSkill.sourceUrl,
+      relDir: selectedSkill.metadata.directoryPath
+		},
+			clientIds,
+			isLocal,
+		);
 
 		// Ask user what to do next
 		const nextAction = await select({
