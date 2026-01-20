@@ -38,54 +38,26 @@ const parseArgs = (args: string[]) => {
  */
 const showHelp = () => {
 	console.log(`
-${pc.bold("skills-installer")} - Install agent skills that comply with the agentskills spec
+${pc.bold(pc.cyan("skills-installer"))} ${pc.dim("—")} Install agent skills
 
-${pc.bold("COMMANDS:")}
-  install <skill>    Install or update an agent skill
-  search [query]     Search for skills in the registry
-  list               List installed skills
-  help               Show this help message
+${pc.bold(pc.yellow("COMMANDS:"))}
+  ${pc.green("search")} [query]             ${pc.dim("Search across all public skills on Github")}
+  ${pc.green("install")} owner              ${pc.dim("Browse all skills from owner's repos")}
+  ${pc.green("install")} owner/repo         ${pc.dim("Browse skills in a specific repo")}
+  ${pc.green("install")} owner/repo/skill   ${pc.dim("Install a specific skill")}
+  ${pc.green("install")} <git-url>          ${pc.dim("HTTPS, SSH, or direct path to skill")}
+  ${pc.green("list")}                       ${pc.dim("List installed skills")}
 
-${pc.bold("OPTIONS:")}
-  --client <name>   Target client (${getAvailableClients().join(", ")})
-  --local, -l       Install locally to current directory
+${pc.bold(pc.yellow("EXAMPLES:"))}
+  ${pc.cyan("$")} skills-installer search ${pc.magenta('frontend')}
+  ${pc.cyan("$")} skills-installer install ${pc.magenta("anthropics")}
+  ${pc.cyan("$")} skills-installer install ${pc.magenta("anthropics/claude-code")}
 
-${pc.bold("INSTALL FORMATS:")}
-  ${pc.dim("# From registry")}
-  @owner/repo/skill-name
+${pc.bold(pc.yellow("OPTIONS:"))}
+  ${pc.blue("--client")} <name>   Target client (${getAvailableClients().join(", ")})
+  ${pc.blue("--project")}, ${pc.blue("-p")}     Install to current project directory
 
-  ${pc.dim("# From GitHub (clone + pick skills)")}
-  owner/repo
-  github.com/owner/repo
-  https://github.com/owner/repo
-  git@github.com:owner/repo.git
-
-  ${pc.dim("# Direct path to skill in repo")}
-  https://github.com/owner/repo/tree/main/skills/skill-name
-
-${pc.bold("EXAMPLES:")}
-  ${pc.dim("# Search for skills interactively")}
-  skills-installer search
-
-  ${pc.dim("# Search with a query")}
-  skills-installer search "frontend design"
-
-  ${pc.dim("# Install from registry")}
-  skills-installer install @anthropic/claude-cookbooks/analyzing-financial-statements
-
-  ${pc.dim("# Install all skills from a GitHub repo")}
-  skills-installer install vercel-labs/agent-skills
-
-  ${pc.dim("# Install specific skill from a repo URL")}
-  skills-installer install https://github.com/vercel-labs/agent-skills/tree/main/skills/frontend-design
-
-  ${pc.dim("# Install locally (defaults to claude-code)")}
-  skills-installer install owner/repo --local
-
-  ${pc.dim("# List all installed skills")}
-  skills-installer list
-
-${pc.dim("Browse skills at https://claude-plugins.dev/skills")}
+${pc.dim("Browse skills at")} ${pc.underline(pc.cyan("https://claude-plugins.dev/skills"))}
 `);
 };
 
@@ -117,9 +89,14 @@ const main = async () => {
 					process.exit(1);
 				}
 
+				const useProject = !!(flags.project || flags.p || flags.local || flags.l);
+				if (flags.local || flags.l) {
+					console.log(pc.dim("Note: --local is deprecated, use --project instead"));
+				}
+
 				await install(skillId, {
 					client: flags.client as string,
-					local: !!(flags.local || flags.l),
+					local: useProject,
 				});
 				break;
 			}
@@ -133,10 +110,15 @@ const main = async () => {
 
 			case "search": {
 				const query = positional[0];
+				const useProjectSearch = !!(flags.project || flags.p || flags.local || flags.l);
+				if (flags.local || flags.l) {
+					console.log(pc.dim("Note: --local is deprecated, use --project instead"));
+				}
+
 				await search({
 					query,
 					client: flags.client as string | undefined,
-					local: !!(flags.local || flags.l),
+					local: useProjectSearch,
 				});
 				break;
 			}

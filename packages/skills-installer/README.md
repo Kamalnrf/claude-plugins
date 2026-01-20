@@ -36,7 +36,7 @@ Agent Skills are specialized capabilities that extend AI coding assistants like 
   <img src="https://github.com/user-attachments/assets/b20597ad-7bed-4845-9fd4-2dd7da0b26d6" alt="Finding and exploring skills using the CLI" width="60%" />
 </p>
 
-Search the registry interactively:
+Search across all public skills on GitHub:
 
 ```bash
 skills-installer search
@@ -53,28 +53,40 @@ The search command provides an interactive interface where you can:
 - Select a skill to install directly
 - Choose installation scope and target client
 
-### Install a skill globally
+### Install skills
+
+The install command supports multiple formats:
 
 ```bash
-skills-installer install @anthropics/skills/frontend-design
+# Browse all skills from an owner
+skills-installer install anthropics
+
+# Browse skills in a specific repo
+skills-installer install anthropics/claude-code
+
+# Install a specific skill
+skills-installer install anthropics/claude-code/frontend-design
+
+# Install from any GitHub URL
+skills-installer install https://github.com/owner/repo/tree/main/skills/my-skill
 ```
 
-Skills installed globally are available across all projects using the selected client.
-
-### Install a skill locally
+### Install to project directory
 
 ```bash
-skills-installer install @anthropics/skills/pdf --local
+skills-installer install anthropics/claude-code/pdf --project
+# or
+skills-installer install anthropics/claude-code/pdf -p
 ```
 
-Local skills are only available in the current project directory.
+Project skills are only available in the current project directory.
 
 ### Update an existing skill
 
 Simply run the install command again - it will automatically update:
 
 ```bash
-skills-installer install @anthropics/skills/frontend-design
+skills-installer install anthropics/claude-code/frontend-design
 ```
 
 ### List installed skills
@@ -83,26 +95,26 @@ skills-installer install @anthropics/skills/frontend-design
 skills-installer list
 ```
 
-Shows all installed skills with their installation scope (global/local) and paths.
+Shows all installed skills with their installation scope (global/project) and paths.
 
 ### Target specific clients
 
 ```bash
-skills-installer install @anthropics/skills/xlsx --client claude-code
+skills-installer install @anthropics/skills/xlsx --client cursor
 ```
 
 Currently supported clients:
 - `claude-code` (default)
+- `amp`
 - `codex`
 - `cursor`
 - `windsurf`
 - `github`
-- `letta`
 - `vscode`
-- `amp`
-- `goose`
-- `opencode`
 - `gemini`
+- `goose`
+- `letta`
+- `opencode`
 - `antigravity`
 - `trae`
 - `qoder`
@@ -112,33 +124,35 @@ Currently supported clients:
 
 | Command | Description |
 |---------|-------------|
-| `search [query]` | Search for skills in the registry |
-| `install <skill>` | Install or update an agent skill |
+| `search [query]` | Search across all public skills on GitHub |
+| `install owner` | Browse all skills from owner's repos |
+| `install owner/repo` | Browse skills in a specific repo |
+| `install owner/repo/skill` | Install a specific skill |
+| `install <git-url>` | Install from HTTPS, SSH, or direct path |
 | `list` | List all installed skills |
-| `help` | Show help message |
 
 ## Options
 
 | Option | Alias | Description |
 |--------|-------|-------------|
 | `--client <name>` | | Target AI coding client (default: claude-code) |
-| `--local` | `-l` | Install to current directory instead of globally |
+| `--project` | `-p` | Install to current project directory |
 
 ## Skill Identifier Format
 
-Skills are identified using the format: `@owner/repo/skill-name`
+Skills can be identified using multiple formats:
 
-Examples:
-- `@anthropics/skills/frontend-design`
-- `@anthropics/skills/pdf`
-- `@anthropics/skills/xlsx`
+- `owner` - Browse all skills from owner's repositories
+- `owner/repo` - Browse skills in a specific repository
+- `owner/repo/skill` - Install a specific skill
+- `https://github.com/owner/repo/tree/main/skills/skill-name` - Direct GitHub URL
 
 ## Where are skills installed?
 
 **Global installation (claude-code):**
 - `~/.claude/skills/`
 
-**Local installation:**
+**Project installation:**
 - `./.claude/skills/` (in your current directory)
 
 ## Examples
@@ -150,23 +164,26 @@ skills-installer search
 # Search with a specific query
 skills-installer search "frontend design"
 
-# Search and install to specific client
-skills-installer search "testing" --client cursor
+# Browse all skills from an owner
+skills-installer install anthropics
 
-# Install the frontend-design skill globally
-skills-installer install @anthropics/claude-code/frontend-design
+# Browse skills in a specific repo
+skills-installer install anthropics/claude-code
 
-# Install a skill locally for current project
-skills-installer install @anthropics/claude-code/frontend-design --local
+# Install a specific skill globally
+skills-installer install anthropics/claude-code/frontend-design
+
+# Install a skill to current project
+skills-installer install anthropics/claude-code/frontend-design --project
+
+# Install from a GitHub URL
+skills-installer install https://github.com/owner/repo/tree/main/skills/my-skill
+
+# Install skill for a specific client
+skills-installer install anthropics/claude-code/frontend-design --client cursor
 
 # List all installed skills
 skills-installer list
-
-# Update an existing skill to latest version
-skills-installer install @anthropics/claude-code/frontend-design
-
-# Install skill for a specific client
-skills-installer install @anthropics/claude-code/frontend-design --client vscode
 ```
 
 ## License
