@@ -26,13 +26,6 @@ export default defineConfig({
         /^\/skills$/,
       ],
     },
-    rewrites: [
-      {
-        source: '/(.*)',
-        has: [{ type: 'host', value: 'api2.claude-plugins.dev' }],
-        destination: 'https://kamalnrf--44867e10a75311f08f880224a6c84d84.web.val.run/$1',
-      },
-    ],
   }),
   vite: {
     plugins: [tailwindcss()],
