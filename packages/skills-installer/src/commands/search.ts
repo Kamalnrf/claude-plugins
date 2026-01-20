@@ -130,9 +130,6 @@ export async function search(options: SearchOptions = {}): Promise<void> {
 	let total = 0;
 	let initialSelectionIndex = 0; // Track where to position cursor after loading more
 
-	// Fetch meta skill from API (same data format as search results)
-  let metaSkill: SearchResultSkill | null = await fetchMetaSkill();
-
 	// 1. Get search query (from options or prompt user)
 	let query = options.query;
 	if (!query) {
@@ -150,14 +147,14 @@ export async function search(options: SearchOptions = {}): Promise<void> {
 		query = queryInput as string;
 	}
 
+	let metaSkill: SearchResultSkill | null = await fetchMetaSkill();
 	// Track current sort (can be changed via in-list option)
-	let currentSort: SortField = "relevance";
+  let currentSort: SortField = "relevance";
 
 	// 2. Search loop (supports pagination and re-sorting)
 	while (true) {
 		// Fetch results
 		s.start(offset === 0 ? "Searching..." : "Loading more results...");
-
     try {
 			const response = await searchSkills({
 				query,
