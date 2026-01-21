@@ -23,7 +23,7 @@ const { skills, total } = await registryAPI.searchSkills({
 });
 
 // Cache all pages: 2h for landing, 10min for searches
-const hasQueryParams = searchQuery || hasSkills || orderBy || order;
+const hasQueryParams = searchQuery || orderBy || order;
 Astro.response.headers.set('Cache-Control',
 	hasQueryParams
 		? 'public, max-age=0, must-revalidate, s-maxage=600, stale-while-revalidate=1200'  // 10min for searches
