@@ -8,10 +8,15 @@ import { registryAPI } from "../lib/api";
 
 // Get search params from URL
 const url = new URL(Astro.request.url);
-const searchQuery = url.searchParams.get("q") || "";
+const searchQuery = url.searchParams.get("q")?.trim() || "";
 const hasSkills = url.searchParams.get("hasSkills") === "true";
 const orderBy = url.searchParams.get("orderBy") as "downloads" | "stars" | null;
 const order = url.searchParams.get("order") as "asc" | "desc" | null;
+
+// Normalize URL: redirect empty query params to clean landing page for better cache consolidation
+if (url.searchParams.has("q") && !searchQuery) {
+	return Astro.redirect("/", 302);
+}
 
 // Fetch initial plugins with SSR
 const { plugins, total } = await registryAPI.searchPlugins({
@@ -23,12 +28,13 @@ const { plugins, total } = await registryAPI.searchPlugins({
 	...(order && { order }),
 });
 
-// Cache only default page (no query params) for fast landing
-// Search/filter happens client-side via /api/plugins (excluded from ISR)
+// Cache all pages: 2h for landing, 10min for searches
 const hasQueryParams = searchQuery || hasSkills || orderBy || order;
-if (!hasQueryParams) {
-	Astro.response.headers.set('Cache-Control', 'public, max-age=0, must-revalidate, s-maxage=7200, stale-while-revalidate=14400');
-}
+Astro.response.headers.set('Cache-Control',
+	hasQueryParams
+		? 'public, max-age=0, must-revalidate, s-maxage=600, stale-while-revalidate=1200'  // 10min for searches
+		: 'public, max-age=0, must-revalidate, s-maxage=7200, stale-while-revalidate=14400' // 2h for landing
+);
 ---
 
 <MarketplaceLayout

@@ -32,7 +32,7 @@ const canonicalUrl = `https://claude-plugins.dev/skills/${slug}`;
 const keywords = `Agent Skills, ${skill.name}, ${owner}, ${marketplace}, Claude, Claude Code, Cursor, VS Code, OpenCode, Amp Code, Codex, Letta, Goose, AI development tools, agentskills.io`;
 const ogImageAlt = `${skill.name} - Agent skill for AI coding assistants with ${skill.stars} stars and ${skill.installs} installs`;
 
-// ISR: Cache for 6 hours with 12 hour stale-while-revalidate
+// Cache for 6 hours with 12 hour stale-while-revalidate
 Astro.response.headers.set('Cache-Control', 'public, max-age=0, must-revalidate, s-maxage=21600, stale-while-revalidate=43200');
 ---
 

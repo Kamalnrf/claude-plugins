@@ -178,7 +178,7 @@ export function InstallSkill({ skill }: Props) {
 			<Tabs defaultValue="claude" className="w-full" orientation="vertical">
 				<div className="flex flex-col md:flex-row gap-6">
 					{/* Vertical tabs on the left */}
-					<div className="w-full md:w-auto overflow-x-auto md:overflow-x-visible">
+					<div className="w-full md:w-auto md:overflow-x-visible md:min-h-[200px] md:max-h-[350px] overflow-auto">
 						<TabsList className="w-fit md:flex-col md:h-fit">
 							{CLIENTS.map((client) => (
 								<TabsTrigger
