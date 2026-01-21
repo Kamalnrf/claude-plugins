@@ -17,15 +17,6 @@ export default defineConfig({
       enabled: true,
     },
     maxDuration: 60,
-    isr: {
-      expiration: 21600, // 6 hours
-      bypassToken: process.env.ISR_BYPASS_TOKEN,
-      exclude: [
-        /^\/api\/.+/,
-        /^\/$/,
-        /^\/skills$/,
-      ],
-    },
   }),
   vite: {
     plugins: [tailwindcss()],
