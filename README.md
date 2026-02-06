@@ -139,6 +139,49 @@ Once installed, your agent will:
 - Help you compare and understand the differences between skills
 - Install skills on your behalf with your confirmation
 
+## Featured Skill Collections
+
+The following repositories contain curated collections of skills that can be installed in bulk:
+
+### ComposioHQ/awesome-claude-skills
+
+A comprehensive collection of **78 SaaS automation skills** powered by Rube MCP (Composio), enabling seamless integration with 500+ apps and services.
+
+**Install all skills:**
+```bash
+npx skills-installer add ComposioHQ/awesome-claude-skills --all
+```
+
+**Categories covered:**
+- **CRM** - Salesforce, HubSpot, Zoho, Pipedrive
+- **Project Management** - Jira, Linear, Asana, Monday, ClickUp, Trello
+- **Communication** - Slack, Microsoft Teams, Discord
+- **Email** - Gmail, Outlook, SendGrid
+- **Code & DevOps** - GitHub, GitLab, Bitbucket, Jenkins, CircleCI
+- **Storage & Docs** - Google Drive, Dropbox, OneDrive, Box, Notion
+- **Spreadsheets** - Google Sheets, Airtable, Excel
+- **Calendar** - Google Calendar, Outlook Calendar
+- **Social Media** - Twitter/X, LinkedIn, Instagram, Facebook
+- **Support** - Zendesk, Intercom, Freshdesk
+- **E-commerce** - Shopify, Stripe, WooCommerce
+- **Design** - Figma, Canva
+- **Analytics** - Google Analytics, Mixpanel
+- **HR** - BambooHR, Workday, Gusto
+- **Automation** - Zapier, Make (Integromat), n8n
+
+**Features:**
+- Cross-app automation workflows
+- 500+ app integrations via Rube MCP
+- OAuth and API key management
+- Web search and browser automation
+- Advanced document processing
+
+**Rube MCP endpoint:** `https://rube.app/mcp`
+
+**Repository:** [ComposioHQ/awesome-claude-skills](https://github.com/ComposioHQ/awesome-claude-skills)
+
+---
+
 ## Support the Project
 
 If you find this project useful, here are two ways to help:
