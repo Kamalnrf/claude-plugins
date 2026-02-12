@@ -1,0 +1,31 @@
+{
+  "name": "opencode-skills-usage-tracker",
+  "module": "src/index.ts",
+  "type": "module",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "bun build src/cli.ts --target=node --outdir=dist",
+    "build:compile": "bun build --compile --minify --sourcemap src/cli.ts --outfile=dist/skills-installer",
+    "test": "bun test",
+    "dev": "bun run src/cli.ts",
+    "publish:npm": "bun run build && npm publish"
+  },
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  },
+  "keywords": [
+    "skills",
+    "agent",
+    "opencode"
+  ],
+  "author": "Kamal <https://github.com/Kamalnrf>",
+  "license": "MIT",
+  "dependencies": {
+    "@opencode-ai/plugin": "^1.0.214"
+  }
+}
