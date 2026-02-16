@@ -35,7 +35,7 @@ npx skills-installer install @anthropics/claude-code/frontend-design
 
 Discovering, installing, and managing plugins and skills across AI coding agents can be fragmented. This project provides:
 
-- **One registry** for discovering 11,989 Claude Code plugins and 63,065 agent skills at [claude-plugins.dev](https://claude-plugins.dev)
+- **One registry** for discovering 17,374 Claude Code plugins and 54,301 agent skills at [claude-plugins.dev](https://claude-plugins.dev)
 - **Two focused CLIs** — `claude-plugins` for Claude Code plugins, `skills-installer` for agent skills
 - **Multi-client support** — Install skills for Claude, Cursor, Windsurf, OpenCode, Codex, VS Code, Amp Code, Goose, Letta, Gemini CLI, Antigravity, Trae, Qoder, CodeBuddy.
 - **Autonomous discovery** — Install the [skills-discovery](#autonomous-skill-discovery) meta skill and let your agent find and install skills for you
