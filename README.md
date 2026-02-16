@@ -139,6 +139,45 @@ Once installed, your agent will:
 - Help you compare and understand the differences between skills
 - Install skills on your behalf with your confirmation
 
+
+## Featured Skill Collections
+
+The following repositories contain curated collections of skills that can be installed in bulk:
+
+### wondelai/skills
+
+A collection of **25 agent skills** for product strategy, UX design, marketing, sales, motivation, and conversion optimization — based on bestselling business books.
+
+**Install all skills:**
+```bash
+npx skills-installer install @wondelai/skills --all
+```
+
+**Install individual skills:**
+```bash
+npx skills-installer install @wondelai/skills/jobs-to-be-done
+npx skills-installer install @wondelai/skills/refactoring-ui
+npx skills-installer install @wondelai/skills/cro-methodology
+```
+
+**Categories covered:**
+- **UX/Design** — Refactoring UI, iOS HIG Design, UX Heuristics, Hooked UX, Web Typography, Top Design, Design of Everyday Things
+- **Marketing/CRO** — CRO Methodology, StoryBrand Messaging, Scorecard Marketing, Contagious, One-Page Marketing
+- **Sales/Influence** — Influence Psychology, Predictable Revenue, Made to Stick, $100M Offers
+- **Product/Innovation** — Jobs to Be Done, Lean Startup, Design Sprint
+- **Strategy/Growth** — Crossing the Chasm, Blue Ocean Strategy, Traction/EOS, Obviously Awesome
+- **Team/Motivation** — Drive (Autonomy, Mastery, Purpose), Negotiation
+
+**Features:**
+- Each skill provides a structured framework with scoring rubrics, diagnostic checklists, and actionable patterns
+- Reference files with 1,500–3,000 words of supporting material per skill
+- Works with Claude Code, Cursor, Windsurf, VS Code, and all agentskills.io-compatible clients
+- Also available via Claude Code Plugin Marketplace: `/plugin marketplace add wondelai/skills`
+
+**Repository:** [wondelai/skills](https://github.com/wondelai/skills)
+
+---
+
 ## Support the Project
 
 If you find this project useful, here are two ways to help:
