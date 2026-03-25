@@ -19,7 +19,9 @@ ship config
 
 Enter your API key when prompted. Get one at https://my.shipstatic.com/settings
 
-Alternative: `export SHIP_API_KEY=ship-...` or pass `--api-key ship-...` per command.
+Alternative: `export SHIP_API_KEY=ship-...`.
+Prefer environment variables (or `ship config`) over passing `--api-key` directly,
+since command-line arguments may be exposed in shell history or process listings.
 
 ## Workflow 1 — Deploy
 
@@ -44,7 +46,7 @@ ship domains set my-site
 
 Internal domains (`my-site.shipstatic.com`) are free and instant. Custom domains require DNS configuration — the CLI prints the required records.
 
-**Apex domains are not supported.** Always use a subdomain: `www.example.com`, not `example.com`.
+**Apex domains are not supported.** Always use a subdomain: `www.example.com`, not `example.com`. The platform uses CNAME records for routing, which cannot be set on apex domains. An A record is only used to redirect apex traffic (e.g. `example.com` → `www.example.com`).
 
 ## Workflow 3 — Link Domain to Deployment
 
