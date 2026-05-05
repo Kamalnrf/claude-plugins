@@ -17,7 +17,7 @@ A plugin manager and skills installer for AI coding agents.
 
 **Install a Claude plugin:**
 ```bash
-npx claude-plugins install @EveryInc/every-marketplace/compounding-engineering
+npx claude-plugins install @EveryInc/every-marketplace/compound-engineering
 ```
 
 > [!IMPORTANT]

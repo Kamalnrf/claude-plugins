@@ -19,7 +19,7 @@ npm install -g claude-plugins
 Or use directly with `npx`:
 
 ```bash
-npx claude-plugins install @EveryInc/every-marketplace/compounding-engineering
+npx claude-plugins install @EveryInc/every-marketplace/compound-engineering
 ```
 
 Plugins are installed to `~/.claude/plugins/marketplaces/`
@@ -44,23 +44,23 @@ Claude Plugins are custom collections of slash commands, agents, MCP servers, an
 Plugins are identified using the format: `@owner/marketplace/plugin-name`
 
 Examples:
-- `@EveryInc/every-marketplace/compounding-engineering`
+- `@EveryInc/every-marketplace/compound-engineering`
 - `@anthropics/claude-code-plugins/pr-review-toolkit`
 
 ## Examples
 
 ```bash
 # Install a plugin
-claude-plugins install @EveryInc/every-marketplace/compounding-engineering
+claude-plugins install @EveryInc/every-marketplace/compound-engineering
 
 # List all installed plugins
 claude-plugins list
 
 # Disable a plugin temporarily
-claude-plugins disable compounding-engineering
+claude-plugins disable compound-engineering
 
 # Re-enable it later
-claude-plugins enable compounding-engineering
+claude-plugins enable compound-engineering
 ```
 
 ## Development
