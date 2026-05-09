@@ -1,82 +1,71 @@
+import { existsSync } from "node:fs";
 import { homedir } from "node:os";
 import { join } from "node:path";
 import type { ClientConfig } from "../types.js";
 
-// Client configurations
+const home = homedir();
+const configHome = process.env.XDG_CONFIG_HOME?.trim() || join(home, ".config");
+const claudeHome = process.env.CLAUDE_CONFIG_DIR?.trim() || join(home, ".claude");
+
+const getOpenClawGlobalDir = (): string => {
+	if (existsSync(join(home, ".openclaw"))) {
+		return join(home, ".openclaw", "skills");
+	}
+	if (existsSync(join(home, ".clawdbot"))) {
+		return join(home, ".clawdbot", "skills");
+	}
+	if (existsSync(join(home, ".moltbot"))) {
+		return join(home, ".moltbot", "skills");
+	}
+	return join(home, ".openclaw", "skills");
+};
+
+// Primary install targets. Many agents now read project skills from .agents/skills.
 export const CLIENT_CONFIGS: Record<string, ClientConfig> = {
+	"shared": {
+		name: "Shared (.agents/skills)",
+		globalDir: join(configHome, "agents", "skills"),
+		localDir: join(process.cwd(), ".agents", "skills"),
+	},
 	"claude-code": {
 		name: "Claude Code",
-		globalDir: join(homedir(), ".claude", "skills"),
+		globalDir: join(claudeHome, "skills"),
 		localDir: join(process.cwd(), ".claude", "skills"),
 	},
-	"codex": {
-		name: "Codex",
-		globalDir: join(homedir(), ".codex", "skills"),
-		localDir: join(process.cwd(), ".codex", "skills"),
+	"openclaw": {
+		name: "OpenClaw",
+		globalDir: getOpenClawGlobalDir(),
+		localDir: join(process.cwd(), "skills"),
 	},
-	"cursor": {
-		name: "Cursor",
-		localDir: join(process.cwd(), ".cursor", "skills"),
-	},
-	"github": {
-		name: "GitHub",
-		localDir: join(process.cwd(), ".github", "skills"),
-	},
-	"letta": {
-		name: "Letta",
-		localDir: join(process.cwd(), ".skills"),
-	},
-	"vscode": {
-		name: "VS Code",
-		localDir: join(process.cwd(), ".github", "skills"),
-	},
-	"amp": {
-		name: "AMP",
-		globalDir: join(homedir(), ".config", "agents", "skills"),
-		localDir: join(process.cwd(), ".agents", "skills"),
-	},
-	"goose": {
-		name: "Goose",
-		globalDir: join(homedir(), ".config", "goose", "skills"),
-		localDir: join(process.cwd(), ".agents", "skills"),
-	},
-	"opencode": {
-		name: "OpenCode",
-		globalDir: join(homedir(), ".config/", "opencode", "skill"),
-		localDir: join(process.cwd(), ".opencode", "skill"),
-	},
-	"gemini": {
-		name: "Gemini CLI",
-		globalDir: join(homedir(), ".gemini", "skills"),
-		localDir: join(process.cwd(), ".gemini", "skills"),
-	},
-	"windsurf": {
-		name: "Windsurf",
-		globalDir: join(homedir(), ".codeium", "windsurf", "skills"),
-		localDir: join(process.cwd(), ".windsurf", "skills"),
-	},
-	"antigravity": {
-		name: "Antigravity",
-		globalDir: join(homedir(), ".gemini", "antigravity", "skills"),
-		localDir: join(process.cwd(), ".agent", "skills"),
-	},
-	"trae": {
-		name: "Trae",
-		localDir: join(process.cwd(), ".trae", "skills"),
-	},
-	"qoder": {
-		name: "Qoder",
-		globalDir: join(homedir(), ".qoder", "skills"),
-		localDir: join(process.cwd(), ".qoder", "skills"),
-	},
-	"codebuddy": {
-		name: "CodeBuddy",
-		globalDir: join(homedir(), ".codebuddy", "skills"),
-		localDir: join(process.cwd(), ".codebuddy", "skills"),
+	"pi": {
+		name: "Pi",
+		globalDir: join(home, ".pi", "agent", "skills"),
+		localDir: join(process.cwd(), ".pi", "skills"),
 	},
 };
 
+const CLIENT_ALIASES: Record<string, string> = {
+	"agents": "shared",
+	"amp": "shared",
+	"antigravity": "shared",
+	"cline": "shared",
+	"codex": "shared",
+	"cursor": "shared",
+	"deepagents": "shared",
+	"dexto": "shared",
+	"firebender": "shared",
+	"gemini": "shared",
+	"gemini-cli": "shared",
+	"github": "shared",
+	"github-copilot": "shared",
+	"kimi-cli": "shared",
+	"opencode": "shared",
+	"replit": "shared",
+	"vscode": "shared",
+	"warp": "shared",
+};
+
 export const getClientConfig = (name: string): ClientConfig | undefined =>
-	CLIENT_CONFIGS[name];
+	CLIENT_CONFIGS[name] ?? CLIENT_CONFIGS[CLIENT_ALIASES[name] ?? ""];
 
 export const getAvailableClients = (): string[] => Object.keys(CLIENT_CONFIGS);

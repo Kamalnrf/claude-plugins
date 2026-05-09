@@ -10,6 +10,7 @@ export interface InstallOptions {
 	client?: string;
 	clients?: string[];
 	local?: boolean;
+	all?: boolean;
 }
 
 export interface ListOptions {

@@ -144,6 +144,9 @@ export async function install(
 	if (skills.length === 1) {
 		toInstall = skills;
 		note(`Found: ${pc.bold(skills[0]!.name)}`);
+	} else if (options.all) {
+		toInstall = skills;
+		note(`Installing all ${skills.length} skills.`);
 	} else {
 		// Multiple skills - show multiselect
 		const selected = await multiselect({

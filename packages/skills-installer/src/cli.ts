@@ -43,6 +43,7 @@ ${pc.bold(pc.cyan("skills-installer"))} ${pc.dim("—")} Install agent skills
 ${pc.bold(pc.yellow("COMMANDS:"))}
   ${pc.green("search")} [query]             ${pc.dim("Search across all public skills on GitHub")}
   ${pc.green("install")} owner              ${pc.dim("Browse all skills from owner's repos")}
+  ${pc.green("add")} owner                  ${pc.dim("Alias for install")}
   ${pc.green("install")} owner/repo         ${pc.dim("Browse skills in a specific repo")}
   ${pc.green("install")} owner/repo/skill   ${pc.dim("Install a specific skill")}
   ${pc.green("install")} <git-url>          ${pc.dim("HTTPS, SSH, or direct path to skill")}
@@ -51,11 +52,13 @@ ${pc.bold(pc.yellow("COMMANDS:"))}
 ${pc.bold(pc.yellow("EXAMPLES:"))}
   ${pc.cyan("$")} skills-installer search ${pc.magenta('frontend')}
   ${pc.cyan("$")} skills-installer install ${pc.magenta("anthropics")}
+  ${pc.cyan("$")} skills-installer add ${pc.magenta("anthropics/claude-code")} ${pc.blue("--all")}
   ${pc.cyan("$")} skills-installer install ${pc.magenta("anthropics/claude-code")}
 
 ${pc.bold(pc.yellow("OPTIONS:"))}
   ${pc.blue("--client")} <name>   Target client (${getAvailableClients().join(", ")})
   ${pc.blue("--project")}, ${pc.blue("-p")}     Install to current project directory
+  ${pc.blue("--all")}            Install all resolved skills without selecting
 
 ${pc.dim("Browse skills at")} ${pc.underline(pc.cyan("https://claude-plugins.dev/skills"))}
 `);
@@ -79,12 +82,13 @@ const main = async () => {
 
 	try {
 		switch (command) {
-			case "install": {
+			case "install":
+			case "add": {
 				const skillId = positional[0];
 				if (!skillId) {
 					cancel("Skill identifier required");
 					console.log(
-						pc.dim("Usage: skills-installer install @owner/repo/skill"),
+						pc.dim(`Usage: skills-installer ${command} @owner/repo/skill`),
 					);
 					process.exit(1);
 				}
@@ -97,6 +101,7 @@ const main = async () => {
 				await install(skillId, {
 					client: flags.client as string,
 					local: useProject,
+					all: !!flags.all,
 				});
 				break;
 			}

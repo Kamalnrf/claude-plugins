@@ -65,11 +65,14 @@ export async function selectClients(
 ): Promise<string[] | "back" | null> {
 	const clients = getClientsForScope(scope);
 
-	const clientOptions: Array<{ value: string; label: string }> = clients.map((clientId) => {
+	const clientOptions: Array<{ value: string; label: string; hint?: string }> = clients.map((clientId) => {
 		const config = CLIENT_CONFIGS[clientId]!;
 		return {
 			value: clientId,
 			label: config.name,
+			hint: clientId === "shared"
+				? "Codex, Amp, Warp, Cursor, OpenCode, Cline, Gemini CLI, GitHub Copilot"
+				: undefined,
 		};
 	});
 
