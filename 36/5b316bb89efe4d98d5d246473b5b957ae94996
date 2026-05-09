@@ -1,0 +1,27 @@
+packages/web/src/components/ui/heart-handshake-icon.tsx
+  s_4b3eb01744a42d::t_527bcb5a3efb85 1-96
+packages/web/src/components/ui/pi-icon.tsx
+  s_4b3eb01744a42d::t_527bcb5a3efb85 1-19
+packages/web/src/components/InstallSkill.tsx
+  s_4b3eb01744a42d::t_b34ae7c62b6d44 14-16,52,69,77
+bun.lock
+  ai_agent 33
+packages/web/src/components/ui/openclaw-icon.tsx
+  s_4b3eb01744a42d::t_527bcb5a3efb85 1-63
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.4",
+  "base_commit_sha": "365b316bb89efe4d98d5d246473b5b957ae94996",
+  "prompts": {},
+  "sessions": {
+    "s_4b3eb01744a42d": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1f49bcbd9ffeijgIk5ujbaLWZ1",
+        "model": "gpt-5.5"
+      },
+      "human_author": "Kamal Mukkamala <kamalnrf@gmail.com>"
+    }
+  }
+}
