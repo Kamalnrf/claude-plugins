@@ -11,6 +11,9 @@ import { OpenCodeIcon } from "./ui/open-code";
 import { GithubIcon } from "./ui/github";
 import { AMPIcon } from "./ui/amp-icon";
 import { GeminiIcon } from "./ui/gemini-icon";
+import { HeartHandshakeIcon } from "./ui/heart-handshake-icon";
+import { OpenClawIcon } from "./ui/openclaw-icon";
+import { PiIcon } from "./ui/pi-icon";
 
 type Props = {
 	skill: Skill; // Skill to use in example instructions
@@ -46,7 +49,7 @@ const CLI_TARGETS: CliTarget[] = [
 	{
 		id: "shared",
 		name: "Shared",
-		icon: <PackageIcon size={16} />,
+		icon: <HeartHandshakeIcon size={16} />,
 		clientId: "shared",
 		description: "Installs to .agents/skills, used by Codex, Amp, Warp, Cursor, OpenCode, and more.",
 		projectPath: ".agents/skills",
@@ -63,7 +66,7 @@ const CLI_TARGETS: CliTarget[] = [
 	{
 		id: "openclaw",
 		name: "OpenClaw",
-		icon: <PackageIcon size={16} />,
+		icon: <OpenClawIcon size={16} />,
 		clientId: "openclaw",
 		description: "Installs to OpenClaw's skills folder.",
 		projectPath: "skills",
@@ -71,7 +74,7 @@ const CLI_TARGETS: CliTarget[] = [
 	{
 		id: "pi",
 		name: "Pi",
-		icon: <PackageIcon size={16} />,
+		icon: <PiIcon size={16} />,
 		clientId: "pi",
 		description: "Installs to Pi's coding agent skills folder.",
 		projectPath: ".pi/skills",
