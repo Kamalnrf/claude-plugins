@@ -1,0 +1,19 @@
+packages/skills-installer/package.json
+  s_4b3eb01744a42d::t_2d498a87af24ae 3
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.4",
+  "base_commit_sha": "0145ad7f1d6b74c5f77a7bddb466973f0c8d4578",
+  "prompts": {},
+  "sessions": {
+    "s_4b3eb01744a42d": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1f49bcbd9ffeijgIk5ujbaLWZ1",
+        "model": "gpt-5.5"
+      },
+      "human_author": "Kamal Mukkamala <kamalnrf@gmail.com>"
+    }
+  }
+}
