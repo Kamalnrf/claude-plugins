@@ -1,0 +1,37 @@
+packages/skills-installer/src/commands/install.ts
+  s_4b3eb01744a42d::t_430674cbde2b71 147-149
+packages/skills-installer/src/lib/client-config.ts
+  s_4b3eb01744a42d::t_836d8bfa9ce3fb 23,25-26,48-65
+  s_4b3eb01744a42d::t_e6774437453641 1,6-22,27-29,32,35-38,40-43,47,69
+packages/skills-installer/src/types.ts
+  s_4b3eb01744a42d::t_430674cbde2b71 13
+packages/skills-installer/src/lib/select-scope-and-clients.ts
+  s_4b3eb01744a42d::t_836d8bfa9ce3fb 73
+  s_4b3eb01744a42d::t_db3b79079cef80 68,74-75
+packages/skills-installer/src/cli.ts
+  s_4b3eb01744a42d::t_430674cbde2b71 46,55,61,85-86,91,104
+packages/skills-installer/README.md
+  s_4b3eb01744a42d::t_bcc5d1d2844177 70-75,114-116,125,138,151-152,154-156
+  s_4b3eb01744a42d::t_0bee7804da09e4 136
+  s_4b3eb01744a42d::t_ec127666fbdba8 10,109,113,118,153,182-183
+packages/web/src/components/InstallSkill.tsx
+  s_4b3eb01744a42d::t_053829f85926d5 1,14,19-24,27-31,35-46,49,52,54-78
+  s_4b3eb01744a42d::t_836d8bfa9ce3fb 34,47-48,50-51,53,201
+  s_4b3eb01744a42d::t_862e1ca8d57f2a 150-152,156-173,175-183,185-186,188-190,194,204,206,208-209,212-213,216-222,228-232,238
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.4",
+  "base_commit_sha": "232ac815621c61f8b75ea03dc4692a4560af4f10",
+  "prompts": {},
+  "sessions": {
+    "s_4b3eb01744a42d": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1f49bcbd9ffeijgIk5ujbaLWZ1",
+        "model": "gpt-5.5"
+      },
+      "human_author": "Kamal Mukkamala <kamalnrf@gmail.com>"
+    }
+  }
+}
