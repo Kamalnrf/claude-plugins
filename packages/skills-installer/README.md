@@ -7,7 +7,7 @@ Browse and discover available skills at [claude-plugins.dev/skills](https://clau
 
 - 🔍 **Interactive Search** - Discover and install skills interactively
 - 🚀 **Simple CLI** - Clean, intuitive command-line interface
-- 📦 **Universal Registry** - Access skills all public agent skills
+- 📦 **Skill Registry** - Access public agent skills
 - 🌍 **Global & Local** - Install skills globally or per-project
 - 🎯 **Multi-Client Support** - Install skills for different coding clients
 
@@ -67,6 +67,12 @@ skills-installer install anthropics/claude-code
 # Install a specific skill
 skills-installer install anthropics/claude-code/frontend-design
 
+# Install all skills resolved from an owner or repo
+skills-installer install anthropics/claude-code --all
+
+# `add` is an alias for `install`
+skills-installer add anthropics/claude-code/frontend-design
+
 # Install from any GitHub URL
 skills-installer install https://github.com/owner/repo/tree/main/skills/my-skill
 ```
@@ -100,31 +106,23 @@ Shows all installed skills with their installation scope (global/project) and pa
 ### Target specific clients
 
 ```bash
-skills-installer install @anthropics/skills/xlsx --client cursor
+skills-installer install @anthropics/skills/xlsx --client shared
 ```
 
 Currently supported clients:
-- `claude-code` (default)
-- `amp`
-- `codex`
-- `cursor`
-- `windsurf`
-- `github`
-- `vscode`
-- `gemini`
-- `goose`
-- `letta`
-- `opencode`
-- `antigravity`
-- `trae`
-- `qoder`
-- `codebuddy`
+- `shared` - `.agents/skills`, used by Codex, Amp, Warp, Cursor, OpenCode, Cline, Gemini CLI, GitHub Copilot, and more
+- `claude-code` - `.claude/skills`
+- `openclaw` - `skills` in the project, `~/.openclaw/skills` globally
+- `pi` - `.pi/skills` in the project, `~/.pi/agent/skills` globally
+
+Common agent IDs that use `.agents/skills` are accepted as aliases for `shared`, including `opencode`, `codex`, `cursor`, `cline`, `amp`, `warp`, and `github-copilot`.
 
 ## Commands
 
 | Command | Description |
 |---------|-------------|
 | `search [query]` | Search across all public skills on GitHub |
+| `add owner` | Alias for `install owner` |
 | `install owner` | Browse all skills from owner's repos |
 | `install owner/repo` | Browse skills in a specific repo |
 | `install owner/repo/skill` | Install a specific skill |
@@ -135,8 +133,9 @@ Currently supported clients:
 
 | Option | Alias | Description |
 |--------|-------|-------------|
-| `--client <name>` | | Target AI coding client (default: claude-code) |
+| `--client <name>` | | Target install location |
 | `--project` | `-p` | Install to current project directory |
+| `--all` | | Install all resolved skills without opening the skill selector |
 
 ## Skill Identifier Format
 
@@ -149,11 +148,12 @@ Skills can be identified using multiple formats:
 
 ## Where are skills installed?
 
-**Global installation (claude-code):**
-- `~/.claude/skills/`
-
-**Project installation:**
-- `./.claude/skills/` (in your current directory)
+| Client | Project path | Global path |
+|--------|--------------|-------------|
+| `shared` | `./.agents/skills/` | `~/.config/agents/skills/` |
+| `claude-code` | `./.claude/skills/` | `~/.claude/skills/` |
+| `openclaw` | `./skills/` | `~/.openclaw/skills/` |
+| `pi` | `./.pi/skills/` | `~/.pi/agent/skills/` |
 
 ## Examples
 
@@ -179,8 +179,8 @@ skills-installer install anthropics/claude-code/frontend-design --project
 # Install from a GitHub URL
 skills-installer install https://github.com/owner/repo/tree/main/skills/my-skill
 
-# Install skill for a specific client
-skills-installer install anthropics/claude-code/frontend-design --client cursor
+# Install skill to the shared .agents/skills location
+skills-installer install anthropics/claude-code/frontend-design --client shared
 
 # List all installed skills
 skills-installer list
