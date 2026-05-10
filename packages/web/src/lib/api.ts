@@ -1,4 +1,9 @@
-const REGISTRY_BASE = "https://api.claude-plugins.dev";
+const DEFAULT_REGISTRY_BASE =
+	"https://kamalnrf--44867e10a75311f08f880224a6c84d84.web.val.run";
+
+export const REGISTRY_BASE = (
+	import.meta.env.REGISTRY_API_URL || DEFAULT_REGISTRY_BASE
+).replace(/\/$/, "");
 const MAX_RETRIES = 3;
 const INITIAL_DELAY_MS = 500; // Exponential backoff: 500ms, 1000ms, 2000ms
 
