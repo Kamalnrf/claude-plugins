@@ -1,4 +1,5 @@
 import type { APIRoute } from "astro";
+import { REGISTRY_BASE } from "../../lib/api";
 
 export const GET: APIRoute = async ({ request }) => {
 	const url = new URL(request.url);
@@ -26,7 +27,7 @@ export const GET: APIRoute = async ({ request }) => {
 	// 3. Fetch skill to get sourceUrl
 	try {
 		const skillResponse = await fetch(
-			`https://api.claude-plugins.dev/api/skills/${owner}/${marketplace}/${skillName}`,
+			`${REGISTRY_BASE}/api/skills/${owner}/${marketplace}/${skillName}`,
 		);
 
 		if (!skillResponse.ok) {
@@ -51,7 +52,7 @@ export const GET: APIRoute = async ({ request }) => {
 
 		// 5. Track install ONLY after successful zip fetch (fire-and-forget)
 		fetch(
-			`https://api.claude-plugins.dev/api/skills/${owner}/${marketplace}/${skillName}/install`,
+			`${REGISTRY_BASE}/api/skills/${owner}/${marketplace}/${skillName}/install`,
 			{ method: "POST" },
 		).catch((err) => console.error("Tracking failed:", err));
 
