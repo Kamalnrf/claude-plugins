@@ -1,0 +1,29 @@
+packages/web/src/lib/api.ts
+  s_b649bd68f875b6::t_99a76f6d364a47 1-6
+packages/web/src/pages/api/download.ts
+  s_b0eff6c8aed3d4::t_8f3df864743aec 2,30,55
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.4",
+  "base_commit_sha": "6ca6edc3d06f41c1a4f7fd2efdd138f9b2a61534",
+  "prompts": {},
+  "sessions": {
+    "s_b0eff6c8aed3d4": {
+      "agent_id": {
+        "tool": "amp",
+        "id": "TU-033EKJ4Hnn4EN8YL9rEfY5",
+        "model": "unknown"
+      },
+      "human_author": "Kamal Mukkamala <kamalnrf@gmail.com>"
+    },
+    "s_b649bd68f875b6": {
+      "agent_id": {
+        "tool": "amp",
+        "id": "TU-033EKItk0IF7kxAgXnOQum",
+        "model": "unknown"
+      },
+      "human_author": "Kamal Mukkamala <kamalnrf@gmail.com>"
+    }
+  }
+}
