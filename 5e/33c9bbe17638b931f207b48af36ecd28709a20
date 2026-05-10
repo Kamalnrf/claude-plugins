@@ -1,0 +1,25 @@
+packages/skills-installer/src/commands/install.ts
+  s_4b3eb01744a42d::t_2e6a33b8f94b13 15,107-125,147
+packages/skills-installer/src/lib/client-config.ts
+  s_4b3eb01744a42d::t_2e6a33b8f94b13 10
+packages/web/src/components/ui/heart-handshake-icon.tsx
+  s_4b3eb01744a42d::t_2e6a33b8f94b13 35-36,45-46
+packages/web/src/components/ui/pi-icon.tsx
+  s_4b3eb01744a42d::t_2e6a33b8f94b13 6
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.4",
+  "base_commit_sha": "5e33c9bbe17638b931f207b48af36ecd28709a20",
+  "prompts": {},
+  "sessions": {
+    "s_4b3eb01744a42d": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1f49bcbd9ffeijgIk5ujbaLWZ1",
+        "model": "gpt-5.5"
+      },
+      "human_author": "Kamal Mukkamala <kamalnrf@gmail.com>"
+    }
+  }
+}
