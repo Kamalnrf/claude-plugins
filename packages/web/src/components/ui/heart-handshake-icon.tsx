@@ -32,9 +32,8 @@ const HeartHandshakeIcon = forwardRef<
 
 	const handleMouseEnter = useCallback(
 		(e: MouseEvent<HTMLDivElement>) => {
-			if (isControlledRef.current) {
-				onMouseEnter?.(e);
-			} else {
+			onMouseEnter?.(e);
+			if (!isControlledRef.current) {
 				controls.start("animate");
 			}
 		},
@@ -43,9 +42,8 @@ const HeartHandshakeIcon = forwardRef<
 
 	const handleMouseLeave = useCallback(
 		(e: MouseEvent<HTMLDivElement>) => {
-			if (isControlledRef.current) {
-				onMouseLeave?.(e);
-			} else {
+			onMouseLeave?.(e);
+			if (!isControlledRef.current) {
 				controls.start("normal");
 			}
 		},

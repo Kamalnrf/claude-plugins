@@ -12,6 +12,7 @@ import {
 import {
 	resolveTarget,
 	trackInstallation,
+	type ResolveResponse,
 	type ResolvedSkill,
 } from "../lib/api";
 import { downloadSkill } from "../lib/download";
@@ -103,6 +104,25 @@ export async function installSingleSkill(
 	return { name: skill.name, installed, updated, failed };
 }
 
+async function resolveAllSkills(
+	skillId: string,
+	initialResponse: ResolveResponse,
+): Promise<ResolvedSkill[]> {
+	const skills = [...initialResponse.skills];
+	let { hasMore, limit, offset } = initialResponse.page;
+
+	while (hasMore) {
+		const response = await resolveTarget(skillId, {
+			limit,
+			offset: offset + limit,
+		});
+		skills.push(...response.skills);
+		({ hasMore, limit, offset } = response.page);
+	}
+
+	return skills;
+}
+
 /**
  * Install an agent skill
  * Supports: @owner/repo/skill, owner/repo, owner/repo/skill, GitHub URLs
@@ -124,7 +144,7 @@ export async function install(
 		throw error;
 	}
 
-	const skills = response.skills;
+	const skills = options.all ? await resolveAllSkills(skillId, response) : response.skills;
 
 	if (skills.length === 0) {
 		s.stop("No skills found");

@@ -3,6 +3,7 @@ export const PiIcon = ({ size = 28 }: { size?: number }) => {
 		<svg
 			aria-label="Pi"
 			height={size}
+			role="img"
 			viewBox="0 0 800 800"
 			width={size}
 			xmlns="http://www.w3.org/2000/svg"

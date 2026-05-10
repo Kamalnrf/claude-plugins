@@ -7,7 +7,7 @@ const home = homedir();
 const configHome = process.env.XDG_CONFIG_HOME?.trim() || join(home, ".config");
 const claudeHome = process.env.CLAUDE_CONFIG_DIR?.trim() || join(home, ".claude");
 
-const getOpenClawGlobalDir = (): string => {
+const getOpenClawGlobalDir = (): string | undefined => {
 	if (existsSync(join(home, ".openclaw"))) {
 		return join(home, ".openclaw", "skills");
 	}
@@ -17,7 +17,6 @@ const getOpenClawGlobalDir = (): string => {
 	if (existsSync(join(home, ".moltbot"))) {
 		return join(home, ".moltbot", "skills");
 	}
-	return join(home, ".openclaw", "skills");
 };
 
 // Primary install targets. Many agents now read project skills from .agents/skills.
