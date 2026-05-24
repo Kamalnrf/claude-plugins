@@ -4,7 +4,6 @@ import { join } from "node:path";
 import type { ClientConfig } from "../types.js";
 
 const home = homedir();
-const configHome = process.env.XDG_CONFIG_HOME?.trim() || join(home, ".config");
 const claudeHome = process.env.CLAUDE_CONFIG_DIR?.trim() || join(home, ".claude");
 
 const getOpenClawGlobalDir = (): string | undefined => {
@@ -23,7 +22,7 @@ const getOpenClawGlobalDir = (): string | undefined => {
 export const CLIENT_CONFIGS: Record<string, ClientConfig> = {
 	"shared": {
 		name: "Shared (.agents/skills)",
-		globalDir: join(configHome, "agents", "skills"),
+		globalDir: join(home, ".agents", "skills"),
 		localDir: join(process.cwd(), ".agents", "skills"),
 	},
 	"claude-code": {

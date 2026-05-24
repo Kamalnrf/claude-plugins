@@ -85,10 +85,9 @@ export async function list(options: ListOptions): Promise<void> {
 	// Group by client
 	const grouped = installedSkills.reduce(
 		(acc, skill) => {
-			if (!acc[skill.client]) {
-				acc[skill.client] = [];
-			}
-			acc[skill.client].push(skill);
+			const clientSkills = acc[skill.client] ?? [];
+			clientSkills.push(skill);
+			acc[skill.client] = clientSkills;
 			return acc;
 		},
 		{} as Record<string, InstalledSkill[]>,

@@ -150,7 +150,7 @@ Skills can be identified using multiple formats:
 
 | Client | Project path | Global path |
 |--------|--------------|-------------|
-| `shared` | `./.agents/skills/` | `~/.config/agents/skills/` |
+| `shared` | `./.agents/skills/` | `~/.agents/skills/` |
 | `claude-code` | `./.claude/skills/` | `~/.claude/skills/` |
 | `openclaw` | `./skills/` | `~/.openclaw/skills/` |
 | `pi` | `./.pi/skills/` | `~/.pi/agent/skills/` |

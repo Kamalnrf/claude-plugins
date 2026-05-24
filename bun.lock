@@ -30,7 +30,7 @@
     },
     "packages/skills-installer": {
       "name": "skills-installer",
-      "version": "0.3.0",
+      "version": "0.3.1",
       "bin": {
         "skills-installer": "./dist/cli.js",
       },
