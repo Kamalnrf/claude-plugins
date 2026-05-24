@@ -1,0 +1,27 @@
+packages/skills-installer/src/commands/list.ts
+  s_800c3ddd571c47::t_a9bfe48127765d 88-90
+packages/skills-installer/README.md
+  s_800c3ddd571c47::t_519c8968341df9 153
+packages/skills-installer/src/lib/client-config.test.ts
+  s_800c3ddd571c47::t_519c8968341df9 1-22
+packages/skills-installer/src/lib/client-config.ts
+  s_800c3ddd571c47::t_519c8968341df9 25
+packages/skills-installer/package.json
+  s_800c3ddd571c47::t_56988fccb553ed 3
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.0",
+  "base_commit_sha": "85a29eb33928f086cb4b8db25b1fa859d810b2b0",
+  "prompts": {},
+  "sessions": {
+    "s_800c3ddd571c47": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019e5996-57bf-7a81-ae03-74eebd5fb966",
+        "model": "gpt-5.5"
+      },
+      "human_author": "Kamal Mukkamala <kamalnrf@gmail.com>"
+    }
+  }
+}
