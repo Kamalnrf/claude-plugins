@@ -28,7 +28,19 @@ export async function installCommand(pluginIdentifier: string): Promise<void> {
 	const s = spinner();
 	s.start("Resolving URL...");
 
-	const url = await resolvePluginUrl(pluginIdentifier);
+	let url: string | null;
+	try {
+		url = await resolvePluginUrl(pluginIdentifier);
+	} catch (error) {
+		s.stop("Failed to resolve");
+		note(
+			`${error instanceof Error ? error.message : String(error)}\n\nPlease check your network connection and try again.`,
+			"Resolution Error",
+		);
+		cancel(`Unable to resolve "${pluginIdentifier}"`);
+		process.exit(1);
+	}
+
 	if (!url) {
 		s.stop("Failed to resolve");
 		note(
@@ -49,12 +61,12 @@ export async function installCommand(pluginIdentifier: string): Promise<void> {
 		s.start(`Installing ${name}...`);
 		await rm(tempLocation, { recursive: true, force: true });
 
-		const cloned = await cloneRepo(url, tempLocation);
-		if (!cloned) {
+		try {
+			await cloneRepo(url, tempLocation);
+		} catch (cloneError) {
 			s.stop("Failed to install");
 			note(
-				`Plugin ${pc.cyan(pluginIdentifier)} ${pc.red("failed to be cloned")}. Please check if this repo ${pc.blue(pc.underline(url))} exists.
-        You can also raise an issue at ${pc.blue(pc.underline("https://github.com/Kamalnrf/claude-plugins/issues"))} to get help.`,
+				`Plugin ${pc.cyan(pluginIdentifier)} ${pc.red("failed to be cloned")}.\n\n${cloneError instanceof Error ? cloneError.message : String(cloneError)}\n\nPlease check if this repo ${pc.blue(pc.underline(url))} exists.\nYou can also raise an issue at ${pc.blue(pc.underline("https://github.com/Kamalnrf/claude-plugins/issues"))} to get help.`,
 				"Clone Step Failed",
 			);
 			throw new Error("Clone failed");
@@ -87,8 +99,8 @@ export async function installCommand(pluginIdentifier: string): Promise<void> {
 			"Installed successfully",
 		);
 		outro(pc.green("Installation complete ✓"));
-	} catch (error: any) {
-		cancel(`Installation failed: ${error.message}`);
+	} catch (error) {
+		cancel(`Installation failed: ${error instanceof Error ? error.message : String(error)}`);
 		await rm(tempLocation, { recursive: true, force: true });
 		process.exit(1);
 	}
@@ -150,7 +162,7 @@ async function installPlugin(
 	pluginName: string,
 	tempLocation: string,
 	marketplaceName: string,
-	s: any,
+	s: ReturnType<typeof spinner>,
 ): Promise<void> {
 	// Ensure local marketplace exists
 	s.start("Checking local marketplace...");

@@ -63,7 +63,7 @@ export async function installSingleSkill(
 	skill: ResolvedSkill,
 	clientIds: string[],
 	local: boolean,
-): Promise<{ name: string; installed: string[]; updated: string[]; failed: string[] }> {
+): Promise<{ name: string; installed: string[]; updated: string[]; failed: Array<{ client: string; error: string }> }> {
 	const s = spinner();
 	const clientNames = clientIds.map((id) => {
 		const config = getClientConfig(id);
@@ -77,7 +77,7 @@ export async function installSingleSkill(
 
 	const installed: string[] = [];
 	const updated: string[] = [];
-	const failed: string[] = [];
+	const failed: Array<{ client: string; error: string }> = [];
 
 	for (const clientId of clientIds) {
 		try {
@@ -88,8 +88,10 @@ export async function installSingleSkill(
 			} else {
 				installed.push(config.name);
 			}
-		} catch {
-			failed.push(getClientConfig(clientId)!.name);
+		} catch (error) {
+			const clientName = getClientConfig(clientId)?.name ?? clientId;
+			const message = error instanceof Error ? error.message : String(error);
+			failed.push({ client: clientName, error: message });
 		}
 	}
 
@@ -214,15 +216,19 @@ export async function install(
 	}
 
 	// 5. Install each skill to all selected clients
-	const results: Array<{ name: string; installed: string[]; updated: string[]; failed: string[] }> = [];
+	const results: Array<{ name: string; installed: string[]; updated: string[]; failed: Array<{ client: string; error: string }> }> = [];
 
 	for (const skill of toInstall) {
 		const result = await installSingleSkill(skill, clientIds, local);
 		results.push(result);
 	}
 
-	// Success message
+	// Report results
 	const successful = results.filter((r) => r.installed.length > 0 || r.updated.length > 0);
+	const allFailures = results.flatMap((r) =>
+		r.failed.map((f) => ({ skill: r.name, ...f })),
+	);
+
 	if (successful.length > 0) {
 		const clientNames = clientIds.map((id) => {
 			const config = getClientConfig(id);
@@ -237,12 +243,26 @@ export async function install(
 			? pc.dim("Available for this project only.")
 			: pc.dim("Available globally.");
 
-		const summary =
+		let summary =
 			`${pc.green("✓")} ${pc.bold("Skills:")} ${skillNames.join(", ")}\n` +
 			`${pc.green("✓")} ${pc.bold("Clients:")} ${clientNames.join(", ")}\n\n` +
 			scopeMsg;
 
+		if (allFailures.length > 0) {
+			summary += `\n\n${pc.yellow("⚠")} Some installations failed:\n`;
+			for (const f of allFailures) {
+				summary += `  ${pc.red("✗")} ${f.skill} → ${f.client}: ${f.error}\n`;
+			}
+		}
+
 		note(summary, "Complete");
 		showExitMessage();
+	} else if (allFailures.length > 0) {
+		let failureMsg = "";
+		for (const f of allFailures) {
+			failureMsg += `${pc.red("✗")} ${f.skill} → ${f.client}: ${f.error}\n`;
+		}
+		note(failureMsg.trim(), "Installation Failed");
+		throw new Error("All skill installations failed");
 	}
 }
