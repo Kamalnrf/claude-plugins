@@ -10,6 +10,12 @@ const { id } = Astro.props;
 let tweet;
 try {
   tweet = await getTweet(id);
+  if (tweet?.entities) {
+    tweet.entities.hashtags ??= [];
+    tweet.entities.user_mentions ??= [];
+    tweet.entities.symbols ??= [];
+    tweet.entities.urls ??= [];
+  }
 } catch (error) {
   console.error(`Failed to fetch tweet ${id}:`, error);
   tweet = undefined;
