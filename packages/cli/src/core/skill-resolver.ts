@@ -24,34 +24,43 @@ export interface SkillInfo {
 export async function resolveSkill(
 	skillIdentifier: string,
 ): Promise<SkillInfo | null> {
+	const parts = skillIdentifier.split("/");
+	if (parts.length !== 3) {
+		throw new Error(
+			`Invalid skill identifier format: "${skillIdentifier}". Expected: @owner/repo/skill or owner/repo/skill`,
+		);
+	}
+
+	const [owner, marketplace, skillName] = parts;
+
+	let response: Response;
 	try {
-		const parts = skillIdentifier.split("/");
-		if (parts.length !== 3) {
-			throw new Error(
-				`Invalid skill identifier format. Expected: @owner/repo/skill or owner/repo/skill`,
-			);
-		}
-
-		const [owner, marketplace, skillName] = parts;
-
-		// Query the API
-		const response = await fetch(
+		response = await fetch(
 			`${REGISTRY_API_URL}/api/skills/${owner}/${marketplace}/${skillName}`,
 		);
+	} catch (error) {
+		throw new Error(
+			`Network error while resolving skill "${skillIdentifier}": ${error instanceof Error ? error.message : String(error)}`,
+		);
+	}
 
-		if (!response.ok) {
+	if (!response.ok) {
+		if (response.status === 404) {
 			return null;
 		}
-
-		const data = (await response.json()) as SkillInfo;
-		if (!data.sourceUrl) {
-			throw new Error("Invalid response from registry API: missing sourceUrl");
-		}
-
-		return data;
-	} catch (error) {
-		return null;
+		throw new Error(
+			`Registry API returned ${response.status} for skill "${skillIdentifier}": ${response.statusText}`,
+		);
 	}
+
+	const data = (await response.json()) as SkillInfo;
+	if (!data.sourceUrl) {
+		throw new Error(
+			`Invalid response from registry API: missing sourceUrl for "${skillIdentifier}"`,
+		);
+	}
+
+	return data;
 }
 
 /**
