@@ -24,7 +24,7 @@ export const GET: APIRoute = async ({ request }) => {
 	const [owner, marketplace, skillName] = parts;
 
 	// Reject namespace parts containing control characters or path traversal
-	const safePattern = /^[a-zA-Z0-9_.\-]+$/;
+	const safePattern = /^@?[a-zA-Z0-9_.\-]+$/;
 	if (!safePattern.test(owner) || !safePattern.test(marketplace) || !safePattern.test(skillName)) {
 		return new Response(
 			JSON.stringify({ error: "Invalid characters in namespace" }),
