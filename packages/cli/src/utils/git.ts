@@ -1,8 +1,8 @@
-import { exec } from "node:child_process";
+import { execFile } from "node:child_process";
 import { promisify } from "node:util";
 import { exists } from "./fs";
 
-const execAsync = promisify(exec);
+const execFileAsync = promisify(execFile);
 
 /**
  * Clones a git repository to the specified destination
@@ -19,7 +19,7 @@ export async function cloneRepo(
 	}
 
 	try {
-		await execAsync(`git clone --depth 1 "${url}" "${destination}"`);
+		await execFileAsync("git", ["clone", "--depth", "1", url, destination]);
 		return true;
 	} catch (error) {
 		const message = error instanceof Error ? error.message : String(error);
@@ -38,7 +38,7 @@ export async function pullRepo(repoPath: string): Promise<boolean> {
 	}
 
 	try {
-		await execAsync(`git -C "${repoPath}" pull`);
+		await execFileAsync("git", ["-C", repoPath, "pull"]);
 		return true;
 	} catch (error) {
 		const message = error instanceof Error ? error.message : String(error);
@@ -53,7 +53,7 @@ export async function pullRepo(repoPath: string): Promise<boolean> {
  */
 export async function isGitRepo(repoPath: string): Promise<boolean> {
 	try {
-		await execAsync(`git -C "${repoPath}" rev-parse --git-dir`);
+		await execFileAsync("git", ["-C", repoPath, "rev-parse", "--git-dir"]);
 		return true;
 	} catch {
 		return false;

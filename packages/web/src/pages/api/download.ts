@@ -13,7 +13,7 @@ export const GET: APIRoute = async ({ request }) => {
 		);
 	}
 
-	// 2. Parse namespace (owner/marketplace/skillName)
+	// 2. Parse and validate namespace (owner/marketplace/skillName)
 	const parts = namespace.split("/");
 	if (parts.length !== 3) {
 		return new Response(
@@ -21,8 +21,16 @@ export const GET: APIRoute = async ({ request }) => {
 			{ status: 400, headers: { "Content-Type": "application/json" } },
 		);
 	}
-	// Sanitize skill name to remove any file extensions
 	const [owner, marketplace, skillName] = parts;
+
+	// Reject namespace parts containing control characters or path traversal
+	const safePattern = /^@?[a-zA-Z0-9_.\-]+$/;
+	if (!safePattern.test(owner) || !safePattern.test(marketplace) || !safePattern.test(skillName)) {
+		return new Response(
+			JSON.stringify({ error: "Invalid characters in namespace" }),
+			{ status: 400, headers: { "Content-Type": "application/json" } },
+		);
+	}
 
 	// 3. Fetch skill to get sourceUrl
 	try {
