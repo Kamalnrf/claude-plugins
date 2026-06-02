@@ -4,8 +4,8 @@ import { registryAPI } from "../../lib/api";
 export const GET: APIRoute = async ({ request }) => {
 	const url = new URL(request.url);
 	const q = url.searchParams.get("q") || "";
-	const limit = parseInt(url.searchParams.get("limit") || "20", 10);
-	const offset = parseInt(url.searchParams.get("offset") || "0", 10);
+	const limit = Math.min(Math.max(parseInt(url.searchParams.get("limit") || "20", 10) || 20, 1), 100);
+	const offset = Math.max(parseInt(url.searchParams.get("offset") || "0", 10) || 0, 0);
 	const orderBy = url.searchParams.get("orderBy") as "downloads" | "stars" | null;
 	const order = url.searchParams.get("order") as "asc" | "desc" | null;
 
@@ -30,7 +30,6 @@ export const GET: APIRoute = async ({ request }) => {
 		return new Response(
 			JSON.stringify({
 				error: "Failed to fetch skills",
-				message: error instanceof Error ? error.message : "Unknown error",
 			}),
 			{
 				status: 500,

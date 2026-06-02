@@ -2,6 +2,7 @@
 import "github-markdown-css/github-markdown-dark.css";
 import matter from 'gray-matter';
 import { Marked } from 'marked';
+import DOMPurify from 'isomorphic-dompurify';
 
 const { content: markdown, sourceUrl } = Astro.props;
 
@@ -25,7 +26,6 @@ const markedInstance = new Marked();
 markedInstance.use({
   renderer: {
     link({ href, title, text }) {
-      console.log('Href =>', href);
       // Ensure href is a string before processing
       if (typeof href !== 'string') {
         // Return default link HTML
@@ -38,10 +38,7 @@ markedInstance.use({
       if (isRelativeLink && sourceUrl) {
         // Parse sourceUrl - format: https://github.com/owner/repo/blob/branch/path/to/SKILL.md
         // Example: https://github.com/bobmatnyc/claude-mpm/blob/main/src/claude_mpm/skills/bundled/debugging/verification-before-completion/SKILL.md
-        const githubUrlMatch = sourceUrl.replace
-        console.log('Github URL Match:', githubUrlMatch)
-
-        if (githubUrlMatch) {
+        if (sourceUrl) {
           // All internal links are within the skill directory
           // Strip ./ prefix if present, otherwise use as-is
           const resolvedPath = href.startsWith('./') ? href.substring(2) : href;
@@ -55,7 +52,12 @@ markedInstance.use({
   }
 });
 
-const parsedContent = await markedInstance.parse(content);
+const rawHtml = await markedInstance.parse(content);
+const parsedContent = DOMPurify.sanitize(rawHtml, {
+  ALLOWED_TAGS: ['h1','h2','h3','h4','h5','h6','p','a','ul','ol','li','code','pre','blockquote','img','table','thead','tbody','tr','th','td','br','hr','em','strong','del','sup','sub','span','div','details','summary','dl','dt','dd','kbd','s','var','samp','abbr','cite','dfn','mark','small','figure','figcaption','picture','source','video','audio'],
+  ALLOWED_ATTR: ['href','src','alt','title','class','id','target','rel','width','height','colspan','rowspan','align','valign','scope','open','loading','decoding','type','media'],
+  ALLOW_DATA_ATTR: false,
+});
 const entries = Object.entries(frontMatter);
 ---
 <article class="markdown-body mx-auto p-6 rounded">

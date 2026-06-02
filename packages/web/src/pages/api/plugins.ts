@@ -5,8 +5,8 @@ export const GET: APIRoute = async ({ request }) => {
 	const url = new URL(request.url);
 	const q = url.searchParams.get("q") || "";
 	const hasSkills = url.searchParams.get("hasSkills") === "true";
-	const limit = parseInt(url.searchParams.get("limit") || "20", 10);
-	const offset = parseInt(url.searchParams.get("offset") || "0", 10);
+	const limit = Math.min(Math.max(parseInt(url.searchParams.get("limit") || "20", 10) || 20, 1), 100);
+	const offset = Math.max(parseInt(url.searchParams.get("offset") || "0", 10) || 0, 0);
 	const orderBy = url.searchParams.get("orderBy") as "downloads" | "stars" | null;
 	const order = url.searchParams.get("order") as "asc" | "desc" | null;
 
