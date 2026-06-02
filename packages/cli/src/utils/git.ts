@@ -14,19 +14,16 @@ export async function cloneRepo(
 	url: string,
 	destination: string,
 ): Promise<boolean> {
-	try {
-		// Check if destination already exists
-		if (await exists(destination)) {
-			console.warn(`Destination ${destination} already exists, skipping clone`);
-			return true;
-		}
+	if (await exists(destination)) {
+		return true;
+	}
 
-		// Clone with depth=1 for faster cloning (shallow clone)
+	try {
 		await execAsync(`git clone --depth 1 "${url}" "${destination}"`);
 		return true;
 	} catch (error) {
-		console.error(`Failed to clone ${url}:`, error);
-		return false;
+		const message = error instanceof Error ? error.message : String(error);
+		throw new Error(`Failed to clone ${url}: ${message}`);
 	}
 }
 
@@ -36,17 +33,16 @@ export async function cloneRepo(
  * @returns true if successful, false otherwise
  */
 export async function pullRepo(repoPath: string): Promise<boolean> {
-	try {
-		if (!(await exists(repoPath))) {
-			console.warn(`Repository ${repoPath} does not exist`);
-			return false;
-		}
+	if (!(await exists(repoPath))) {
+		throw new Error(`Repository path does not exist: ${repoPath}`);
+	}
 
+	try {
 		await execAsync(`git -C "${repoPath}" pull`);
 		return true;
 	} catch (error) {
-		console.error(`Failed to pull ${repoPath}:`, error);
-		return false;
+		const message = error instanceof Error ? error.message : String(error);
+		throw new Error(`Failed to pull ${repoPath}: ${message}`);
 	}
 }
 

@@ -17,26 +17,36 @@ const REGISTRY_API_URL = "https://api.claude-plugins.dev";
 export async function resolvePluginUrl(
 	pluginIdentifier: string,
 ): Promise<string | null> {
+	let response: Response;
 	try {
-		const response = await fetch(
+		response = await fetch(
 			`${REGISTRY_API_URL}/api/resolve/${pluginIdentifier}`,
 		);
+	} catch (error) {
+		throw new Error(
+			`Network error while resolving plugin "${pluginIdentifier}": ${error instanceof Error ? error.message : String(error)}`,
+		);
+	}
 
-		if (!response.ok) {
+	if (!response.ok) {
+		if (response.status === 404) {
 			return null;
 		}
-
-		const data = (await response.json()) as {
-			gitUrl: string;
-		};
-		if (!data.gitUrl) {
-			throw new Error(`Invalid response from registry API: ${data}`);
-		}
-
-		return data.gitUrl;
-	} catch (error) {
-		return null;
+		throw new Error(
+			`Registry API returned ${response.status} for "${pluginIdentifier}": ${response.statusText}`,
+		);
 	}
+
+	const data = (await response.json()) as {
+		gitUrl: string;
+	};
+	if (!data.gitUrl) {
+		throw new Error(
+			`Invalid response from registry API: missing gitUrl for "${pluginIdentifier}"`,
+		);
+	}
+
+	return data.gitUrl;
 }
 
 /**

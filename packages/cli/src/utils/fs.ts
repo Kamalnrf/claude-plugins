@@ -1,5 +1,5 @@
 import { constants } from "node:fs";
-import { access, mkdir, readFile, rm, writeFile } from "node:fs/promises";
+import { access, mkdir, readFile, rename, rm, writeFile } from "node:fs/promises";
 import { homedir } from "node:os";
 import { join } from "node:path";
 
@@ -85,8 +85,9 @@ export async function readJSON<T>(filePath: string): Promise<T | null> {
 		try {
 			return JSON.parse(content) as T;
 		} catch (error) {
-			console.warn(`Failed to parse JSON from ${filePath}:`, error);
-			return null;
+			throw new Error(
+				`Failed to parse JSON from ${filePath}: ${error instanceof Error ? error.message : String(error)}`,
+			);
 		}
 	});
 }
@@ -99,17 +100,8 @@ export async function writeJSON<T>(filePath: string, data: T): Promise<void> {
 		const content = JSON.stringify(data, null, 2);
 		const tempPath = `${filePath}.tmp`;
 
-		// Write to temp file first
+		// Write to temp file first, then atomically rename
 		await writeFile(tempPath, content, "utf-8");
-
-		// Atomic rename
-		await writeFile(filePath, content, "utf-8");
-
-		// Clean up temp file
-		try {
-			await rm(tempPath, { force: true });
-		} catch {
-			// Ignore cleanup errors
-		}
+		await rename(tempPath, filePath);
 	});
 }

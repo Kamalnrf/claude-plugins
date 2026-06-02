@@ -27,7 +27,19 @@ export async function skillInstallCommand(
 	const s = spinner();
 	s.start("Resolving skill from registry...");
 
-	const skill = await resolveSkill(skillIdentifier);
+	let skill: Awaited<ReturnType<typeof resolveSkill>>;
+	try {
+		skill = await resolveSkill(skillIdentifier);
+	} catch (error) {
+		s.stop("Failed to resolve");
+		note(
+			`${error instanceof Error ? error.message : String(error)}\n\nPlease check the identifier format and your network connection.`,
+			"Resolution Error",
+		);
+		cancel(`Unable to resolve "${skillIdentifier}"`);
+		process.exit(1);
+	}
+
 	if (!skill) {
 		s.stop("Failed to resolve");
 		note(
@@ -66,7 +78,7 @@ export async function skillInstallCommand(
 		fetch(
 			`${REGISTRY_API_URL}/api/skills/${owner}/${marketplace}/${name}/install`,
 			{ method: "POST" },
-		).catch((err) => console.error("Install tracking failed:", err));
+		).catch(() => {});
 
 		// Step 5: Success message
 		note(
