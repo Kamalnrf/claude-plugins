@@ -1,6 +1,6 @@
 ---
 import { getTweet } from 'react-tweet/api';
-import { EmbeddedTweet, TweetNotFound } from 'react-tweet';
+import { EmbeddedTweet } from 'react-tweet';
 
 interface Props {
   id: string;
@@ -16,10 +16,22 @@ try {
 }
 const hasVideo = tweet?.mediaDetails?.some(m => m.type === 'video' || m.type === 'animated_gif');
 const tweetUrl = tweet ? `https://twitter.com/${tweet.user.screen_name}/status/${id}` : '';
+const fallbackUrl = `https://twitter.com/i/web/status/${id}`;
 ---
 
 <div class="tweet-embed max-w-[600px] mx-auto" data-theme="dark" data-has-video={hasVideo} data-tweet-url={tweetUrl}>
-  {tweet ? <EmbeddedTweet tweet={tweet} /> : <TweetNotFound />}
+  {tweet ? (
+    <EmbeddedTweet tweet={tweet} />
+  ) : (
+    <a
+      href={fallbackUrl}
+      target="_blank"
+      rel="noopener noreferrer"
+      class="block rounded-lg border border-border/50 bg-card/30 p-4 text-sm text-muted-foreground hover:bg-muted/30"
+    >
+      View usage example on Twitter/X
+    </a>
+  )}
 </div>
 
 <script>
