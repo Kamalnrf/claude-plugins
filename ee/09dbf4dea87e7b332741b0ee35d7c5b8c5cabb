@@ -1,0 +1,19 @@
+packages/web/src/pages/skills/[...slug].astro
+  s_c2614041682ff2::t_4b221d0aeb7ac2 79-91
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "ee09dbf4dea87e7b332741b0ee35d7c5b8c5cabb",
+  "prompts": {},
+  "sessions": {
+    "s_c2614041682ff2": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_16203c72dffe0XJAuNN4Z99K7B",
+        "model": "gpt-5.5"
+      },
+      "human_author": "Kamal Mukkamala <kamalnrf@gmail.com>"
+    }
+  }
+}
