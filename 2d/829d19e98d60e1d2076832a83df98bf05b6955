@@ -1,0 +1,20 @@
+packages/web/src/components/Tweet.astro
+  s_c2614041682ff2::t_fda7b72765ddb9 18-19,27-41,44-46,51-52
+  s_c2614041682ff2::t_990c4a62f675f5 17,20-26,42-43
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "2d829d19e98d60e1d2076832a83df98bf05b6955",
+  "prompts": {},
+  "sessions": {
+    "s_c2614041682ff2": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_16203c72dffe0XJAuNN4Z99K7B",
+        "model": "gpt-5.5"
+      },
+      "human_author": "Kamal Mukkamala <kamalnrf@gmail.com>"
+    }
+  }
+}
