@@ -7,7 +7,6 @@ import { SkillDetailHeader } from "@/components/SkillDetailHeader";
 import Markdown from "@/components/Markdown.astro";
 import { Button } from "@/components/ui/button";
 import {LinkIcon} from '@/components/ui/link-icon'
-import Tweet from '@/components/Tweet.astro';
 
 const { slug } = Astro.params;
 const parts = slug?.split("/") || [];
@@ -77,8 +76,19 @@ Astro.response.headers.set('Cache-Control', 'public, max-age=0, must-revalidate,
 					<h2 class="text-base font-semibold text-foreground/90 tracking-tight">Skill Usage</h2>
 					<div class="flex-1 h-px bg-border/30"></div>
 				</div>
-				<div class="flex justify-center">
-					<Tweet id="2011227015337455694" />
+				<div class="rounded-lg border border-border/50 bg-card/30 p-4 text-sm text-muted-foreground">
+					<p>
+						Use this skill when you need to find or install a more specialized Agent Skill before starting work.
+					</p>
+					<a
+						href="https://twitter.com/noominoid/status/2011227015337455694"
+						target="_blank"
+						rel="noopener noreferrer"
+						class="mt-3 inline-flex items-center gap-1 text-primary hover:underline"
+					>
+						View usage example
+						<LinkIcon />
+					</a>
 				</div>
 			</section>
 		)}
