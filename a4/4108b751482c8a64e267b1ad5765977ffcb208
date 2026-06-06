@@ -1,0 +1,21 @@
+packages/web/src/components/Tweet.astro
+  s_c2614041682ff2::t_f8bbf6b23bb419 3,19,23-34
+packages/web/src/pages/skills/[...slug].astro
+  s_c2614041682ff2::t_70735893a936a7 10,80-81
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.3",
+  "base_commit_sha": "a44108b751482c8a64e267b1ad5765977ffcb208",
+  "prompts": {},
+  "sessions": {
+    "s_c2614041682ff2": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_16203c72dffe0XJAuNN4Z99K7B",
+        "model": "gpt-5.5"
+      },
+      "human_author": "Kamal Mukkamala <kamalnrf@gmail.com>"
+    }
+  }
+}
