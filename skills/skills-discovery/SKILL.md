@@ -96,22 +96,22 @@ Determine which client the user is working in before installing. If unclear, ask
 - **Client selection:**
 
 ```bash
-npx skills-installer install @owner/repo/skill-name --client claude-code  # default
-npx skills-installer install @owner/repo/skill-name --client cursor
-npx skills-installer install @owner/repo/skill-name --client vscode
+npx skills-installer@0.3.1 install @owner/repo/skill-name --client claude-code  # default
+npx skills-installer@0.3.1 install @owner/repo/skill-name --client cursor
+npx skills-installer@0.3.1 install @owner/repo/skill-name --client vscode
 ```
 
 **Scope selection:**
 
 ```bash
-npx skills-installer install @owner/repo/skill-name  # global (default)
-npx skills-installer install @owner/repo/skill-name --local  # project-specific
+npx skills-installer@0.3.1 install @owner/repo/skill-name  # global (default)
+npx skills-installer@0.3.1 install @owner/repo/skill-name --local  # project-specific
 ```
 
 **Combined:**
 
 ```bash
-npx skills-installer install @owner/repo/skill-name --client cursor --local
+npx skills-installer@0.3.1 install @owner/repo/skill-name --client cursor --local
 ```
 
 **Defaults:**
@@ -123,10 +123,10 @@ npx skills-installer install @owner/repo/skill-name --client cursor --local
 
 ```bash
 # List installed skills
-npx skills-installer list
+npx skills-installer@0.3.1 list
 
 # Uninstall a skill
-npx skills-installer uninstall @owner/repo/skill-name
+npx skills-installer@0.3.1 uninstall @owner/repo/skill-name
 ```
 
 ## Presenting results to users
