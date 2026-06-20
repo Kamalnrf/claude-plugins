@@ -176,7 +176,7 @@ Present results and ask which to install.
 
 | Endpoint                                 | Description       |
 | ---------------------------------------- | ----------------- |
-| `GET /api/skills/search?q=QUERY`         | Search skills     |
+| `GET /api/skills?q=QUERY`                | Search skills     |
 | `GET /api/skills/@owner/repo/skill-name` | Get skill details |
 
 **Web registry:** https://claude-plugins.dev/skills
