@@ -10,6 +10,16 @@ const { id } = Astro.props;
 let tweet;
 try {
   tweet = await getTweet(id);
+  // react-tweet@3.3.0 iterates entity arrays without null checks;
+  // the Twitter API omits them when empty, so default to [].
+  for (const t of [tweet, tweet?.quoted_tweet].filter(Boolean)) {
+    if (t.entities) {
+      t.entities.hashtags ??= [];
+      t.entities.user_mentions ??= [];
+      t.entities.symbols ??= [];
+      t.entities.urls ??= [];
+    }
+  }
 } catch (error) {
   console.error(`Failed to fetch tweet ${id}:`, error);
   tweet = undefined;
