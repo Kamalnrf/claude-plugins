@@ -1,0 +1,25 @@
+{
+  "name": "claude-plugins",
+  "owner": {
+    "name": "Kamal",
+    "url": "https://github.com/Kamalnrf"
+  },
+  "metadata": {
+    "description": "Tools to improve and work with claude-plugins.dev",
+    "version": "1.0.0"
+  },
+  "plugins": [
+    {
+      "name": "claude-skills-usage-tracker",
+      "description": "An anoyomous usage tracker for skills to help improve search and discovery of skills for everyone",
+      "version": "1.0.0",
+      "author": {
+        "name": "Kamal",
+        "url": "https://github.com/Kamalnrf",
+        "email": "kamalnrf@gmail.com"
+      },
+      "homepage": "https://github.com/Kamalnrf/claude-plugins",
+      "source": "./packages/plugins/compound-engineering"
+    }
+  ]
+}
