@@ -1,6 +1,6 @@
 ---
 import { getTweet } from 'react-tweet/api';
-import { EmbeddedTweet, TweetNotFound } from 'react-tweet';
+import { EmbeddedTweet } from 'react-tweet';
 
 interface Props {
   id: string;
@@ -24,12 +24,52 @@ try {
   console.error(`Failed to fetch tweet ${id}:`, error);
   tweet = undefined;
 }
-const hasVideo = tweet?.mediaDetails?.some(m => m.type === 'video' || m.type === 'animated_gif');
-const tweetUrl = tweet ? `https://twitter.com/${tweet.user.screen_name}/status/${id}` : '';
+
+const normalizeTweet = (value: any) => {
+  if (!(
+    value &&
+    typeof value.id_str === 'string' &&
+    typeof value.text === 'string' &&
+    Array.isArray(value.display_text_range) &&
+    value.user &&
+    typeof value.user.name === 'string' &&
+    typeof value.user.screen_name === 'string' &&
+    typeof value.user.profile_image_url_https === 'string'
+  )) {
+    return undefined;
+  }
+
+  return {
+    ...value,
+    entities: {
+      hashtags: [],
+      user_mentions: [],
+      urls: [],
+      symbols: [],
+      ...value.entities,
+    },
+  };
+};
+
+const normalizedTweet = normalizeTweet(tweet);
+const hasVideo = normalizedTweet?.mediaDetails?.some(m => m.type === 'video' || m.type === 'animated_gif');
+const tweetUrl = normalizedTweet ? `https://twitter.com/${normalizedTweet.user.screen_name}/status/${id}` : '';
+const fallbackUrl = `https://twitter.com/i/web/status/${id}`;
 ---
 
 <div class="tweet-embed max-w-[600px] mx-auto" data-theme="dark" data-has-video={hasVideo} data-tweet-url={tweetUrl}>
-  {tweet ? <EmbeddedTweet tweet={tweet} /> : <TweetNotFound />}
+  {normalizedTweet ? (
+    <EmbeddedTweet tweet={normalizedTweet} />
+  ) : (
+    <a
+      href={fallbackUrl}
+      target="_blank"
+      rel="noopener noreferrer"
+      class="block rounded-lg border border-border/50 bg-card/30 p-4 text-sm text-muted-foreground hover:bg-muted/30"
+    >
+      View usage example on Twitter/X
+    </a>
+  )}
 </div>
 
 <script>
