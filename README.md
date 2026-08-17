@@ -148,8 +148,8 @@ If you find this project useful, here are two ways to help:
 A star helps others discover this project!
 
 <p align="center">
-  <a href="https://star-history.com/#Kamalnrf/claude-plugins&Date">
-    <img src="https://api.star-history.com/svg?repos=Kamalnrf/claude-plugins&type=Date" alt="Star History Chart" width="60%" />
+  <a href="https://star-history.dera.page/#Kamalnrf/claude-plugins&type=Date">
+    <img src="https://star-history.dera.page/svg?repos=Kamalnrf/claude-plugins&type=Date" alt="Star History Chart" width="60%" />
   </a>
 </p>
 
